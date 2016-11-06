@@ -1,0 +1,72 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="net.onkel.ardourcontrol.MainActivity">
+    <item
+        android:id="@+id/action_connect"
+        android:title="@string/action_connect"
+        android:orderInCategory="101"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_disconnect"
+        android:title="@string/action_disconnect"
+        android:orderInCategory="102"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_settings"
+        android:orderInCategory="103"
+        android:title="@string/action_settings" />
+    <item android:title="@string/action_banking"
+        android:id="@+id/action_banking"
+        android:orderInCategory="104">
+
+        <menu>
+            <item android:title="@string/action_newbank"
+                android:id="@+id/action_newbank"
+                android:orderInCategory="104" />
+            <item android:title="@string/action_editbank"
+                android:id="@+id/action_editbank"
+                android:orderInCategory="105"/>
+            <item android:title="@string/action_removebank"
+                android:id="@+id/action_removebank"
+                android:orderInCategory="106" />
+        </menu>
+    </item>
+    <item android:title="@string/action_alltracks"
+        android:id="@+id/action_all_tracks"
+        android:orderInCategory="200">
+        <menu >
+
+            <item android:title="@string/menu_record">
+                <menu>
+                    <item android:title="@string/action_allrecenable"
+                        android:id="@+id/action_allrecenable"
+                        android:orderInCategory="201" />
+                    <item android:title="@string/action_allredisable"
+                        android:id="@+id/action_allrecdisable"
+                        android:orderInCategory="203" />
+                    <item android:title="@string/action_alltoggle"
+                        android:id="@+id/action_allrectoggle"
+                        android:orderInCategory="203" />
+                </menu>
+            </item>
+
+            <item android:title="@string/menu_stripin">
+                <menu>
+                    <item android:title="@string/action_allstripin_enable"
+                        android:id="@+id/action_allstripin_enable"
+                        android:orderInCategory="210" />
+                    <item android:title="@string/action_allstripin_disable"
+                        android:id="@+id/action_allstripin_disable"
+                        android:orderInCategory="210" />
+                    <item android:title="@string/action_allstripin_toggle"
+                        android:id="@+id/action_allstripin_toggle"
+                        android:orderInCategory="212" />
+                </menu>
+            </item>
+
+        </menu>
+    </item>
+
+
+</menu>

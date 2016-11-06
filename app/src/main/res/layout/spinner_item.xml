@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/itemText"
+    style="?android:attr/spinnerDropDownItemStyle"
+    android:maxLines="1"
+    android:layout_width="match_parent"
+    android:textColor="@android:color/white"
+    android:layout_height="28dp"
+    android:background="#80FF40FF"
+    android:backgroundTint="@color/VeryDark"
+    android:ellipsize="marquee"/>

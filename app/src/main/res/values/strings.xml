@@ -1,0 +1,27 @@
+<resources>
+    <string name="app_name">Ardmix</string>
+    <string name="action_settings">Settings</string>
+    <string name="action_connect">Connect</string>
+    <string name="host">Host</string>
+    <string name="port">Port</string>
+    <string name="Ok">Ok</string>
+    <string name="cancel">Cancel</string>
+    <string name="action_disconnect">Disconnect</string>
+    <string name="action_newbank">New bank</string>
+    <string name="hint_stripname">The name of the strip</string>
+    <string name="hint_bankname">The name of the bank</string>
+    <string name="bankSize">bank size</string>
+    <string name="action_banking">Banking</string>
+    <string name="action_removebank">Remove Bank</string>
+    <string name="action_editbank">Edit Bank</string>
+    <string name="useSendsLayout">Use separate sends frame</string>
+    <string name="action_alltracks">All Tracks</string>
+    <string name="action_allrecenable">Enable</string>
+    <string name="action_allredisable">Disable</string>
+    <string name="action_alltoggle">Toggle</string>
+    <string name="action_allstripin_toggle">Toggle</string>
+    <string name="action_allstripin_enable">Enable</string>
+    <string name="action_allstripin_disable">Disable</string>
+    <string name="menu_record">Record</string>
+    <string name="menu_stripin">Strip In</string>
+</resources>

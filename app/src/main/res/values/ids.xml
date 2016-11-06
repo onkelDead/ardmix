@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="bankButton1" type="id">80</item>
+    <item name="strip_select_list" type="id">99</item>
+    <item name="bankSelectOk" type="id">52</item>
+    <item name="strip_ok" type="id">121</item>
+</resources>

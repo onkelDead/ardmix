@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    tools:context="de.paraair.MainActivity"
+    android:background="?attr/colorPrimary">
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="24dp"
+        android:layout_gravity="top|right"
+        android:id="@+id/btTransport"
+
+        android:background="?attr/colorPrimary"
+        android:layout_marginTop="5dp">
+
+        <ImageButton
+            android:id="@+id/bGotoStart"
+            android:layout_width="48dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="2dp"
+            android:layout_weight="0.1"
+            android:background="@drawable/ard_btn1"
+            android:minHeight="100dp"
+            android:src="@drawable/transport_start" />
+
+
+        <de.paraair.ardmix.ToggleImageButton
+            android:layout_width="48dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/bLoopEnable"
+            android:layout_weight="0.1"
+            android:layout_margin="2dp"
+            android:src="@drawable/transport_loop"
+            app:background_toggled="@drawable/ard_btn1_green"
+            app:background_untoggled="@drawable/ard_btn1"
+            />
+
+        <de.paraair.ardmix.ToggleImageButton
+            android:id="@+id/bPlay"
+            android:layout_width="48dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="2dp"
+            android:layout_weight="0.2"
+            android:minHeight="100dp"
+            android:src="@drawable/transport_play"
+            app:background_toggled="@drawable/ard_btn1_green"
+            app:background_untoggled="@drawable/ard_btn1" />
+
+        <de.paraair.ardmix.ToggleImageButton
+            android:id="@+id/bStop"
+            android:layout_width="48dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="2dp"
+            android:layout_weight="0.2"
+            android:minHeight="100dp"
+            android:src="@drawable/transport_stop"
+            app:background_toggled="@drawable/ard_btn1_green"
+            app:background_untoggled="@drawable/ard_btn1" />
+
+        <de.paraair.ardmix.ToggleImageButton
+            android:id="@+id/bRec"
+            android:layout_width="48dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="2dp"
+            android:layout_weight="0.2"
+            android:minHeight="100dp"
+            android:src="@drawable/transport_record"
+            app:background_toggled="@drawable/ard_btn1_red"
+            app:background_untoggled="@drawable/ard_btn1" />
+
+
+        <ImageButton
+            android:id="@+id/bGotoEnd"
+            android:layout_width="48dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="2dp"
+            android:layout_weight="0.1"
+            android:background="@drawable/ard_btn1"
+            android:minHeight="100dp"
+            android:minWidth="40dp"
+            android:src="@drawable/transport_end" />
+
+    </LinearLayout>
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.AppBarOverlay"
+        android:layout_width="240dp">
+
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:background="?attr/colorPrimary"
+            app:popupTheme="@style/AppTheme.PopupOverlay"
+            android:layout_height="36dp" />
+
+
+    </android.support.design.widget.AppBarLayout>
+
+    <include layout="@layout/content_main" />
+
+</android.support.design.widget.CoordinatorLayout>
