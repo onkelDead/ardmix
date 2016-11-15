@@ -2,6 +2,7 @@ package de.paraair.ardmix;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -93,6 +94,17 @@ public  class ArdourPlugin {
                 return String.format("%.2f", current);
             else
                 return String.format(print_fmt, current);
+        }
+
+        public int getIndexFromScalePointKey(int key) {
+            int index = 0;
+
+            for(Map.Entry<Integer,String> entry : scale_points.entrySet()) {
+                if( entry.getKey() == key )
+                    return index;
+                index++;
+            }
+            return 0;
         }
 
         public void addScalePoint(int val, String name) {

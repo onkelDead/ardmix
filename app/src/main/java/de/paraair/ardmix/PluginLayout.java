@@ -128,7 +128,7 @@ public class PluginLayout extends LinearLayout implements View.OnClickListener  
                     final MyAdapter aa = new MyAdapter(parameter.scale_points);
                     Spinner parameterValue = new Spinner(context);
                     parameterValue.setAdapter(aa);
-                    parameterValue.setSelection((int)parameter.current);
+                    parameterValue.setSelection(parameter.getIndexFromScalePointKey((int)parameter.current) );
                     parameterValue.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                         @Override
                         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
