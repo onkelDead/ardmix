@@ -1165,7 +1165,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public void onBankDlg(int bankIndex, Bank bank) {
-        if (selectBank != null) {
+        if (selectBank != null && bankIndex != -1) {
             selectBank.setName(bank.getName());
             selectBank.getStrips().clear();
             for( Bank.Strip strip: bank.getStrips()) {
