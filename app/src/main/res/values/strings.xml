@@ -24,4 +24,6 @@
     <string name="action_allstripin_disable">Disable</string>
     <string name="menu_record">Record</string>
     <string name="menu_stripin">Strip In</string>
+    <string name="action_savebanks">Save Bank</string>
+    <string name="action_loadbanks">Load Bank</string>
 </resources>

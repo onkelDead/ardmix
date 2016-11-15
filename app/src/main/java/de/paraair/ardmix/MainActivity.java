@@ -11,6 +11,8 @@ import android.os.Message;
 import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.JsonReader;
+import android.util.JsonWriter;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
@@ -22,6 +24,13 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -49,6 +58,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Long frameRate;
     private byte transportState = TRANSPORT_STOPPED;
 
+    private BankLoadDialog fdlg = null;
 
     // top level IO elements
     private ImageButton gotoStartButton = null;
@@ -138,10 +148,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         recordButton = (ToggleImageButton) this.findViewById(R.id.bRec);
         recordButton.setOnClickListener(this);
         recordButton.setAutoToggle(false);
-
-//        loopButton = (ToggleImageButton) this.findViewById(R.id.bLoopEnable);
-//        loopButton.setOnClickListener(this);
-//        loopButton.setAutoToggle(false);
 
         transportToggleGroup = new ToggleGroup();
 
@@ -260,6 +266,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.action_disconnect:
                 stopConnectionToArdour();
                 break;
+
+// Banking menu
             case R.id.action_newbank:
                 BankSettingDialogFragment bdlg = new BankSettingDialogFragment ();
                 Bundle bankBundle = new Bundle();
@@ -273,7 +281,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.action_removebank:
                 RemoveBank(banks.indexOf(currentBank));
                 break;
+            case R.id.action_savebank:
+                SaveBank(currentBank);
+                break;
+            case R.id.action_loadbank:
+                LoadBank();
+                break;
 
+// Record button menu
             case R.id.action_allrecenable:
                 oscService.transportAction(OscService.ALL_REC_ENABLE);
                 break;
@@ -286,6 +301,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 oscService.transportAction(OscService.ALL_REC_TOGGLE);
                 break;
 
+// Strip In menu
             case R.id.action_allstripin_enable:
                 oscService.transportAction(OscService.ALL_STRIPIN_ENABLE);
                 break;
@@ -301,6 +317,62 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void LoadBank() {
+        File dir = new File(context.getFilesDir().getPath());
+        File[] files = dir.listFiles();
+
+        HashMap<String,String> mapFileNames = new HashMap<>();
+        for (File f: files
+             ) {
+            String filename = f.getName();
+            if (filename.endsWith(".bank")) {
+                mapFileNames.put(f.getName(), f.getAbsolutePath());
+                Log.d(TAG, "filename: " + f.getAbsolutePath());
+            }
+        }
+        Bundle bankBundle = new Bundle();
+        bankBundle.putStringArrayList("files", new ArrayList<String>(mapFileNames.keySet()));
+        fdlg = new BankLoadDialog();
+        bankBundle.putInt("bankIndex", -1);
+        fdlg.setArguments(bankBundle);
+        fdlg.show(getSupportFragmentManager(), "Load Bank");
+
+    }
+
+    private void SaveBank(Bank bank) {
+        try {
+
+            StringWriter stringWriter = new StringWriter();
+            JsonWriter jsonWriter = new JsonWriter(stringWriter);
+            jsonWriter.beginObject();
+            jsonWriter.name("Bank").value(bank.getName());
+            jsonWriter.name("Strips");
+            jsonWriter.beginArray();
+            for ( Bank.Strip strip : bank.getStrips() ) {
+
+                jsonWriter.beginObject().name(strip.name).value(strip.id);
+                jsonWriter.endObject();
+
+            }
+            jsonWriter.endArray();
+
+            jsonWriter.endObject();
+            jsonWriter.close();
+
+            System.out.print(stringWriter.toString());
+            FileOutputStream outputStream;
+            String filename = bank.getName() + ".bank";
+            outputStream = openFileOutput(filename, Context.MODE_PRIVATE);
+            outputStream.write(stringWriter.toString().getBytes());
+            outputStream.close();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
     }
 
     public void RemoveBank(int bankIndex) {
@@ -1226,5 +1298,50 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public ArrayList<Track> getRoutes() {
         return oscService.getRoutes();
+    }
+
+    public void LoadBankFile(Object tag) {
+        if( fdlg != null ) {
+            fdlg.dismiss();
+            Bank bank = new Bank();
+            int n = 0;
+            try {
+                FileInputStream inputStream;
+                StringBuffer content = new StringBuffer();
+                byte[] buffer = new byte[1024];
+                String filename = (String) tag;
+                inputStream = openFileInput(filename);
+                while ((n = inputStream.read(buffer)) != -1)
+                {
+                    content.append(new String(buffer, 0, n));
+                }
+                inputStream.close();
+                Log.d(TAG, "load file content: " + content.toString());
+
+                StringReader stringReader = new StringReader(content.toString());
+                JsonReader reader = new JsonReader(stringReader);
+                reader.beginObject();
+                if( reader.nextName().equals("Bank"))
+                    bank.setName(reader.nextString());
+                if( reader.nextName().equals("Strips")) {
+                    reader.beginArray();
+                    while (reader.hasNext()) {
+                        reader.beginObject();
+                        bank.add(reader.nextName(), reader.nextInt(), true);
+                        reader.endObject();
+                    }
+                    reader.endArray();
+                }
+                reader.endObject();
+                banks.add(bank);
+                updateBanklist();
+
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        fdlg = null;
     }
 }

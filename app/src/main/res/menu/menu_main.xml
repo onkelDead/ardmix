@@ -30,6 +30,12 @@
             <item android:title="@string/action_removebank"
                 android:id="@+id/action_removebank"
                 android:orderInCategory="106" />
+            <item android:title="@string/action_savebanks"
+                android:id="@+id/action_savebank"
+                android:orderInCategory="108" />
+            <item android:title="@string/action_loadbanks"
+                android:id="@+id/action_loadbank"
+                android:orderInCategory="108" />
         </menu>
     </item>
     <item android:title="@string/action_alltracks"
