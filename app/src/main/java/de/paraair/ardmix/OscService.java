@@ -978,11 +978,17 @@ public class OscService {
 	}
 
 	public void setSendEnable(int trackIndex, int pluginIndex, float value) {
+/*
 		Object[] args  = new Object[3];
 		args[0] = trackIndex;
 		args[1] = pluginIndex + 1;
 		args[2] = value;
 		this.sendOSCMessage("/strip/send/enable", args);
+*/
+		Object[] args  = new Object[2];
+		args[0] = pluginIndex + 1;
+		args[1] = value;
+		this.sendOSCMessage("/select/send_enable", args);
 	}
 
     public ArrayList<Track> getRoutes() {

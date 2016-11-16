@@ -31,7 +31,12 @@ public class Bank implements Cloneable{
         strip.id = remoteId;
         strip.name = name;
         strip.enabled = enabled;
-        strips.add(strip);
+        int insert_index = 0;
+        for(Strip p: strips) {
+            if (p.id < remoteId)
+                insert_index++;
+        }
+        strips.add(insert_index, strip);
     }
 
     public boolean contains(int remoteId) {

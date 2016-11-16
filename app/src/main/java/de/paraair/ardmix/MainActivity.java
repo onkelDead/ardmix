@@ -269,11 +269,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 // Banking menu
             case R.id.action_newbank:
-                BankSettingDialogFragment bdlg = new BankSettingDialogFragment ();
-                Bundle bankBundle = new Bundle();
-                bankBundle.putInt("bankIndex", -1);
-                bdlg.setArguments(bankBundle);
-                bdlg.show(getSupportFragmentManager(), "Bank Settings");
+                newBank();
                 break;
             case R.id.action_editbank:
                 EditBank(banks.indexOf(currentBank));
@@ -317,6 +313,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void newBank() {
+        BankSettingDialogFragment bdlg = new BankSettingDialogFragment ();
+        Bundle bankBundle = new Bundle();
+        bankBundle.putInt("bankIndex", -1);
+        bdlg.setArguments(bankBundle);
+        bdlg.show(getSupportFragmentManager(), "Bank Settings");
     }
 
     private void LoadBank() {
@@ -623,11 +627,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     if (!useSendsLayout) {
                         int next = 1;
                         for (int i = 0; i < sargs.length; i += 5) {
-                            StripLayout receiveStrip = getStripLayout((int) sargs[i]);
-                            receiveStrip.setType(Track.TrackType.RECEIVE, (Float) sargs[i + 3], (int) sargs[i + 2], (int) sargs[i + 4] == 1);
-                            if (!currentBank.contains(receiveStrip.getRemoteId())) {
-                                receiveStrip.setPosition(strip.getPosition() + next);
-                                stripList.addView(receiveStrip, strip.getPosition() + (next++));
+                            if( (int)sargs[i] > 0 ) {
+                                StripLayout receiveStrip = getStripLayout((int) sargs[i]);
+                                receiveStrip.setType(Track.TrackType.RECEIVE, (Float) sargs[i + 3], (int) sargs[i + 2], (int) sargs[i + 4] == 1);
+                                if (!currentBank.contains(receiveStrip.getRemoteId())) {
+                                    receiveStrip.setPosition(strip.getPosition() + next);
+                                    stripList.addView(receiveStrip, strip.getPosition() + (next++));
+                                }
                             }
                         }
                     }
@@ -859,7 +865,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             _bank.button.setToggleState(false);
             bankList.addView(_bank.button);
         }
-
+        ToggleTextButton addBank = new ToggleTextButton(this);
+        LinearLayout.LayoutParams bankLP = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                32);
+        bankLP.setMargins(1,1,1,1);
+        bankLP.gravity = Gravity.RIGHT;
+        addBank.setLayoutParams(bankLP);
+        addBank.setPadding(0,0,0,0);
+        addBank.setAllText("+");
+        addBank.setId(bankId + banks.size());
+        addBank.setOnClickListener(this);
+        addBank.setAutoToggle(false);
+        addBank.setToggleState(false);
+        bankList.addView(addBank);
+        
     }
 
     @Override
@@ -946,6 +966,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 if (i >= bankId && i < bankId + banks.size() ) {
                     showBank((int)v.getTag());
+                    break;
+                }
+
+                if( i == bankId + banks.size()) {
+                    newBank();
                     break;
                 }
 
