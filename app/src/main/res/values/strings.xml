@@ -7,13 +7,13 @@
     <string name="Ok">Ok</string>
     <string name="cancel">Cancel</string>
     <string name="action_disconnect">Disconnect</string>
-    <string name="action_newbank">New bank</string>
+    <string name="action_newbank">New bank...</string>
     <string name="hint_stripname">The name of the strip</string>
     <string name="hint_bankname">The name of the bank</string>
     <string name="bankSize">bank size</string>
     <string name="action_banking">Banking</string>
     <string name="action_removebank">Remove Bank</string>
-    <string name="action_editbank">Edit Bank</string>
+    <string name="action_editbank">Edit Bank...</string>
     <string name="useSendsLayout">Use separate sends frame</string>
     <string name="action_alltracks">All Tracks</string>
     <string name="action_allrecenable">Enable</string>
@@ -25,5 +25,8 @@
     <string name="menu_record">Record</string>
     <string name="menu_stripin">Strip In</string>
     <string name="action_savebanks">Save Bank</string>
-    <string name="action_loadbanks">Load Bank</string>
+    <string name="action_loadbanks">Load Bank...</string>
+    <string name="action_Mask">Strip Elements...</string>
+    <string name="action_consettings">Connection...</string>
+    <string name="action_maskall">Show all</string>
 </resources>

@@ -15,7 +15,21 @@
     <item
         android:id="@+id/action_settings"
         android:orderInCategory="103"
-        android:title="@string/action_settings" />
+        android:title="@string/action_settings">
+        <menu>
+            <item
+                android:id="@+id/action_connection"
+                android:orderInCategory="103"
+                android:title="@string/action_consettings" />
+            <item
+                android:id="@+id/action_mask"
+                android:orderInCategory="103"
+                android:title="@string/action_Mask" />
+
+        </menu>
+
+    </item>
+
     <item android:title="@string/action_banking"
         android:id="@+id/action_banking"
         android:orderInCategory="104">

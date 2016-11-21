@@ -6,6 +6,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.view.Gravity;
 import android.widget.LinearLayout;
+import android.widget.RemoteViews;
 import android.widget.TextView;
 
 /**
@@ -55,7 +56,9 @@ public class StripLayout extends LinearLayout {
 
     }
 
-    public void init(Context context) {
+    public void init(Context context, StripElementMask mask) {
+
+        removeAllViews();
 
         LayoutParams switchLP = new LayoutParams(
                 LayoutParams.WRAP_CONTENT,
@@ -90,7 +93,8 @@ public class StripLayout extends LinearLayout {
                 stripName.setBackgroundColor(Color.WHITE);
                 break;
         }
-        this.addView(stripName);
+        if( mask.bTitle )
+            this.addView(stripName);
 
         fxs = new ToggleTextButton(context, "FX","FX", 0xffFF80FF, Color.GRAY);
         fxs.setPadding(0,0,0,0);
@@ -99,11 +103,8 @@ public class StripLayout extends LinearLayout {
         fxs.setId(track.remoteId);
         fxs.setTag("fx");
         fxs.setOnClickListener(onClickListener);
-//        if (track.type == Track.TrackType.MASTER) {
-//            fxs.setEnabled(false);
-//            fxs.setUntoggledText("");
-//        }
-        this.addView(fxs);
+        if( mask.bFX)
+            this.addView(fxs);
 
         sends = new ToggleTextButton(context, "SEND","SEND", Color.CYAN, Color.GRAY);
         sends.setPadding(0,0,0,0);
@@ -116,7 +117,8 @@ public class StripLayout extends LinearLayout {
             sends.setEnabled(false);
             sends.setUntoggledText("");
         }
-        this.addView(sends);
+        if (mask.bSend)
+            this.addView(sends);
 
 
 
@@ -126,6 +128,7 @@ public class StripLayout extends LinearLayout {
         recEnabled.setId(track.remoteId);
         if (track.type == Track.TrackType.AUDIO) {
             recEnabled.setTag("rec");
+            recEnabled.setToggleState(track.recEnabled);
             recEnabled.setOnClickListener(onClickListener);
         }
         else if (track.type == Track.TrackType.MASTER) {
@@ -143,7 +146,8 @@ public class StripLayout extends LinearLayout {
             recEnabled.setOnClickListener(onClickListener);
         }
 
-        this.addView(recEnabled);
+        if( mask.bRecord)
+            this.addView(recEnabled);
 
 
         LayoutParams meterParam = new LayoutParams(
@@ -155,7 +159,9 @@ public class StripLayout extends LinearLayout {
         meterImage.setId(track.remoteId);
         meterImage.setBackgroundColor(Color.BLACK);
         meterImage.setBackgroundResource(R.drawable.gain_image);
-        this.addView(meterImage);
+
+        if (mask.bMeter)
+            this.addView(meterImage);
 
         muteEnabled = new ToggleTextButton(context, "MUTE", "MUTE", Color.YELLOW, Color.GRAY);
         muteEnabled.setPadding(0,0,0,0);
@@ -163,8 +169,10 @@ public class StripLayout extends LinearLayout {
         muteEnabled.setTag("mute");
         muteEnabled.setId(track.remoteId);
         muteEnabled.setToggleState(track.muteEnabled );
+        if (mask.bMute) {
+            this.addView(muteEnabled);
+        }
         muteEnabled.setOnClickListener(onClickListener);
-        this.addView(muteEnabled);
 
 
         soloEnabled = new ToggleTextButton(context, "SOLO", "SOLO", Color.GREEN, Color.GRAY);
@@ -175,23 +183,25 @@ public class StripLayout extends LinearLayout {
         soloEnabled.setToggleState(track.soloEnabled);
         soloEnabled.setOnClickListener(onClickListener);
         if (track.type == Track.TrackType.MASTER) {
-            soloEnabled.setEnabled(false);
+            soloEnabled.setEnabled(track.soloEnabled);
             soloEnabled.setUntoggledText("");
         }
-        this.addView(soloEnabled);
+        if (mask.bSolo)
+            this.addView(soloEnabled);
 
         panEnabled = new ToggleTextButton(context, "PAN", "PAN", 0xffffbb33, Color.GRAY);
         panEnabled.setPadding(0,0,0,0);
         panEnabled.setLayoutParams(switchLP);
         panEnabled.setTag("pan");
         panEnabled.setId(track.remoteId);
+        panEnabled.setToggleState(false);
         panEnabled.setOnClickListener(onClickListener);
         if (track.type == Track.TrackType.MASTER) {
             panEnabled.setEnabled(false);
             panEnabled.setUntoggledText("");
         }
-        this.addView(panEnabled);
-        panEnabled.setToggleState(false);
+        if (mask.bPan)
+            this.addView(panEnabled);
 
         volumeSeek = new FaderView(context);
         volumeSeek.setLayoutParams(new LayoutParams(
@@ -200,7 +210,9 @@ public class StripLayout extends LinearLayout {
         volumeSeek.setTag("volume");
         volumeSeek.setId(track.remoteId);
         volumeSeek.setOnChangeHandler(mHandler);
-        this.addView(volumeSeek);
+        volumeSeek.setProgress(track.trackVolume);
+        if (mask.bFader)
+            this.addView(volumeSeek);
 
     }
 

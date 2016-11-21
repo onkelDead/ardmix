@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <CheckBox
+        android:text="Strip Title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/chkMaskTitle" />
+    <CheckBox
+        android:text="Strip FX Button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/chkMaskFX" />
+    <CheckBox
+        android:text="Strip Send Button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/chkMaskSend" />
+    <CheckBox
+        android:text="Strip Record/Receive Button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/chkMaskRecord" />
+    <CheckBox
+        android:text="Strip Meter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/chkMaskMeter" />
+    <CheckBox
+        android:text="Strip Mute Button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/chkMaskMute" />
+    <CheckBox
+        android:text="Strip Solo Button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/chkMaskSolo" />
+    <CheckBox
+        android:text="Strip Pan Button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/chkMaskPan" />
+    <CheckBox
+        android:text="Strip Fader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/chkMaskFader" />
+
+</LinearLayout>

@@ -92,6 +92,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private PluginLayout pluginLayout;
 
+    private StripElementMask stripElementMask = new StripElementMask();
+
     private LinearLayout stripSelect;
     private StripLayout masterStrip;
     private LinearLayout mainLayout;
@@ -124,6 +126,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         oscPort = settings.getInt("oscPort", 3819); //if oscPort setting not found default to 3819
         bankSize = settings.getInt("bankSize", 8);
         useSendsLayout = settings.getBoolean("useSendsLayout", false);
+
+        stripElementMask.bTitle = settings.getBoolean("mskTitle", true);
+        stripElementMask.bMeter = settings.getBoolean("mskMeter", true);
 
         mainSroller = (HorizontalScrollView) findViewById(R.id.main_scoller);
         stripList = (LinearLayout) findViewById(R.id.strip_list);
@@ -251,7 +256,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         switch(id) {
 
-            case R.id.action_settings:
+            case R.id.action_connection:
                 reset_layouts();
                 SettingsDialogFragment sdlg = new SettingsDialogFragment ();
                 Bundle settingsBundle = new Bundle();
@@ -261,6 +266,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 settingsBundle.putBoolean("useSendsLayout", useSendsLayout);
                 sdlg.setArguments(settingsBundle);
                 sdlg.show(getSupportFragmentManager(), "Connection Settings");
+                break;
+            case R.id.action_mask:
+                stripElementMask.config(this);
                 break;
             case R.id.action_connect:
             startConnectionToArdour();
@@ -653,8 +661,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         remote_id = (int)args[i];
                         StripLayout strip = getStripLayout(remote_id);
                         strip.setType(Track.TrackType.SEND, (Float)args[i+3], (int)args[i+2], (int)args[i+4] == 1);
-                        if( !currentBank.contains(remote_id))
-                            stripList.addView(strip, stripList.getChildCount());
+
                     }
                     break;
 
@@ -800,7 +807,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         stripLayout.setOnClickListener(this);
         stripLayout.setOnChangeHandler(topLevelHandler);
 
-        stripLayout.init(context);
+        stripLayout.init(context, stripElementMask);
         strips.add(stripLayout);
 
         System.out.printf("adding strip %s with id %d\n", t.name, t.remoteId-1);
@@ -1410,5 +1417,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         }
         fdlg = null;
+    }
+
+    public void onStripMaskDlg() {
+        for( StripLayout sl : strips) {
+            sl.init(context, stripElementMask);
+        }
+        showBank((int)currentBank.getButton().getTag());
+
+        SharedPreferences settings = getSharedPreferences(TAG, 0);
+        SharedPreferences.Editor editor = settings.edit();
+
+        editor.putBoolean("mskTitle", stripElementMask.bTitle);
+        editor.putBoolean("mskMeter", stripElementMask.bMeter);
+
+        editor.commit();
     }
 }
