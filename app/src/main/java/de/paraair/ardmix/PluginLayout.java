@@ -30,6 +30,9 @@ public class PluginLayout extends LinearLayout implements View.OnClickListener  
     public static final int MSG_WHAT_PLUGIN_CHANGED = 28;
     public static final int MSG_WHAT_PLUGIN_RESET = 29;
     public static final int MSG_WHAT_PLUGIN_RESUEST = 22;
+    public static final int MSG_WHAT_PLUGIN_NEXT = 31;
+    public static final int MSG_WHAT_PLUGIN_PREV = 32;
+
     private ArdourPlugin plugin;
 
     private Context context;
@@ -150,13 +153,39 @@ public class PluginLayout extends LinearLayout implements View.OnClickListener  
 
             }
         }
+        LinearLayout btnLayout = new LinearLayout(context);
+        btnLayout.setOrientation(HORIZONTAL);
+        btnLayout.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+        btnLayout.setPadding(0,16,0,0);
+
         Button btnClose = new Button(context);
-        btnClose.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, 26));
+        LayoutParams bclp = new LayoutParams(LayoutParams.WRAP_CONTENT, 26);
+        bclp.setMargins(0,0,48,0);
+        btnClose.setLayoutParams(bclp);
         btnClose.setPadding(1, 0, 1, 0);
-        btnClose.setText("Close");
         btnClose.setTag("close");
+        btnClose.setText("Close");
         btnClose.setOnClickListener(this);
-        addView(btnClose);
+        btnLayout.addView(btnClose);
+
+        Button btnPrev = new Button(context);
+        btnPrev.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, 26));
+        btnPrev.setPadding(1, 0, 1, 0);
+        btnPrev.setTag("prev");
+        btnPrev.setText("<");
+        btnPrev.setOnClickListener(this);
+        btnLayout.addView(btnPrev);
+
+        Button btnNext = new Button(context);
+        btnNext.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, 26));
+        btnNext.setPadding(1, 0, 1, 0);
+        btnNext.setTag("next");
+        btnNext.setText(">");
+        btnNext.setOnClickListener(this);
+        btnLayout.addView(btnNext);
+
+        addView(btnLayout);
+
     }
 
     public class MyAdapter extends BaseAdapter {
@@ -278,6 +307,15 @@ public class PluginLayout extends LinearLayout implements View.OnClickListener  
             case "close":
                 onChangeHandler.sendMessage(onChangeHandler.obtainMessage(SendsLayout.MSG_WHAT_RESET_LAYOUT));
                 break;
+
+            case "next":
+                onChangeHandler.sendMessage(onChangeHandler.obtainMessage(MSG_WHAT_PLUGIN_NEXT));
+                break;
+
+            case "prev":
+                onChangeHandler.sendMessage(onChangeHandler.obtainMessage(MSG_WHAT_PLUGIN_PREV));
+                break;
+
             default:
                 break;
         }

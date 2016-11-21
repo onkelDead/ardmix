@@ -569,6 +569,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     }
                     break;
 
+                case PluginLayout.MSG_WHAT_PLUGIN_NEXT:
+                    int np = currentBank.getStripPosition(iPluginLayout);
+                    //reset_layouts();
+
+                    if( np < currentBank.getStrips().size()-1 ) {
+                        np++;
+                        enablePluginLayout(currentBank.getStrips().get(np).id, true);
+                    }
+                    break;
+
+                case PluginLayout.MSG_WHAT_PLUGIN_PREV:
+                    int pp = currentBank.getStripPosition(iPluginLayout);
+                    //reset_layouts();
+                    if( pp > 0) {
+                        pp--;
+                        enablePluginLayout(currentBank.getStrips().get(pp).id, true);
+                    }
+                    break;
+
+
                 case MSG_WHAT_FRAMERATE:
                     frameRate = (Long) msg.obj;
                     break;
@@ -1173,7 +1193,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             pluginLayout = new PluginLayout(this);
             pluginLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
             pluginLayout.setOrientation(LinearLayout.VERTICAL);
-            pluginLayout.setBackgroundColor(0x30FF40FF);
+            pluginLayout.setBackgroundColor(0x20FF40FF);
             pluginLayout.setPadding(1, 0, 1, 0);
             pluginLayout.setId(stripIndex);
             pluginLayout.setOnChangeHandler(topLevelHandler);
@@ -1187,7 +1207,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             iPluginLayout = stripIndex;
             // we are ready to receive plugin list
             oscService.requestPluginList(stripIndex);
-            strip.setBackgroundColor(0x10FF40FF);
+            strip.setBackgroundColor(0x20FF40FF);
         }
         else {
             pluginLayout.removeAllViews();

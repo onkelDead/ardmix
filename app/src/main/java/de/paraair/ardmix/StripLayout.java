@@ -92,7 +92,7 @@ public class StripLayout extends LinearLayout {
         }
         this.addView(stripName);
 
-        fxs = new ToggleTextButton(context, "FX","FX", 0xFF8040FF, Color.GRAY);
+        fxs = new ToggleTextButton(context, "FX","FX", 0xffFF80FF, Color.GRAY);
         fxs.setPadding(0,0,0,0);
         fxs.setLayoutParams(switchLP);
         fxs.setToggleState(false);

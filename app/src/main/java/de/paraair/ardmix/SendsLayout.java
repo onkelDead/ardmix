@@ -125,9 +125,12 @@ public class SendsLayout extends LinearLayout implements OnClickListener {
         LinearLayout btnLayout = new LinearLayout(context);
         btnLayout.setOrientation(HORIZONTAL);
         btnLayout.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+        btnLayout.setPadding(0,32,0,0);
 
         Button btnClose = new Button(context);
-        btnClose.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, 26));
+        LayoutParams bclp = new LayoutParams(LayoutParams.WRAP_CONTENT, 26);
+        bclp.setMargins(0,0,48,0);
+        btnClose.setLayoutParams(bclp);
         btnClose.setPadding(1, 0, 1, 0);
         btnClose.setTag("close");
         btnClose.setText("Close");
