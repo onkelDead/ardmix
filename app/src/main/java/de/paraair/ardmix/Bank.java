@@ -14,6 +14,13 @@ public class Bank implements Cloneable{
         return button;
     }
 
+    public int getStripPosition(int iSendsLayout) {
+        for(int i = 0; i < strips.size(); i++)
+            if (iSendsLayout == strips.get(i).id)
+                return i;
+        return -1;
+    }
+
     enum BankType { ALL, AUDIO, BUS };
 
     private ArrayList<Strip> strips = new ArrayList();

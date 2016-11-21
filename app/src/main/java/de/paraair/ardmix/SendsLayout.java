@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.os.Handler;
 import android.os.Message;
+import android.view.Gravity;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -26,6 +27,8 @@ public class SendsLayout extends LinearLayout implements OnClickListener {
     public static final int MSG_WHAT_SEND_CHANGED = 98;
     public static final int MSG_WHAT_SEND_ENABLED = 99;
     public static final int MSG_WHAT_RESET_LAYOUT = 199;
+    public static final int MSG_WHAT_PREV_SEND_LAYOUT = 197;
+    public static final int MSG_WHAT_NEXT_SEND_LAYOUT = 198;
     private Context context;
     private Object[] sargs;
 
@@ -37,9 +40,11 @@ public class SendsLayout extends LinearLayout implements OnClickListener {
     public SendsLayout(Context context) {
         super(context);
         this.context = context;
-        this.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT));
+        LayoutParams lp = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT);
+        lp.setMargins(1,1,1,1);
+        this.setLayoutParams(lp);
         this.setOrientation(LinearLayout.VERTICAL);
-        this.setBackgroundColor(0x3000FFFF);
+        this.setBackgroundColor(getResources().getColor(R.color.BUS_AUX_BACKGROUND));
         this.setPadding(1, 0, 1, 0);
 
     }
@@ -51,8 +56,24 @@ public class SendsLayout extends LinearLayout implements OnClickListener {
      */
     @Override
     public void onClick(View v) {
-        Message fm = onChangeHandler.obtainMessage(MSG_WHAT_RESET_LAYOUT);
-        onChangeHandler.sendMessage(fm);
+
+        String tag = (String)(v.getTag());
+        Message fm;
+        switch(tag) {
+            case "close":
+                fm = onChangeHandler.obtainMessage(MSG_WHAT_RESET_LAYOUT);
+                onChangeHandler.sendMessage(fm);
+                break;
+            case "prev":
+                fm = onChangeHandler.obtainMessage(MSG_WHAT_PREV_SEND_LAYOUT);
+                onChangeHandler.sendMessage(fm);
+                break;
+            case "next":
+                fm = onChangeHandler.obtainMessage(MSG_WHAT_NEXT_SEND_LAYOUT);
+                onChangeHandler.sendMessage(fm);
+                break;
+
+        }
     }
 
     public void init(StripLayout strip, Object[] sargs) {
@@ -101,12 +122,35 @@ public class SendsLayout extends LinearLayout implements OnClickListener {
             addView(sLayout);
         }
 
+        LinearLayout btnLayout = new LinearLayout(context);
+        btnLayout.setOrientation(HORIZONTAL);
+        btnLayout.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+
         Button btnClose = new Button(context);
         btnClose.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, 26));
         btnClose.setPadding(1, 0, 1, 0);
+        btnClose.setTag("close");
         btnClose.setText("Close");
         btnClose.setOnClickListener(this);
-        addView(btnClose);
+        btnLayout.addView(btnClose);
+
+        Button btnPrev = new Button(context);
+        btnPrev.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, 26));
+        btnPrev.setPadding(1, 0, 1, 0);
+        btnPrev.setTag("prev");
+        btnPrev.setText("<");
+        btnPrev.setOnClickListener(this);
+        btnLayout.addView(btnPrev);
+
+        Button btnNext = new Button(context);
+        btnNext.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, 26));
+        btnNext.setPadding(1, 0, 1, 0);
+        btnNext.setTag("next");
+        btnNext.setText(">");
+        btnNext.setOnClickListener(this);
+        btnLayout.addView(btnNext);
+
+        addView(btnLayout);
 
     }
 

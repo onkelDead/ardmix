@@ -39,8 +39,14 @@ public class FaderView extends ImageView implements View.OnTouchListener {
     private float relative;
     private Orientation orientation = Orientation.VERTICAL;
 
-    private Paint p;
+    private boolean bTopText = false;
+    private String strTopText = "";
+    private boolean bBottomText = false;
+    private String strBottomText = "";
 
+    public int val0 = 782;
+
+    private Paint p;
     private Bitmap fader_bmp;
 
     private Handler myListener;
@@ -72,8 +78,6 @@ public class FaderView extends ImageView implements View.OnTouchListener {
 //        int ledheight =  (int)parentHeight / 14;
 
         int val = meterLevel;
-        int val0 = 782;
-
 
         p.setColor(progressColor);
 
@@ -81,22 +85,42 @@ public class FaderView extends ImageView implements View.OnTouchListener {
             float leftEdge = parentWidth / 2;
             float rightEdge = parentWidth / 2;
             float meterWidth = parentWidth / 4;
-            float topEdge = 12;
-            float bottomEdge = 12;
-            float top0db = parentHeight - ((float)val0 / max * (parentHeight - topEdge - bottomEdge)) - topEdge;
-            float topdb = parentHeight - ((float)val / max * (parentHeight - topEdge - bottomEdge)) - topEdge;
+            float topEdge = 12 + (bTopText ? 24 : 0);
+            float bottomEdge = 12 + (bBottomText ? 24 : 0);
+
+            float fullheight = parentHeight - topEdge - bottomEdge;
+
+            float top0db = fullheight - ((float)val0 / max * (fullheight)) + topEdge;
+            float topdb = fullheight - ((float)val / max * (fullheight)) + topEdge;
             p.setStrokeWidth(meterWidth);
 
-            canvas.drawLine(leftEdge, parentHeight - bottomEdge , rightEdge, topdb, p);
+            // bright bg till volume
+            canvas.drawLine(leftEdge, topdb, rightEdge , fullheight + topEdge , p);
 
+            // 0dB line
             p.setStrokeWidth(2);
             canvas.drawLine(12, top0db, parentWidth - 12, top0db, p);
-            p.setColor(0x40808080);
 
+            // full range background
+            p.setColor(0x40808080);
             p.setStrokeWidth(1);
             canvas.drawRect(leftEdge - meterWidth / 2, topEdge , rightEdge + meterWidth / 2, parentHeight - bottomEdge, p);
 
+            // the bitmap
             canvas.drawBitmap(fader_bmp, leftEdge - 24, topdb - fader_bmp.getHeight() / 2, null);
+
+            // top text
+            if( bTopText ) {
+                p.setColor(0xffffbb33);
+                p.setTextSize(12);
+                canvas.drawText(strTopText, 12, 18, p);
+            }
+            // bottom text
+            if( bBottomText ) {
+                p.setColor(0xffffbb33);
+                p.setTextSize(12);
+                canvas.drawText(strBottomText, 12, parentHeight - bottomEdge + 30, p);
+            }
         }
         else {
             float leftEdge = parentHeight / 2;
@@ -218,4 +242,33 @@ public class FaderView extends ImageView implements View.OnTouchListener {
     void setDisplayText(String text) {
         displayText = text;
     }
+
+    public void setbTopText(boolean bTopText) {
+        this.bTopText = bTopText;
+    }
+
+    public void setStrTopText(String strTopText) {
+        this.strTopText = strTopText;
+        if ( !strTopText.equals("")) {
+            this.bTopText = true;
+        }
+        else {
+            this.bTopText = false;
+        }
+    }
+    public void setbBottomText(boolean bBottomText) {
+        this.bBottomText = bBottomText;
+    }
+
+    public void setStrBottomText(String strBottomText) {
+        this.strBottomText = strBottomText;
+        if ( !strBottomText.equals("")) {
+            this.bBottomText = true;
+        }
+        else {
+            this.bBottomText = false;
+        }
+    }
 }
+
+

@@ -279,6 +279,7 @@ public class StripLayout extends LinearLayout {
                     }
                     else if(showtype == Track.TrackType.PAN) {
                         track.panPosition = (float)msg.arg2 / 1000;
+
                         Message fm = onChangeHandler.obtainMessage(MSG_WHAT_PAN_CHANGED, msg.arg1, msg.arg2);
                         onChangeHandler.sendMessage(fm);
                     }
@@ -301,6 +302,7 @@ public class StripLayout extends LinearLayout {
             volumeSeek.setProgressColor(0xA000FFFF);
             oldVolume = track.trackVolume;
             oldMute = track.muteEnabled;
+            track.muteEnabled = enabled;
             track.trackVolume = (int)(sendVolume * 1000);
             volumeSeek.setProgress(track.trackVolume);
             soloEnabled.setEnabled(false);
@@ -319,6 +321,9 @@ public class StripLayout extends LinearLayout {
 //            muteEnabled.setEnabled(false);
         }
         else if(type == Track.TrackType.PAN ) {
+            volumeSeek.setStrTopText("right");
+            volumeSeek.setStrBottomText("left");
+            volumeSeek.val0 = 500;
             oldVolume = track.trackVolume;
 
         }
@@ -326,10 +331,12 @@ public class StripLayout extends LinearLayout {
 //            volumeSeek.setBackgroundColor(getResources().getColor(R.color.VeryDark));
             track.source_id = -1;
             volumeSeek.setProgressColor(getResources().getColor(R.color.fader));
+            volumeSeek.setbTopText(false);
             track.trackVolume = oldVolume;
             volumeSeek.setProgress(track.trackVolume);
             soloEnabled.setEnabled(true);
             muteEnabled.setToggleState(oldMute);
+            track.muteEnabled = oldMute;
         }
         showtype = type;
     }
@@ -352,6 +359,9 @@ public class StripLayout extends LinearLayout {
 
     public void ResetPan() {
         panEnabled.setToggleState(false);
+        volumeSeek.setbTopText(false);
+        volumeSeek.setbBottomText(false);
+        volumeSeek.val0 = 782;
         showtype = track.type;
     }
 

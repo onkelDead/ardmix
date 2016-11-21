@@ -1050,6 +1050,13 @@ public class OscService {
 				eargs[1] = sendIndex;
 				eargs[2] = (float)val;
 				this.sendOSCMessage("/strip/send/enable", eargs);
+/*				Object[] eargs  = new Object[2];
+				eargs[0] = sendTrack.remoteId;
+				eargs[1] = sendIndex;
+				if( val == 1 )
+					this.sendOSCMessage("/strip/plugin/activate", eargs);
+				else
+					this.sendOSCMessage("/strip/plugin/deactivate", eargs);*/
 				break;
 
 		}

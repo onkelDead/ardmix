@@ -52,6 +52,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private OscService oscService = null;
 
+    private int iVisibleStrips = 0;
 
     // Ardour session values
     private Long maxFrame;
@@ -251,6 +252,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         switch(id) {
 
             case R.id.action_settings:
+                reset_layouts();
                 SettingsDialogFragment sdlg = new SettingsDialogFragment ();
                 Bundle settingsBundle = new Bundle();
                 settingsBundle.putString("host", oscHost);
@@ -476,7 +478,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     _track = oscService.getTrack(msg.arg1 );
                     if ( iAuxLayout == msg.arg1) {
                         for( StripLayout _sl: strips) {
-                            if( _sl.getShowType() == Track.TrackType.RECEIVE) {
+                            if( _sl.getShowType() == Track.TrackType.RECEIVE && _sl.getTrack().muteEnabled == true ) {
                                 if( lastVolume != -1) {
                                     _sl.changeVolume(_track.trackVolume - lastVolume);
                                 }
@@ -494,6 +496,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     reset_layouts();
                     break;
 
+                case SendsLayout.MSG_WHAT_NEXT_SEND_LAYOUT:
+                    int nl = currentBank.getStripPosition(iSendsLayout);
+                    //reset_layouts();
+
+                    if( nl < currentBank.getStrips().size()-1 ) {
+                        nl++;
+                        enableSendsLayout(currentBank.getStrips().get(nl).id, true);
+                    }
+                    break;
+
+                case SendsLayout.MSG_WHAT_PREV_SEND_LAYOUT:
+                    int pl = currentBank.getStripPosition(iSendsLayout);
+                    //reset_layouts();
+                    if( pl > 0) {
+                        pl--;
+                        enableSendsLayout(currentBank.getStrips().get(pl).id, true);
+                    }
+                    break;
+
                 case SendsLayout.MSG_WHAT_SEND_CHANGED:
                     Track sendTrack =    oscService.getTrack(msg.arg1 + 1);
                     if (sendTrack != null)
@@ -505,7 +526,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     if (sendEnableTrack != null)
                         oscService.trackSendAction(OscService.SEND_ENABLED, sendEnableTrack, msg.arg2, (int)msg.obj );
                     break;
-
 
                 case StripLayout.MSG_WHAT_AUX_CHANGED:
                     Track auxTrack =    oscService.getTrack(msg.arg1 );
@@ -1310,11 +1330,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             try {
                 stripList.addView(getStripLayout(strip.id), c);
 
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
             getStripLayout(strip.id).setPosition(c++);
         }
+        iVisibleStrips = c;
 
         _bankButton = (ToggleTextButton) bankList.getChildAt(bankIndex);
         _bankButton.toggleOn();
