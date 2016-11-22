@@ -20,6 +20,9 @@ public class StripSettingDialogFragment extends DialogFragment {
     private int stripIndex;
     private EditText txtStripName;
     private CheckBox cbStripIn;
+    private CheckBox cbStripRecord;
+    private CheckBox cbStripMute;
+    private CheckBox cbStripSolo;
 
     @NonNull
     @Override
@@ -39,7 +42,7 @@ public class StripSettingDialogFragment extends DialogFragment {
                 String name = txtStripName.getText().toString();
 
                 MainActivity callingActivity = (MainActivity) getActivity();
-                callingActivity.onStripDlg(stripIndex, name, cbStripIn.isChecked());
+                callingActivity.onStripDlg(stripIndex, name, cbStripIn.isChecked(), cbStripRecord.isChecked(), cbStripMute.isChecked(), cbStripSolo.isChecked());
             }
         });
         builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -49,13 +52,32 @@ public class StripSettingDialogFragment extends DialogFragment {
         });
 
         txtStripName = (EditText) view.findViewById(R.id.stripname);
-        cbStripIn = (CheckBox) view.findViewById(R.id.sripin);
-
         txtStripName.setText(args.getString("stripName"));
+
+        cbStripIn = (CheckBox) view.findViewById(R.id.sripin);
         if (args.keySet().contains("stripIn"))
             cbStripIn.setChecked(args.getBoolean("stripIn"));
         else
             cbStripIn.setEnabled(false);
+
+        cbStripRecord = (CheckBox) view.findViewById(R.id.sriprecord);
+        if (args.keySet().contains("stripRecord"))
+            cbStripRecord.setChecked(args.getBoolean("stripRecord"));
+        else
+            cbStripRecord.setEnabled(false);
+
+        cbStripMute = (CheckBox) view.findViewById(R.id.sripmute);
+        if (args.keySet().contains("stripMute"))
+            cbStripMute.setChecked(args.getBoolean("stripMute"));
+        else
+            cbStripMute.setEnabled(false);
+
+        cbStripSolo = (CheckBox) view.findViewById(R.id.sripsolo);
+        if (args.keySet().contains("stripSolo"))
+            cbStripSolo.setChecked(args.getBoolean("stripSolo"));
+        else
+            cbStripSolo.setEnabled(false);
+
         stripIndex = args.getInt("stripIndex");
 
         return builder.create();

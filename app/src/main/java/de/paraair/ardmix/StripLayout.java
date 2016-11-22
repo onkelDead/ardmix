@@ -52,8 +52,6 @@ public class StripLayout extends LinearLayout {
         super(context);
         this.setOrientation(LinearLayout.VERTICAL);
         this.track = track;
-
-
     }
 
     public void init(Context context, StripElementMask mask) {
@@ -86,7 +84,8 @@ public class StripLayout extends LinearLayout {
                 stripName.setBackgroundColor(0xff00FFFF);
                 break;
             case BUS:
-                stripName.setBackgroundColor(0xff0000FF);
+                stripName.setBackgroundColor(Color.BLUE);
+                setBackgroundColor(0x200000FF);
                 stripName.setTextColor(Color.WHITE);
                 break;
             default:
@@ -138,7 +137,7 @@ public class StripLayout extends LinearLayout {
         }
         else {
             recEnabled.setAllText("Receive");
-            recEnabled.setTextColor(Color.argb(255,120,120,255));
+//            recEnabled.setTextColor(Color.BLUE);
             recEnabled.onColor = Color.BLUE;
             recEnabled.offColor = Color.GRAY;
             recEnabled.setTag("in");

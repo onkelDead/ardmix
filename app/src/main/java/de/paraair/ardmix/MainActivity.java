@@ -441,7 +441,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         stripList.removeAllViews();
         strips.clear();
         masterView.removeView(masterStrip);
-        bankList.removeAllViews();
+        if( bankList != null)
+            bankList.removeAllViews();
         banks.clear();
     }
 
@@ -1289,23 +1290,36 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Bundle settingsBundle = new Bundle();
         settingsBundle.putString("stripName", t.name);
         settingsBundle.putInt("stripIndex", i);
-        if(t.type == Track.TrackType.AUDIO)
+        if(t.type == Track.TrackType.AUDIO) {
             settingsBundle.putBoolean("stripIn", t.stripIn);
+            settingsBundle.putBoolean("stripRecord", t.recEnabled);
+        }
+        settingsBundle.putBoolean("stripMute", t.muteEnabled);
+        settingsBundle.putBoolean("stripSolo", t.soloEnabled);
+
         dlg.setArguments(settingsBundle);
         dlg.show(getSupportFragmentManager(), "Strip Settings");
 
     }
 
     private StripLayout getStripLayout(int remote_id) {
-        return strips.get(remote_id-1);
+        if( remote_id-1 < strips.size() )
+            return strips.get(remote_id-1);
+        return null;
     }
 
-    public void onStripDlg(int stripIndex, String stripName, boolean bStripIn) {
+    public void onStripDlg(int stripIndex, String stripName, boolean bStripIn, boolean bRecord, boolean bMute, boolean bSolo) {
         Track t = oscService.getTrack(stripIndex);
         t.name = stripName;
         oscService.trackListAction(OscService.NAME_CHANGED, oscService.getTrack(stripIndex));
         if(t.stripIn != bStripIn)
             oscService.trackListAction(OscService.STRIPIN_CHANGED, oscService.getTrack(stripIndex));
+        if(t.recEnabled != bRecord)
+            oscService.trackListAction(OscService.REC_CHANGED, oscService.getTrack(stripIndex));
+        if(t.muteEnabled != bMute)
+            oscService.trackListAction(OscService.MUTE_CHANGED, oscService.getTrack(stripIndex));
+        if(t.soloEnabled != bSolo)
+            oscService.trackListAction(OscService.SOLO_CHANGED, oscService.getTrack(stripIndex));
     }
 
     public void onBankDlg(int bankIndex, Bank bank) {

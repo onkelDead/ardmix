@@ -682,16 +682,14 @@ public class OscService {
 					int stripIndex = 0;
 					Track t;
 
-                    if(pathes.length < 3) {
-                        System.out.printf("pathes.length < 3: %s, ", message.getName());
-                        for( int a = 0; a < message.getArgCount(); a++) {
-                            System.out.printf("%d-%s,  ", a, String.valueOf(message.getArg(a)));
-                        }
-                        System.out.printf("\n");
+//                    if(pathes.length < 3) {
+//                        System.out.printf("pathes.length < 3: %s, ", message.getName());
+//                        for( int a = 0; a < message.getArgCount(); a++) {
+//                            System.out.printf("%d-%s,  ", a, String.valueOf(message.getArg(a)));
+//                        }
+//                        System.out.printf("\n");
 //						return;
-					}
-
-
+//					}
 
 					switch (pathes[1]) {
                         case "transport_play":
@@ -841,10 +839,14 @@ public class OscService {
 								case "monitor_input":
 									t = getTrack(stripIndex);
 									if( t != null ) {
-										int ie = (int) message.getArg(argOffset);
-										t.stripIn = ie > 0;
-										Message inmsg = transportHandler.obtainMessage(2000, routes);
-										transportHandler.sendMessage(inmsg);
+										try {
+											int ie = (int) message.getArg(argOffset);
+											t.stripIn = ie > 0;
+											Message inmsg = transportHandler.obtainMessage(2000, routes);
+											transportHandler.sendMessage(inmsg);
+										} catch (Exception e) {
+											e.printStackTrace();
+										}
 									}
 									break;
 

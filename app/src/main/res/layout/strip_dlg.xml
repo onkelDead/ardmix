@@ -24,4 +24,35 @@
         android:layout_marginRight="4dp"
         android:layout_marginBottom="4dp"
         />
+    <CheckBox
+        android:id="@+id/sriprecord"
+        android:text="@string/menu_record"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginLeft="4dp"
+        android:layout_marginRight="4dp"
+        android:layout_marginBottom="4dp"
+        />
+    <CheckBox
+        android:id="@+id/sripmute"
+        android:text="@string/mute"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginLeft="4dp"
+        android:layout_marginRight="4dp"
+        android:layout_marginBottom="4dp"
+        />
+    <CheckBox
+        android:id="@+id/sripsolo"
+        android:text="@string/solo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginLeft="4dp"
+        android:layout_marginRight="4dp"
+        android:layout_marginBottom="4dp"
+        />
+
 </LinearLayout>
