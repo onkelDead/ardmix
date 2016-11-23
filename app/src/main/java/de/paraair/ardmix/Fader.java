@@ -3,7 +3,7 @@ package de.paraair.ardmix;
 /**
  * Created by onkel on 16.09.16.
  */
-public class Fader {
+class Fader {
     public int remoteId;
     public String name;
     public int Volume = 0;
@@ -15,10 +15,10 @@ public class Fader {
 
     public final static double scale = (maxlval - minlval) / (maxpos - minpos);
 
-    public final static int valueToSlider(double value){
+    public static int valueToSlider(double value){
         return  (int)(minpos + (Math.cbrt(value) - minlval) / scale);
     }
-    public final static double sliderToValue(int sliderposition){
+    public static double sliderToValue(int sliderposition){
         return Math.pow((sliderposition - minpos) * scale + minlval, 3.0);
     }
 

@@ -18,9 +18,6 @@ public class MeterImageView extends ImageView {
     public float parentHeight;
 
     public int meterLevel = 0;
-    private float peak = 0;
-    private int peakCount = 0;
-
 
     private Paint p;
 
@@ -70,58 +67,11 @@ public class MeterImageView extends ImageView {
 
         }
 
-//        float db0 = meterLevel / parentHeight;
-//
-//        float cyanBorder = parentHeight * .6F;
-//        float greenBorder = parentHeight * .8F;
-//        float yellowBorder = parentHeight * .9F;
-//
-//
-//        p.setStrokeWidth(meterWidth);
-//        p.setColor(Color.rgb(0,128,0));
-//        canvas.drawLine(leftEdge, parentHeight, rightEdge, parentHeight - Math.min(meterLevel, cyanBorder), p);
-//        if (meterLevel > cyanBorder){
-//            p.setColor(Color.GREEN);
-//            canvas.drawLine(leftEdge, parentHeight - cyanBorder, rightEdge, parentHeight - Math.min(meterLevel, greenBorder), p);
-//        }
-//        if (meterLevel > greenBorder){
-//            p.setColor(Color.YELLOW);
-//            canvas.drawLine(leftEdge, parentHeight - greenBorder, rightEdge, parentHeight - Math.min(meterLevel, yellowBorder), p);
-//        }
-//        if (meterLevel > yellowBorder){
-//            p.setColor(Color.RED);
-//            canvas.drawLine(leftEdge, parentHeight - yellowBorder, rightEdge, parentHeight - meterLevel, p);
-//        }
-//
-//
-//// peak indicator
-//        if( peakCount > 0 ) {
-//            p.setStrokeWidth(4);
-//            Float elta =  meterWidth - (parentWidth/4);
-//            canvas.drawLine(elta, parentHeight - peak, parentWidth- elta, parentHeight - peak, p);
-//            peakCount--;
-//        }
-//        else
-//            peak = 0;
-
 
     }
 
     public void setProgress(int val) {
         meterLevel = val;
-//        for( int i = 0; i < 16; i++) {
-//            int  b = val & 1;
-//            if( b == 1 )
-//                meterLevel += 100;
-//            val = val >> 1;
-//        }
-//        Float factor = val/32767F;
-//        Float meterFloat = parentHeight * factor;
-//        meterLevel = meterFloat.intValue();
-        if( meterLevel > peak ) {
-            peak = meterLevel;
-            peakCount = 40;
-        }
 
         this.invalidate();
     }

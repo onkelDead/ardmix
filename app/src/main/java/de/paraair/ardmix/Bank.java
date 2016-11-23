@@ -21,7 +21,7 @@ public class Bank implements Cloneable{
         return -1;
     }
 
-    enum BankType { ALL, AUDIO, BUS };
+    enum BankType { ALL, AUDIO, BUS }
 
     private ArrayList<Strip> strips = new ArrayList();
     private String name;
@@ -60,7 +60,6 @@ public class Bank implements Cloneable{
                 return;
             }
         }
-        return;
     }
 
     public String getName() {
@@ -93,7 +92,7 @@ public class Bank implements Cloneable{
         return type;
     }
 
-    protected Bank clone() {
+    Bank GetClone() {
         Bank clone = new Bank(name);
         for(Strip strip: strips ) {
             clone.add(strip.name, strip.id, strip.enabled);

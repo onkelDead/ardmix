@@ -8,7 +8,7 @@ import java.util.Set;
 
 
 
-public class Blinker extends Thread {
+class Blinker extends Thread {
 
 	private Handler handler = null;
 

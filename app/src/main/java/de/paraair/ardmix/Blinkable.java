@@ -1,6 +1,6 @@
 package de.paraair.ardmix;
 
-public interface Blinkable {
+interface Blinkable {
 	
 	void blink();
 	void startBlink();

@@ -675,12 +675,10 @@ public class OscService {
             }
             else {
 
-                if( true /*state == OscService.READY*/ ) {
-
-                    // get a list of the URI elements
-					String[] pathes = message.getName().split("/");
-					int stripIndex = 0;
-					Track t;
+				// get a list of the URI elements
+				String[] pathes = message.getName().split("/");
+				int stripIndex = 0;
+				Track t;
 
 //                    if(pathes.length < 3) {
 //                        System.out.printf("pathes.length < 3: %s, ", message.getName());
@@ -691,222 +689,222 @@ public class OscService {
 //						return;
 //					}
 
-					switch (pathes[1]) {
-                        case "transport_play":
-                            transportHandler.sendMessage(transportHandler.obtainMessage(ArdourConstants.MSG_WHAT_PLAY, (int)message.getArg(0), 0));
-                            break;
+				switch (pathes[1]) {
+					case "transport_play":
+						transportHandler.sendMessage(transportHandler.obtainMessage(ArdourConstants.MSG_WHAT_PLAY, (int)message.getArg(0), 0));
+						break;
 
-                        case "transport_stop":
-                            transportHandler.sendMessage(transportHandler.obtainMessage(ArdourConstants.MSG_WHAT_STOP, (int)message.getArg(0), 0));
-                            break;
+					case "transport_stop":
+						transportHandler.sendMessage(transportHandler.obtainMessage(ArdourConstants.MSG_WHAT_STOP, (int)message.getArg(0), 0));
+						break;
 
-                        case "rec_enable_toggle":
-                            transportHandler.sendMessage(transportHandler.obtainMessage(ArdourConstants.MSG_WHAT_RECORD, (int)message.getArg(0), 0));
-                            break;
+					case "rec_enable_toggle":
+						transportHandler.sendMessage(transportHandler.obtainMessage(ArdourConstants.MSG_WHAT_RECORD, (int)message.getArg(0), 0));
+						break;
 
-						case "strip":
-                            // argOffset represents if the strip index is part of the URI (argOffset=1) or not (argOffset=0)
-							int argOffset = 0;
-							if (pathes.length > 3 && TextUtils.isDigitsOnly(pathes[3]) )
-								stripIndex = Integer.parseInt(pathes[3]);
-							else {
-								if( message.getArgCount() > 0) {
-									stripIndex = (int) message.getArg(0);
-									argOffset = 1;
-								}
+					case "strip":
+						// argOffset represents if the strip index is part of the URI (argOffset=1) or not (argOffset=0)
+						int argOffset = 0;
+						if (pathes.length > 3 && TextUtils.isDigitsOnly(pathes[3]) )
+							stripIndex = Integer.parseInt(pathes[3]);
+						else {
+							if( message.getArgCount() > 0) {
+								stripIndex = (int) message.getArg(0);
+								argOffset = 1;
 							}
-							switch (pathes[2]) {
-								case "plugin":
-									switch(pathes[3]) {
-										case "list":
+						}
+						switch (pathes[2]) {
+							case "plugin":
+								switch(pathes[3]) {
+									case "list":
 
-                                            Object plargs[] = new Object[message.getArgCount()];
-                                            for(int i = 0; i < message.getArgCount(); i++ ) {
-                                                plargs[i] = message.getArg(i);
-                                            }
-                                            Message plmsg = transportHandler.obtainMessage(ArdourConstants.MSG_WHAT_PLUGIN_LIST, plargs);
-                                            transportHandler.sendMessage(plmsg);
-											break;
-										case "descriptor":
-											Object pdargs[] = new Object[message.getArgCount()];
-											for(int i = 0; i < message.getArgCount(); i++ ) {
-												pdargs[i] = message.getArg(i);
-											}
-											Message pdmsg = transportHandler.obtainMessage(ArdourConstants.MSG_WHAT_PLUGIN_DESCRIPTOR, pdargs);
-											transportHandler.sendMessage(pdmsg);
-											break;
-									}
-									break;
-								case "meter":
-                                    t = getTrack(stripIndex);
+										Object plargs[] = new Object[message.getArgCount()];
+										for(int i = 0; i < message.getArgCount(); i++ ) {
+											plargs[i] = message.getArg(i);
+										}
+										Message plmsg = transportHandler.obtainMessage(ArdourConstants.MSG_WHAT_PLUGIN_LIST, plargs);
+										transportHandler.sendMessage(plmsg);
+										break;
+									case "descriptor":
+										Object pdargs[] = new Object[message.getArgCount()];
+										for(int i = 0; i < message.getArgCount(); i++ ) {
+											pdargs[i] = message.getArg(i);
+										}
+										Message pdmsg = transportHandler.obtainMessage(ArdourConstants.MSG_WHAT_PLUGIN_DESCRIPTOR, pdargs);
+										transportHandler.sendMessage(pdmsg);
+										break;
+								}
+								break;
+							case "meter":
+								t = getTrack(stripIndex);
 
-                                    int newMeter = ((int)message.getArg(1));
+								int newMeter = ((int)message.getArg(1));
 
-                                    newMeter = (newMeter != 0xffff) ? newMeter & 0x1FFF : 0;
-                                    if( t != null && t.meter != newMeter ) {
-                                        t.meter = newMeter;
-                                        Message mmsg = transportHandler.obtainMessage(ArdourConstants.MSG_WHAT_STRIP_METER);
-                                        mmsg.arg1 = stripIndex;
-                                        transportHandler.sendMessage(mmsg);
-                                    }
-									break;
-								case "receives":
+								newMeter = (newMeter != 0xffff) ? newMeter & 0x1FFF : 0;
+								if( t != null && t.meter != newMeter ) {
+									t.meter = newMeter;
+									Message mmsg = transportHandler.obtainMessage(ArdourConstants.MSG_WHAT_STRIP_METER);
+									mmsg.arg1 = stripIndex;
+									transportHandler.sendMessage(mmsg);
+								}
+								break;
+							case "receives":
 
-									Object margs[] = new Object[message.getArgCount()];
-									for(int i = 0; i < message.getArgCount(); i++ ) {
-										margs[i] = message.getArg(i);
-									}
-									Message rmsg = transportHandler.obtainMessage(ArdourConstants.MSG_WHAT_STRIP_RECEIVES, margs);
-									transportHandler.sendMessage(rmsg);
-									break;
+								Object margs[] = new Object[message.getArgCount()];
+								for(int i = 0; i < message.getArgCount(); i++ ) {
+									margs[i] = message.getArg(i);
+								}
+								Message rmsg = transportHandler.obtainMessage(ArdourConstants.MSG_WHAT_STRIP_RECEIVES, margs);
+								transportHandler.sendMessage(rmsg);
+								break;
 
-								case "sends":
+							case "sends":
 
-									Object rargs[] = new Object[message.getArgCount()-1];
+								Object rargs[] = new Object[message.getArgCount()-1];
 
-									for(int i = 1; i < message.getArgCount(); i++ ) {
-										rargs[i-1] = message.getArg(i);
-									}
-									Message sendmsg = transportHandler.obtainMessage(ArdourConstants.MSG_WHAT_STRIP_SENDS, (int)message.getArg(0), 0, rargs);
-									transportHandler.sendMessage(sendmsg);
-									break;
-								case "name":
-									t = getTrack(stripIndex);
-                                    if (t!=null) {
-                                        t.name = (String) message.getArg(argOffset);
-                                        Message namemsg = transportHandler.obtainMessage(ArdourConstants.MSG_WHAT_STRIP_NAME);
-                                        namemsg.arg1 = stripIndex;
-                                        transportHandler.sendMessage(namemsg);
-                                    }
-									break;
-								case "fader":
-									t = getTrack(stripIndex);
-									if ( t!=null && !t.getTrackVolumeOnSeekBar() ) {
-										Float val = (Float) message.getArg(argOffset);
-                                        t.trackVolume = Math.round(val * 1000);
-										Message fadermsg = transportHandler.obtainMessage(ArdourConstants.MSG_WHAT_STRIP_VOLUME);
-										fadermsg.arg1 = stripIndex;
-										transportHandler.sendMessage(fadermsg);
-									}
-									else {
-										if ( t==null )
-											Log.d(TAG, "fader change missed\n");
-									}
-									break;
-								case "recenable":
+								for(int i = 1; i < message.getArgCount(); i++ ) {
+									rargs[i-1] = message.getArg(i);
+								}
+								Message sendmsg = transportHandler.obtainMessage(ArdourConstants.MSG_WHAT_STRIP_SENDS, (int)message.getArg(0), 0, rargs);
+								transportHandler.sendMessage(sendmsg);
+								break;
+							case "name":
+								t = getTrack(stripIndex);
+								if (t!=null) {
+									t.name = (String) message.getArg(argOffset);
+									Message namemsg = transportHandler.obtainMessage(ArdourConstants.MSG_WHAT_STRIP_NAME);
+									namemsg.arg1 = stripIndex;
+									transportHandler.sendMessage(namemsg);
+								}
+								break;
+							case "fader":
+								t = getTrack(stripIndex);
+								if ( t!=null && !t.getTrackVolumeOnSeekBar() ) {
+									Float val = (Float) message.getArg(argOffset);
+									t.trackVolume = Math.round(val * 1000);
+									Message fadermsg = transportHandler.obtainMessage(ArdourConstants.MSG_WHAT_STRIP_VOLUME);
+									fadermsg.arg1 = stripIndex;
+									transportHandler.sendMessage(fadermsg);
+								}
+								else {
+									if ( t==null )
+										Log.d(TAG, "fader change missed\n");
+								}
+								break;
+							case "recenable":
 //                                    System.out.printf("OSC rec changed on %d\n", stripIndex);
 
-                                    t = getTrack(stripIndex);
-									if (t!=null) {
-										t.recEnabled = ((Float) message.getArg(argOffset) > 0);
-										Message recmsg = transportHandler.obtainMessage(ArdourConstants.MSG_WHAT_STRIP_REC);
-										recmsg.arg1 = stripIndex;
-										transportHandler.sendMessage(recmsg);
+								t = getTrack(stripIndex);
+								if (t!=null) {
+									t.recEnabled = ((Float) message.getArg(argOffset) > 0);
+									Message recmsg = transportHandler.obtainMessage(ArdourConstants.MSG_WHAT_STRIP_REC);
+									recmsg.arg1 = stripIndex;
+									transportHandler.sendMessage(recmsg);
+								}
+								else {
+									Log.d(TAG, "recEnable missed\n");
+								}
+								break;
+							case "mute":
+								t = getTrack(stripIndex);
+								if (t!=null) {
+									t.muteEnabled = ((Float) message.getArg(argOffset) > 0);
+									Message mutemsg = transportHandler.obtainMessage(ArdourConstants.MSG_WHAT_STRIP_MUTE);
+									mutemsg.arg1 = stripIndex;
+									transportHandler.sendMessage(mutemsg);
+								}
+								break;
+							case "solo":
+								t = getTrack(stripIndex);
+								if (t!=null) {
+									t.soloEnabled = ((Float) message.getArg(argOffset) > 0);
+									Message somsg = transportHandler.obtainMessage(ArdourConstants.MSG_WHAT_STRIP_SOLO);
+									somsg.arg1 = stripIndex;
+									transportHandler.sendMessage(somsg);
+								}
+								break;
+
+							case "pan_stereo_position":
+								t = getTrack(stripIndex);
+								if (t!=null) {
+									t.panPosition = (Float) message.getArg(argOffset);
+									Message somsg = transportHandler.obtainMessage(ArdourConstants.MSG_WHAT_STRIP_PAN);
+									somsg.arg1 = stripIndex;
+									transportHandler.sendMessage(somsg);
+								}
+								break;
+
+							case "monitor_input":
+								t = getTrack(stripIndex);
+								if( t != null ) {
+									try {
+										int ie = (int) message.getArg(argOffset);
+										t.stripIn = ie > 0;
+										Message inmsg = transportHandler.obtainMessage(2000, routes);
+										transportHandler.sendMessage(inmsg);
+									} catch (Exception e) {
+										e.printStackTrace();
 									}
-									else {
-										Log.d(TAG, "recEnable missed\n");
-									}
-									break;
-								case "mute":
-                                    t = getTrack(stripIndex);
-                                    if (t!=null) {
-                                        t.muteEnabled = ((Float) message.getArg(argOffset) > 0);
-                                        Message mutemsg = transportHandler.obtainMessage(ArdourConstants.MSG_WHAT_STRIP_MUTE);
-                                        mutemsg.arg1 = stripIndex;
-                                        transportHandler.sendMessage(mutemsg);
-                                    }
-									break;
-								case "solo":
-                                    t = getTrack(stripIndex);
-                                    if (t!=null) {
-                                        t.soloEnabled = ((Float) message.getArg(argOffset) > 0);
-                                        Message somsg = transportHandler.obtainMessage(ArdourConstants.MSG_WHAT_STRIP_SOLO);
-                                        somsg.arg1 = stripIndex;
-                                        transportHandler.sendMessage(somsg);
-                                    }
-									break;
+								}
+								break;
 
-								case "pan_stereo_position":
-									t = getTrack(stripIndex);
-									if (t!=null) {
-										t.panPosition = (Float) message.getArg(argOffset);
-										Message somsg = transportHandler.obtainMessage(ArdourConstants.MSG_WHAT_STRIP_PAN);
-										somsg.arg1 = stripIndex;
-										transportHandler.sendMessage(somsg);
-									}
-									break;
+							default:
 
-								case "monitor_input":
-									t = getTrack(stripIndex);
-									if( t != null ) {
-										try {
-											int ie = (int) message.getArg(argOffset);
-											t.stripIn = ie > 0;
-											Message inmsg = transportHandler.obtainMessage(2000, routes);
-											transportHandler.sendMessage(inmsg);
-										} catch (Exception e) {
-											e.printStackTrace();
-										}
-									}
-									break;
+								if(message.getName().equals("/strip/record_safe")) break;
+								if(message.getName().equals("/strip/select")) break;
+								if(message.getName().equals("/strip/trimdB")) break;
+								if(message.getName().equals("/strip/gui_select")) break;
+								if(message.getName().equals("/strip/expand")) break;
+								if(message.getName().equals("/strip/monitor_input")) break;
+								if(message.getName().equals("/strip/monitor_disk")) break;
 
-								default:
+								System.out.printf("path: %s, ", message.getName());
+								for( int a = 0; a < message.getArgCount(); a++) {
+									System.out.printf("%d-%s,  ", a, String.valueOf(message.getArg(a)));
+								}
+								System.out.printf("\n");
+								break;
+						}
+						break;
+					case "position":
+						switch (pathes[2]) {
+							case "samples":
+								Message pomsg = transportHandler.obtainMessage(ArdourConstants.MSG_WHAT_UPDATE_CLOCK, Long.parseLong((String) message.getArg(0)));
+								transportHandler.sendMessage(pomsg);
+								break;
+					}
+					case "master":
+						switch (pathes[2]) {
+							case "meter":
+								stripIndex = routes.size();
+								t = getTrack(stripIndex);
 
-									if(message.getName().equals("/strip/record_safe")) break;
-									if(message.getName().equals("/strip/select")) break;
-									if(message.getName().equals("/strip/trimdB")) break;
-									if(message.getName().equals("/strip/gui_select")) break;
-									if(message.getName().equals("/strip/expand")) break;
-									if(message.getName().equals("/strip/monitor_input")) break;
-									if(message.getName().equals("/strip/monitor_disk")) break;
+								int newMeter = ((int)message.getArg(0)) & 0xffff;
+								newMeter = (newMeter != 0xffff) ? newMeter & 0x1FFF : 0;
 
-									System.out.printf("path: %s, ", message.getName());
-									for( int a = 0; a < message.getArgCount(); a++) {
-										System.out.printf("%d-%s,  ", a, String.valueOf(message.getArg(a)));
-									}
-									System.out.printf("\n");
-									break;
-							}
-							break;
-						case "position":
-							switch (pathes[2]) {
-                                case "samples":
-                                    Message pomsg = transportHandler.obtainMessage(ArdourConstants.MSG_WHAT_UPDATE_CLOCK, Long.parseLong((String) message.getArg(0)));
-                                    transportHandler.sendMessage(pomsg);
-                                    break;
-                        }
-                        case "master":
-                            switch (pathes[2]) {
-                                case "meter":
-                                    stripIndex = routes.size();
-                                    t = getTrack(stripIndex);
+								if( t != null && t.meter != newMeter ) {
+									t.meter = newMeter;
+									Message mmsg = transportHandler.obtainMessage(ArdourConstants.MSG_WHAT_STRIP_METER, stripIndex, 0);
+									transportHandler.sendMessage(mmsg);
+								}
+								break;
+							case "fader":
+								t = getTrack(routes.size()-1);
+								if ( t!=null && !t.getTrackVolumeOnSeekBar() ) {
+									Float val = (Float) message.getArg(0);
+									t.trackVolume = Math.round(val * 1000);
+									Message fadermsg = transportHandler.obtainMessage(ArdourConstants.MSG_WHAT_STRIP_VOLUME);
+									fadermsg.arg1 = t.remoteId-1;
+									transportHandler.sendMessage(fadermsg);
+								}
+								else {
+									if ( t==null )
+										Log.d(TAG, "fader change missed\n");
+								}
+								break;
 
-                                    int newMeter = ((int)message.getArg(0)) & 0xffff;
-                                    newMeter = (newMeter != 0xffff) ? newMeter & 0x1FFF : 0;
-
-                                    if( t != null && t.meter != newMeter ) {
-                                        t.meter = newMeter;
-                                        Message mmsg = transportHandler.obtainMessage(ArdourConstants.MSG_WHAT_STRIP_METER, stripIndex, 0);
-                                        transportHandler.sendMessage(mmsg);
-                                    }
-                                    break;
-                                case "fader":
-                                    t = getTrack(routes.size()-1);
-                                    if ( t!=null && !t.getTrackVolumeOnSeekBar() ) {
-                                        Float val = (Float) message.getArg(0);
-                                        t.trackVolume = Math.round(val * 1000);
-                                        Message fadermsg = transportHandler.obtainMessage(ArdourConstants.MSG_WHAT_STRIP_VOLUME);
-                                        fadermsg.arg1 = t.remoteId-1;
-                                        transportHandler.sendMessage(fadermsg);
-                                    }
-                                    else {
-                                        if ( t==null )
-                                            Log.d(TAG, "fader change missed\n");
-                                    }
-                                    break;
-
-                            }
-                            break;
+						}
+						break;
 //                        default:
 //                            System.out.printf("path: %s, ", message.getName());
 //                            for( int a = 0; a < message.getArgCount(); a++) {
@@ -916,7 +914,6 @@ public class OscService {
 //                            break;
 					}
                 }
-            }
             msg_count--;
 		}
 	};

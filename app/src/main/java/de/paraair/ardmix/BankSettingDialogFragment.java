@@ -24,9 +24,7 @@ public class BankSettingDialogFragment extends DialogFragment {
     private Bank bank;
     private EditText txtBankName;
     private int bankIndex;
-    ArrayList<Track> routes;
-
-    private StripSelectLayout ssl;
+    private ArrayList<Track> routes;
 
     @NonNull
     @Override
@@ -45,11 +43,11 @@ public class BankSettingDialogFragment extends DialogFragment {
 
         MainActivity callingActivity = (MainActivity) getActivity();
         final Bank orgBank = callingActivity.getBank(bankIndex);
-        bank = orgBank.clone();
+        bank = orgBank.GetClone();
         txtBankName = (EditText) view.findViewById(R.id.bankname);
         txtBankName.setText(bank.getName());
         routes = callingActivity.getRoutes();
-        ssl = new StripSelectLayout(view.getContext());
+        StripSelectLayout ssl = new StripSelectLayout(view.getContext());
         ssl.setRoutes(routes,bank);
 
         ssl.onClickListener = new View.OnClickListener() {
@@ -94,6 +92,14 @@ public class BankSettingDialogFragment extends DialogFragment {
                 public void onClick(DialogInterface dialog, int id) {
                     MainActivity callingActivity = (MainActivity) getActivity();
                     callingActivity.RemoveBank(bankIndex);
+                }
+            });
+        }
+        else {
+            builder.setNeutralButton(R.string.action_loadbanks, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    MainActivity callingActivity = (MainActivity) getActivity();
+                    callingActivity.LoadBank();
                 }
             });
         }

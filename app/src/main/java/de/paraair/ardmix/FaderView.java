@@ -23,12 +23,10 @@ import android.widget.SeekBar;
 public class FaderView extends ImageView implements View.OnTouchListener {
 
 
-    private String displayText = "AABB";
-
     enum Orientation {
         VERTICAL,
         HORIZONTAL
-    };
+    }
 
     public ArdourPlugin.InputParameter param;
 
@@ -50,7 +48,7 @@ public class FaderView extends ImageView implements View.OnTouchListener {
     private Bitmap fader_bmp;
 
     private Handler myListener;
-    private int progressColor = getResources().getColor(R.color.fader);
+    private int progressColor = getResources().getColor(R.color.fader, null);
 
     public FaderView(Context context) {
         super(context);
@@ -240,7 +238,6 @@ public class FaderView extends ImageView implements View.OnTouchListener {
     }
 
     void setDisplayText(String text) {
-        displayText = text;
     }
 
     public void setbTopText(boolean bTopText) {
@@ -249,12 +246,7 @@ public class FaderView extends ImageView implements View.OnTouchListener {
 
     public void setStrTopText(String strTopText) {
         this.strTopText = strTopText;
-        if ( !strTopText.equals("")) {
-            this.bTopText = true;
-        }
-        else {
-            this.bTopText = false;
-        }
+        this.bTopText = !strTopText.equals("");
     }
     public void setbBottomText(boolean bBottomText) {
         this.bBottomText = bBottomText;
@@ -262,12 +254,7 @@ public class FaderView extends ImageView implements View.OnTouchListener {
 
     public void setStrBottomText(String strBottomText) {
         this.strBottomText = strBottomText;
-        if ( !strBottomText.equals("")) {
-            this.bBottomText = true;
-        }
-        else {
-            this.bBottomText = false;
-        }
+        this.bBottomText = !strBottomText.equals("");
     }
 }
 

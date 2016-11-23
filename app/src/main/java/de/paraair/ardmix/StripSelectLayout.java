@@ -20,7 +20,6 @@ import java.util.ArrayList;
 public class StripSelectLayout extends ListView {
 
     OnClickListener onClickListener;
-    private ArrayList<Track> routes;
     private Context context;
     private ArrayAdapter<Bank.Strip> adapter;
 
@@ -31,7 +30,6 @@ public class StripSelectLayout extends ListView {
     }
 
     public void setRoutes(ArrayList<Track> routes, Bank bank) {
-        this.routes = routes;
 
         Bank b = new Bank();
 

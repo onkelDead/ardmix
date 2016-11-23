@@ -32,6 +32,7 @@ public class PluginLayout extends LinearLayout implements View.OnClickListener  
     public static final int MSG_WHAT_PLUGIN_RESUEST = 22;
     public static final int MSG_WHAT_PLUGIN_NEXT = 31;
     public static final int MSG_WHAT_PLUGIN_PREV = 32;
+    private static final int PARAMETER_HEIGHT = 32;
 
     private ArdourPlugin plugin;
 
@@ -65,6 +66,11 @@ public class PluginLayout extends LinearLayout implements View.OnClickListener  
             pluginDescription.setText("No FX present");
         addView(pluginDescription);
 
+        LinearLayout btnLayout = new LinearLayout(context);
+        btnLayout.setOrientation(HORIZONTAL);
+        btnLayout.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+        btnLayout.setPadding(0,16,0,0);
+
         if( plugins.size() > 0 ) {
             resetPlugin = new Button(context);
             resetPlugin.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, 26));
@@ -72,91 +78,8 @@ public class PluginLayout extends LinearLayout implements View.OnClickListener  
             resetPlugin.setPadding(1, 0, 1, 0);
             resetPlugin.setTag("resetPlugin");
             resetPlugin.setOnClickListener(this);
-            addView(resetPlugin);
+            btnLayout.addView(resetPlugin);
         }
-
-        if( inlude_request) {
-            Message fm = onChangeHandler.obtainMessage(MSG_WHAT_PLUGIN_RESUEST, getId(), 0);
-            onChangeHandler.sendMessage(fm);
-        }
-
-    }
-
-    public void init(Track track, ArdourPlugin plugin) {
-        pluginDescription.setText("(" + (plugin.getPluginId() + 1) + "/" + plugins.size() + ") - " + plugin.getName() + " - " + track.name);
-        resetPlugin.setId(plugin.getPluginId());
-        this.plugin = plugin;
-
-        for(ArdourPlugin.InputParameter parameter: plugin.getParameters()) {
-            if( (parameter.flags & 128) == 128 ) {
-                LinearLayout pLayout = new LinearLayout(context);
-                pLayout.setOrientation(HORIZONTAL);
-                pLayout.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
-
-                TextView parameterName = new TextView(context);
-                parameterName.setLayoutParams(new LayoutParams(160, 32));
-                parameterName.setText(parameter.name);
-                parameterName.setTextColor(Color.WHITE);
-
-                pLayout.addView(parameterName);
-
-                if( parameter.scaleSize == 0 ) {
-                    if( (parameter.flags & 64) == 64 ) {
-                        CheckBox parameterValue = new CheckBox(context);
-                        parameterValue.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
-                        parameterValue.setChecked(parameter.current != 0);
-                        parameterValue.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                            @Override
-                            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                                Message msg = mHandler.obtainMessage(40, (int)buttonView.getTag(), isChecked ? 1 : 0 );
-                                mHandler.sendMessage(msg);
-                            }
-                        });
-                        parameterValue.setTag(parameter.parameter_index);
-                        pLayout.addView(parameterValue);
-                    }
-                    else {
-                        FaderView parameterValue = new FaderView(context);
-                        parameterValue.param = parameter;
-                        parameterValue.setLayoutParams(new LayoutParams(240, 32));
-                        parameterValue.setMax(1000);
-                        parameterValue.setOrientation(FaderView.Orientation.HORIZONTAL);
-                        parameterValue.setId(parameter.parameter_index);
-                        parameterValue.setProgress(parameter.getFaderFromCurrent(1000));
-                        parameterValue.setOnChangeHandler(mHandler);
-                        pLayout.addView(parameterValue);
-                    }
-                }
-                else {
-                    final MyAdapter aa = new MyAdapter(parameter.scale_points);
-                    Spinner parameterValue = new Spinner(context);
-                    parameterValue.setAdapter(aa);
-                    parameterValue.setSelection(parameter.getIndexFromScalePointKey((int)parameter.current) );
-                    parameterValue.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                        @Override
-                        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                            Map.Entry<Integer, String> e = aa.getItem(position);
-                            Message msg = mHandler.obtainMessage(40, (int)parent.getTag(), e.getKey() );
-                            mHandler.sendMessage(msg);
-                        }
-
-                        @Override
-                        public void onNothingSelected(AdapterView<?> parent) {
-
-                        }
-
-                    });
-                    parameterValue.setTag(parameter.parameter_index);
-                    pLayout.addView(parameterValue);
-                }
-                addView(pLayout);
-
-            }
-        }
-        LinearLayout btnLayout = new LinearLayout(context);
-        btnLayout.setOrientation(HORIZONTAL);
-        btnLayout.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
-        btnLayout.setPadding(0,16,0,0);
 
         Button btnClose = new Button(context);
         LayoutParams bclp = new LayoutParams(LayoutParams.WRAP_CONTENT, 26);
@@ -185,6 +108,88 @@ public class PluginLayout extends LinearLayout implements View.OnClickListener  
         btnLayout.addView(btnNext);
 
         addView(btnLayout);
+
+        if( inlude_request) {
+            Message fm = onChangeHandler.obtainMessage(MSG_WHAT_PLUGIN_RESUEST, getId(), 0);
+            onChangeHandler.sendMessage(fm);
+        }
+
+    }
+
+    public void init(Track track, ArdourPlugin plugin) {
+        pluginDescription.setText("(" + (plugin.getPluginId() + 1) + "/" + plugins.size() + ") - " + plugin.getName() + " - " + track.name);
+        resetPlugin.setId(plugin.getPluginId());
+        this.plugin = plugin;
+
+        for(ArdourPlugin.InputParameter parameter: plugin.getParameters()) {
+            if( (parameter.flags & 128) == 128 ) {
+                LinearLayout pLayout = new LinearLayout(context);
+                pLayout.setOrientation(HORIZONTAL);
+                pLayout.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+
+                TextView parameterName = new TextView(context);
+                parameterName.setLayoutParams(new LayoutParams(160, PARAMETER_HEIGHT));
+                parameterName.setText(parameter.name);
+                parameterName.setTextColor(Color.WHITE);
+
+                pLayout.addView(parameterName);
+
+                if( parameter.scaleSize == 0 ) {
+                    if( (parameter.flags & 64) == 64 ) {
+                        CheckBox parameterValue = new CheckBox(context);
+                        parameterValue.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+                        parameterValue.setChecked(parameter.current != 0);
+                        parameterValue.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                            @Override
+                            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                                Message msg = mHandler.obtainMessage(40, (int)buttonView.getTag(), isChecked ? 1 : 0 );
+                                mHandler.sendMessage(msg);
+                            }
+                        });
+                        parameterValue.setTag(parameter.parameter_index);
+                        pLayout.addView(parameterValue);
+                    }
+                    else {
+                        FaderView parameterValue = new FaderView(context);
+                        parameterValue.param = parameter;
+                        parameterValue.setLayoutParams(new LayoutParams(240, PARAMETER_HEIGHT));
+                        parameterValue.setMax(1000);
+                        parameterValue.setOrientation(FaderView.Orientation.HORIZONTAL);
+                        parameterValue.setId(parameter.parameter_index);
+                        parameterValue.setProgress(parameter.getFaderFromCurrent(1000));
+                        parameterValue.setOnChangeHandler(mHandler);
+                        pLayout.addView(parameterValue);
+                    }
+                }
+                else {
+                    final MyAdapter aa = new MyAdapter(parameter.scale_points);
+                    Spinner parameterValue = new Spinner(context);
+                    parameterValue.setLayoutParams(new LayoutParams(240, PARAMETER_HEIGHT));
+                    parameterValue.setAdapter(aa);
+                    parameterValue.setPopupBackgroundResource(R.color.VeryDark);
+                    parameterValue.setSelection(parameter.getIndexFromScalePointKey((int)parameter.current) );
+                    parameterValue.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                        @Override
+                        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                            Map.Entry<Integer, String> e = aa.getItem(position);
+                            Message msg = mHandler.obtainMessage(40, (int)parent.getTag(), e.getKey() );
+                            mHandler.sendMessage(msg);
+                        }
+
+                        @Override
+                        public void onNothingSelected(AdapterView<?> parent) {
+
+                        }
+
+                    });
+                    parameterValue.setTag(parameter.parameter_index);
+                    pLayout.addView(parameterValue);
+                }
+                addView(pLayout);
+
+            }
+        }
+
 
     }
 

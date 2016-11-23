@@ -86,7 +86,7 @@ public class ToggleImageButton extends ImageButton implements ToggleListener, Bl
 	 */
 	public void toggle(){
 		
-		if (state == false){
+		if (!state){
 			this.setBackgroundResource(toggledResourceId);
 			state = true;
 		}
@@ -113,7 +113,7 @@ public class ToggleImageButton extends ImageButton implements ToggleListener, Bl
 		
 		canBlink.set(false);
 		
-		if (s == true){
+		if (s){
 			state = true;
 			this.setBackgroundResource(toggledResourceId);
 		}
@@ -129,7 +129,7 @@ public class ToggleImageButton extends ImageButton implements ToggleListener, Bl
 	 */
 	public void setToggleState(boolean s, boolean blink){
 		
-		if (s == true){
+		if (s){
 			
 			this.setBackgroundResource(toggledResourceId);
 			

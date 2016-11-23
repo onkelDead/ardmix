@@ -6,7 +6,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.view.Gravity;
 import android.widget.LinearLayout;
-import android.widget.RemoteViews;
 import android.widget.TextView;
 
 /**
@@ -23,15 +22,15 @@ public class StripLayout extends LinearLayout {
     public static final int STRIP_WIDTH = 60;
 
     private Track track;
-    private TextView stripName;
-    private ToggleTextButton sends;
-    private ToggleTextButton fxs;
-    private ToggleTextButton recEnabled;
-    private ToggleTextButton muteEnabled;
-    private ToggleTextButton soloEnabled;
-    private ToggleTextButton panEnabled;
+    private TextView tvStripName;
+    private ToggleTextButton ttbSends;
+    private ToggleTextButton ttbFX;
+    private ToggleTextButton ttbRecord;
+    private ToggleTextButton ttbMute;
+    private ToggleTextButton ttbSolo;
+    private ToggleTextButton ttbPan;
     LinearLayout faderLayout;
-    private FaderView volumeSeek = null;
+    private FaderView fwVolume = null;
     MeterImageView meterImage = null;
 
     private OnClickListener onClickListener;
@@ -41,7 +40,7 @@ public class StripLayout extends LinearLayout {
     private int oldVolume;
     private boolean oldMute;
     public Track.TrackType showtype;
-    private int position;
+    private int iPosition;
 
 
     public StripLayout(Context context) {
@@ -67,86 +66,85 @@ public class StripLayout extends LinearLayout {
                 LayoutParams.MATCH_PARENT,
                 26);
         testLP.setMargins(1,1,1,1);
-        stripName = new TextView(context);
-        stripName.setPadding(1,0,1,0);
-        stripName.setMaxLines(1);
-        stripName.setText(track.name);
-        stripName.setLayoutParams(testLP);
-        stripName.setId(track.remoteId);
-        stripName.setTextColor(Color.BLACK);
-        stripName.setClickable(true);
-        stripName.setId(track.remoteId);
-        stripName.setTag("strip");
-        stripName.setOnClickListener(onClickListener);
-        stripName.setGravity(Gravity.CENTER_HORIZONTAL);
+        tvStripName = new TextView(context);
+        tvStripName.setPadding(1,0,1,0);
+        tvStripName.setMaxLines(1);
+        tvStripName.setText(track.name);
+        tvStripName.setLayoutParams(testLP);
+        tvStripName.setId(track.remoteId);
+        tvStripName.setTextColor(Color.BLACK);
+        tvStripName.setClickable(true);
+        tvStripName.setId(track.remoteId);
+        tvStripName.setTag("strip");
+        tvStripName.setOnClickListener(onClickListener);
+        tvStripName.setGravity(Gravity.CENTER_HORIZONTAL);
         switch(track.type) {
             case AUDIO:
-                stripName.setBackgroundColor(0xff00FFFF);
+                tvStripName.setBackgroundColor(0xff00FFFF);
                 break;
             case BUS:
-                stripName.setBackgroundColor(Color.BLUE);
+                tvStripName.setBackgroundColor(Color.BLUE);
                 setBackgroundColor(0x200000FF);
-                stripName.setTextColor(Color.WHITE);
+                tvStripName.setTextColor(Color.WHITE);
                 break;
             default:
-                stripName.setBackgroundColor(Color.WHITE);
+                tvStripName.setBackgroundColor(Color.WHITE);
                 break;
         }
         if( mask.bTitle )
-            this.addView(stripName);
+            this.addView(tvStripName);
 
-        fxs = new ToggleTextButton(context, "FX","FX", 0xffFF80FF, Color.GRAY);
-        fxs.setPadding(0,0,0,0);
-        fxs.setLayoutParams(switchLP);
-        fxs.setToggleState(false);
-        fxs.setId(track.remoteId);
-        fxs.setTag("fx");
-        fxs.setOnClickListener(onClickListener);
+        ttbFX = new ToggleTextButton(context, "FX","FX", 0xffFF80FF, Color.GRAY);
+        ttbFX.setPadding(0,0,0,0);
+        ttbFX.setLayoutParams(switchLP);
+        ttbFX.setToggleState(false);
+        ttbFX.setId(track.remoteId);
+        ttbFX.setTag("fx");
+        ttbFX.setOnClickListener(onClickListener);
         if( mask.bFX)
-            this.addView(fxs);
+            this.addView(ttbFX);
 
-        sends = new ToggleTextButton(context, "SEND","SEND", Color.CYAN, Color.GRAY);
-        sends.setPadding(0,0,0,0);
-        sends.setLayoutParams(switchLP);
-        sends.setToggleState(false);
-        sends.setId(track.remoteId);
-        sends.setTag("aux");
-        sends.setOnClickListener(onClickListener);
+        ttbSends = new ToggleTextButton(context, "SEND","SEND", Color.CYAN, Color.GRAY);
+        ttbSends.setPadding(0,0,0,0);
+        ttbSends.setLayoutParams(switchLP);
+        ttbSends.setToggleState(false);
+        ttbSends.setId(track.remoteId);
+        ttbSends.setTag("aux");
+        ttbSends.setOnClickListener(onClickListener);
         if (track.type == Track.TrackType.MASTER) {
-            sends.setEnabled(false);
-            sends.setUntoggledText("");
+            ttbSends.setEnabled(false);
+            ttbSends.setUntoggledText("");
         }
         if (mask.bSend)
-            this.addView(sends);
+            this.addView(ttbSends);
 
 
 
-        recEnabled = new ToggleTextButton(context, "REC","REC", Color.RED, Color.GRAY);
-        recEnabled.setPadding(0,0,0,0);
-        recEnabled.setLayoutParams(switchLP);
-        recEnabled.setId(track.remoteId);
+        ttbRecord = new ToggleTextButton(context, "REC","REC", Color.RED, Color.GRAY);
+        ttbRecord.setPadding(0,0,0,0);
+        ttbRecord.setLayoutParams(switchLP);
+        ttbRecord.setId(track.remoteId);
         if (track.type == Track.TrackType.AUDIO) {
-            recEnabled.setTag("rec");
-            recEnabled.setToggleState(track.recEnabled);
-            recEnabled.setOnClickListener(onClickListener);
+            ttbRecord.setTag("rec");
+            ttbRecord.setToggleState(track.recEnabled);
+            ttbRecord.setOnClickListener(onClickListener);
         }
         else if (track.type == Track.TrackType.MASTER) {
-            recEnabled.setEnabled(false);
-            recEnabled.setUntoggledText("");
+            ttbRecord.setEnabled(false);
+            ttbRecord.setUntoggledText("");
             recChanged();
         }
         else {
-            recEnabled.setAllText("Receive");
-//            recEnabled.setTextColor(Color.BLUE);
-            recEnabled.onColor = Color.BLUE;
-            recEnabled.offColor = Color.GRAY;
-            recEnabled.setTag("in");
-            recEnabled.setToggleState(false);
-            recEnabled.setOnClickListener(onClickListener);
+            ttbRecord.setAllText("Receive");
+            ttbRecord.onColor = Color.BLUE;
+            ttbRecord.offColor = Color.GRAY;
+            ttbRecord.setTag("in");
+            ttbRecord.setToggleState(false);
+            ttbRecord.setOnClickListener(onClickListener);
         }
 
         if( mask.bRecord)
-            this.addView(recEnabled);
+            this.addView(ttbRecord);
 
 
         LayoutParams meterParam = new LayoutParams(
@@ -162,56 +160,56 @@ public class StripLayout extends LinearLayout {
         if (mask.bMeter)
             this.addView(meterImage);
 
-        muteEnabled = new ToggleTextButton(context, "MUTE", "MUTE", Color.YELLOW, Color.GRAY);
-        muteEnabled.setPadding(0,0,0,0);
-        muteEnabled.setLayoutParams(switchLP);
-        muteEnabled.setTag("mute");
-        muteEnabled.setId(track.remoteId);
-        muteEnabled.setToggleState(track.muteEnabled );
+        ttbMute = new ToggleTextButton(context, "MUTE", "MUTE", Color.YELLOW, Color.GRAY);
+        ttbMute.setPadding(0,0,0,0);
+        ttbMute.setLayoutParams(switchLP);
+        ttbMute.setTag("mute");
+        ttbMute.setId(track.remoteId);
+        ttbMute.setToggleState(track.muteEnabled );
         if (mask.bMute) {
-            this.addView(muteEnabled);
+            this.addView(ttbMute);
         }
-        muteEnabled.setOnClickListener(onClickListener);
+        ttbMute.setOnClickListener(onClickListener);
 
 
-        soloEnabled = new ToggleTextButton(context, "SOLO", "SOLO", Color.GREEN, Color.GRAY);
-        soloEnabled.setPadding(0,0,0,0);
-        soloEnabled.setLayoutParams(switchLP);
-        soloEnabled.setTag("solo");
-        soloEnabled.setId(track.remoteId);
-        soloEnabled.setToggleState(track.soloEnabled);
-        soloEnabled.setOnClickListener(onClickListener);
+        ttbSolo = new ToggleTextButton(context, "SOLO", "SOLO", Color.GREEN, Color.GRAY);
+        ttbSolo.setPadding(0,0,0,0);
+        ttbSolo.setLayoutParams(switchLP);
+        ttbSolo.setTag("solo");
+        ttbSolo.setId(track.remoteId);
+        ttbSolo.setToggleState(track.soloEnabled);
+        ttbSolo.setOnClickListener(onClickListener);
         if (track.type == Track.TrackType.MASTER) {
-            soloEnabled.setEnabled(track.soloEnabled);
-            soloEnabled.setUntoggledText("");
+            ttbSolo.setEnabled(track.soloEnabled);
+            ttbSolo.setUntoggledText("");
         }
         if (mask.bSolo)
-            this.addView(soloEnabled);
+            this.addView(ttbSolo);
 
-        panEnabled = new ToggleTextButton(context, "PAN", "PAN", 0xffffbb33, Color.GRAY);
-        panEnabled.setPadding(0,0,0,0);
-        panEnabled.setLayoutParams(switchLP);
-        panEnabled.setTag("pan");
-        panEnabled.setId(track.remoteId);
-        panEnabled.setToggleState(false);
-        panEnabled.setOnClickListener(onClickListener);
+        ttbPan = new ToggleTextButton(context, "PAN", "PAN", 0xffffbb33, Color.GRAY);
+        ttbPan.setPadding(0,0,0,0);
+        ttbPan.setLayoutParams(switchLP);
+        ttbPan.setTag("pan");
+        ttbPan.setId(track.remoteId);
+        ttbPan.setToggleState(false);
+        ttbPan.setOnClickListener(onClickListener);
         if (track.type == Track.TrackType.MASTER) {
-            panEnabled.setEnabled(false);
-            panEnabled.setUntoggledText("");
+            ttbPan.setEnabled(false);
+            ttbPan.setUntoggledText("");
         }
         if (mask.bPan)
-            this.addView(panEnabled);
+            this.addView(ttbPan);
 
-        volumeSeek = new FaderView(context);
-        volumeSeek.setLayoutParams(new LayoutParams(
+        fwVolume = new FaderView(context);
+        fwVolume.setLayoutParams(new LayoutParams(
                 LayoutParams.MATCH_PARENT,
                 LayoutParams.MATCH_PARENT));
-        volumeSeek.setTag("volume");
-        volumeSeek.setId(track.remoteId);
-        volumeSeek.setOnChangeHandler(mHandler);
-        volumeSeek.setProgress(track.trackVolume);
+        fwVolume.setTag("volume");
+        fwVolume.setId(track.remoteId);
+        fwVolume.setOnChangeHandler(mHandler);
+        fwVolume.setProgress(track.trackVolume);
         if (mask.bFader)
-            this.addView(volumeSeek);
+            this.addView(fwVolume);
 
     }
 
@@ -224,42 +222,42 @@ public class StripLayout extends LinearLayout {
     }
 
     public void nameChanged() {
-        stripName.setText(track.name);
+        tvStripName.setText(track.name);
     }
 
     public void recChanged() {
 //        System.out.printf("rec changed on %d\n", track.remoteId);
-        recEnabled.setToggleState(track.recEnabled);
+        ttbRecord.setToggleState(track.recEnabled);
     }
 
     public void muteChanged() {
-        muteEnabled.setToggleState(track.muteEnabled);
+        ttbMute.setToggleState(track.muteEnabled);
     }
 
     public void soloChanged() {
-        soloEnabled.setToggleState(track.soloEnabled);
+        ttbSolo.setToggleState(track.soloEnabled);
     }
 
     public void panChanged() {
         if( showtype == Track.TrackType.PAN)
-            volumeSeek.setProgress((int) (track.panPosition * 1000));
+            fwVolume.setProgress((int) (track.panPosition * 1000));
     }
 
     public void volumeChanged() {
-        if (volumeSeek == null) {
-            volumeSeek = new FaderView(this.getContext());
-            volumeSeek.setLayoutParams(new LayoutParams(
+        if (fwVolume == null) {
+            fwVolume = new FaderView(this.getContext());
+            fwVolume.setLayoutParams(new LayoutParams(
                     LayoutParams.MATCH_PARENT,
                     LayoutParams.MATCH_PARENT));
-            volumeSeek.setTag("volume");
-            volumeSeek.setId(track.remoteId);
-            volumeSeek.setClickable(true);
+            fwVolume.setTag("volume");
+            fwVolume.setId(track.remoteId);
+            fwVolume.setClickable(true);
 
-            volumeSeek.setOnChangeHandler(mHandler);
+            fwVolume.setOnChangeHandler(mHandler);
 
-            faderLayout.addView(volumeSeek);
+            faderLayout.addView(fwVolume);
         }
-        volumeSeek.setProgress(track.trackVolume);
+        fwVolume.setProgress(track.trackVolume);
     }
 
     private Handler mHandler = new Handler() {
@@ -270,9 +268,6 @@ public class StripLayout extends LinearLayout {
         @Override
         public void handleMessage(Message msg) {
 
-            int index;
-            StripLayout tl;
-
             switch (msg.what) {
                 case 10:
                     track.setTrackVolumeOnSeekBar(true);
@@ -280,24 +275,19 @@ public class StripLayout extends LinearLayout {
                 case 20:
                     if(showtype == Track.TrackType.RECEIVE) {
                         track.trackVolume = msg.arg2;
-                        Message fm = onChangeHandler.obtainMessage(MSG_WHAT_RECEIVE_CHANGED, msg.arg1, track.trackVolume);
-                        onChangeHandler.sendMessage(fm);
+                        onChangeHandler.sendMessage(onChangeHandler.obtainMessage(MSG_WHAT_RECEIVE_CHANGED, msg.arg1, track.trackVolume));
                     }
                     else if(showtype == Track.TrackType.SEND) {
                         track.trackVolume = msg.arg2;
-                        Message fm = onChangeHandler.obtainMessage(MSG_WHAT_AUX_CHANGED, msg.arg1, track.trackVolume);
-                        onChangeHandler.sendMessage(fm);
+                        onChangeHandler.sendMessage(onChangeHandler.obtainMessage(MSG_WHAT_AUX_CHANGED, msg.arg1, track.trackVolume));
                     }
                     else if(showtype == Track.TrackType.PAN) {
                         track.panPosition = (float)msg.arg2 / 1000;
-
-                        Message fm = onChangeHandler.obtainMessage(MSG_WHAT_PAN_CHANGED, msg.arg1, msg.arg2);
-                        onChangeHandler.sendMessage(fm);
+                        onChangeHandler.sendMessage(onChangeHandler.obtainMessage(MSG_WHAT_PAN_CHANGED, msg.arg1, msg.arg2));
                     }
                     else {
                         track.trackVolume = msg.arg2;
-                        Message fm = onChangeHandler.obtainMessage(MSG_WHAT_FADER_CHANGED, msg.arg1, track.trackVolume);
-                        onChangeHandler.sendMessage(fm);
+                        onChangeHandler.sendMessage(onChangeHandler.obtainMessage(MSG_WHAT_FADER_CHANGED, msg.arg1, track.trackVolume));
                     }
                     break;
                 case 30:
@@ -309,44 +299,40 @@ public class StripLayout extends LinearLayout {
     public void setType(Track.TrackType type, Float sendVolume, int sendId, boolean enabled) {
         if(type == Track.TrackType.RECEIVE) {
             track.source_id = sendId;
-//            volumeSeek.setBackgroundColor(Color.BLUE);
-            volumeSeek.setProgressColor(0xA000FFFF);
+            fwVolume.setProgressColor(0xA000FFFF);
             oldVolume = track.trackVolume;
             oldMute = track.muteEnabled;
             track.muteEnabled = enabled;
             track.trackVolume = (int)(sendVolume * 1000);
-            volumeSeek.setProgress(track.trackVolume);
-            soloEnabled.setEnabled(false);
-            muteEnabled.setToggleState(!enabled);
+            fwVolume.setProgress(track.trackVolume);
+            ttbSolo.setEnabled(false);
+            ttbMute.setToggleState(!enabled);
         }
         else if(type == Track.TrackType.SEND) {
             track.source_id = sendId;
-//            volumeSeek.setBackgroundColor(Color.BLUE);
-            volumeSeek.setProgressColor(Color.argb(255,160,160,255));
+            fwVolume.setProgressColor(Color.argb(255,160,160,255));
             oldVolume = track.trackVolume;
             oldMute = track.muteEnabled;
             track.trackVolume = (int)(sendVolume * 1000);
-            volumeSeek.setProgress(track.trackVolume);
-            soloEnabled.setEnabled(false);
-            muteEnabled.setToggleState(!enabled);
-//            muteEnabled.setEnabled(false);
+            fwVolume.setProgress(track.trackVolume);
+            ttbSolo.setEnabled(false);
+            ttbMute.setToggleState(!enabled);
         }
         else if(type == Track.TrackType.PAN ) {
-            volumeSeek.setStrTopText("right");
-            volumeSeek.setStrBottomText("left");
-            volumeSeek.val0 = 500;
+            fwVolume.setStrTopText("right");
+            fwVolume.setStrBottomText("left");
+            fwVolume.val0 = 500;
             oldVolume = track.trackVolume;
 
         }
         else {
-//            volumeSeek.setBackgroundColor(getResources().getColor(R.color.VeryDark));
             track.source_id = -1;
-            volumeSeek.setProgressColor(getResources().getColor(R.color.fader));
-            volumeSeek.setbTopText(false);
+            fwVolume.setProgressColor(getResources().getColor(R.color.fader, null));
+            fwVolume.setbTopText(false);
             track.trackVolume = oldVolume;
-            volumeSeek.setProgress(track.trackVolume);
-            soloEnabled.setEnabled(true);
-            muteEnabled.setToggleState(oldMute);
+            fwVolume.setProgress(track.trackVolume);
+            ttbSolo.setEnabled(true);
+            ttbMute.setToggleState(oldMute);
             track.muteEnabled = oldMute;
         }
         showtype = type;
@@ -365,14 +351,14 @@ public class StripLayout extends LinearLayout {
     }
 
     public void sendChanged(boolean state) {
-        sends.setToggleState(state);
+        ttbSends.setToggleState(state);
     }
 
     public void ResetPan() {
-        panEnabled.setToggleState(false);
-        volumeSeek.setbTopText(false);
-        volumeSeek.setbBottomText(false);
-        volumeSeek.val0 = 782;
+        ttbPan.setToggleState(false);
+        fwVolume.setbTopText(false);
+        fwVolume.setbBottomText(false);
+        fwVolume.val0 = 782;
         showtype = track.type;
     }
 
@@ -389,15 +375,15 @@ public class StripLayout extends LinearLayout {
     }
 
     public int getPosition() {
-        return position;
+        return iPosition;
     }
 
     public void setPosition(int position) {
-        this.position = position;
+        this.iPosition = position;
     }
 
     public void fxOff() {
-        fxs.setToggleState(false);
+        ttbFX.setToggleState(false);
     }
 
     public void pushVolume() {
@@ -418,7 +404,6 @@ public class StripLayout extends LinearLayout {
         if(track.trackVolume < 0)
             track.trackVolume = 0;
         volumeChanged();
-        Message fm = onChangeHandler.obtainMessage(MSG_WHAT_RECEIVE_CHANGED, track.remoteId, track.trackVolume);
-        onChangeHandler.sendMessage(fm);
+        onChangeHandler.sendMessage(onChangeHandler.obtainMessage(MSG_WHAT_RECEIVE_CHANGED, track.remoteId, track.trackVolume));
     }
 }

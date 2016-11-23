@@ -13,8 +13,8 @@ public class Track extends Fader {
     public int bank;
 
     enum TrackType  {
-		MASTER, AUDIO, MIDI, BUS, SEND, RECEIVE, PAN;
-    };
+		MASTER, AUDIO, MIDI, BUS, SEND, RECEIVE, PAN
+    }
 
 	public int remoteId;
 

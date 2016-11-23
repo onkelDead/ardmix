@@ -19,9 +19,7 @@ import java.util.ArrayList;
 
 public class BankLoadDialog extends DialogFragment {
 
-    public ArrayList<String> files;
-
-    private FileSelectLayout fsl;
+    private ArrayList<String> files;
 
     @NonNull
     @Override
@@ -36,7 +34,7 @@ public class BankLoadDialog extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = getActivity().getLayoutInflater();
         LinearLayout view = (LinearLayout)inflater.inflate(R.layout.file_dlg, null);
-        fsl = new FileSelectLayout(view.getContext());
+        FileSelectLayout fsl = new FileSelectLayout(view.getContext());
         fsl.setFileNames(files);
 
         fsl.onClickListener = new View.OnClickListener() {

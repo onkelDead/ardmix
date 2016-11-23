@@ -4,7 +4,7 @@ package de.paraair.ardmix;
  * Created by onkel on 06.10.16.
  */
 
-public final class ArdourConstants {
+final class ArdourConstants {
     // Ardour strip type constants
     public static final int STRIP_TRACK_AUDIO = 1;
     public static final int STRIP_TRACK_MIDI = 2;

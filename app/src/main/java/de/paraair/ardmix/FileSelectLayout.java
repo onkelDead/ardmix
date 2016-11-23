@@ -19,9 +19,6 @@ public class FileSelectLayout extends ListView {
 
     private Context context;
     public OnClickListener onClickListener;
-    private ArrayAdapter<String> adapter;
-
-    private ArrayList<String> fileNames;
 
     public FileSelectLayout(Context context) {
         super(context);
@@ -30,9 +27,8 @@ public class FileSelectLayout extends ListView {
     }
 
     public void setFileNames(ArrayList<String> strings) {
-        this.fileNames = strings;
 
-        adapter = new FileAdapter(context, strings);
+        ArrayAdapter<String> adapter = new FileAdapter(context, strings);
 
         this.setAdapter(adapter);
     }

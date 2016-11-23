@@ -75,8 +75,7 @@ public  class ArdourPlugin {
         public int getFaderFromCurrent(int base) {
 
             float Range = max - min;
-            int val = (int)(base / Range * (current - min)) ;
-            return val;
+            return (int)(base / Range * (current - min));
         }
 
         public void setCurrentFromFader(int val, int base) {
@@ -110,7 +109,7 @@ public  class ArdourPlugin {
         public void addScalePoint(int val, String name) {
             scale_points.put(val, name);
         }
-    };
+    }
 
 
 }

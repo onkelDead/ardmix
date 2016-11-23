@@ -39,15 +39,12 @@ public class StripSettingDialogFragment extends DialogFragment {
         builder.setPositiveButton(R.string.Ok, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
 
-                String name = txtStripName.getText().toString();
-
                 MainActivity callingActivity = (MainActivity) getActivity();
-                callingActivity.onStripDlg(stripIndex, name, cbStripIn.isChecked(), cbStripRecord.isChecked(), cbStripMute.isChecked(), cbStripSolo.isChecked());
+                callingActivity.onStripDlg(stripIndex, txtStripName.getText().toString(), cbStripIn.isChecked(), cbStripRecord.isChecked(), cbStripMute.isChecked(), cbStripSolo.isChecked());
             }
         });
         builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                // User cancelled the dialog
             }
         });
 
