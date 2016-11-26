@@ -30,6 +30,8 @@ final class ArdourConstants {
     public static final int FEEDBACK_STRIP_SIGNAL_PRESENT = 512;
     public static final int FEEDBACK_TRANSPORT_POSITION_SAMPLES = 1024;
     public static final int FEEDBACK_TRANSPORT_POSITION_TIME = 2048;
+    public static final int FEEDBACK_EXTRA_SELECT = 8192;
+
 
     // Ardour msg.what values
     public static final int MSG_WHAT_STRIP_NAME = 50;
@@ -49,9 +51,14 @@ final class ArdourConstants {
     public static final int MSG_WHAT_STOP = 3700;
 
     public static final int MSG_WHAT_STRIP_METER = 6000;
+
     public static final int MSG_WHAT_STRIP_SENDS = 7000;
+    public static final int MSG_WHAT_STRIP_SEND_FADER = 7500;
+    public static final int MSG_WHAT_STRIP_SEND_ENABLE = 7600;
+
     public static final int MSG_WHAT_STRIP_RECEIVES = 8000;
     public static final int MSG_WHAT_NEWSTRIP = 1010;
+
     public static final int MSG_WHAT_PLUGIN_LIST = 4010;
     public static final int MSG_WHAT_PLUGIN_DESCRIPTOR = 4000;
 

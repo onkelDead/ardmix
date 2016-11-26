@@ -20,7 +20,7 @@ public  class ArdourPlugin {
 
     public ArdourPlugin() {}
 
-    public ArdourPlugin(int trackId, int pluginId, String name) {
+    public ArdourPlugin(int trackId, int pluginId/*, String name*/) {
         this.name = name;
         this.trackId = trackId;
         this.pluginId = pluginId;
@@ -56,15 +56,15 @@ public  class ArdourPlugin {
         int parameter_index;
         String name;
 
-        int type;
+        String type;
         int flags;
         float min;
         float max;
-        double current;
+        float current;
         String print_fmt;
         int scaleSize;
 
-        SortedMap<Integer, String> scale_points = new TreeMap<>();
+        SortedMap<Float, String> scale_points = new TreeMap<>();
 
 
         public InputParameter(int index, String name) {
@@ -98,7 +98,7 @@ public  class ArdourPlugin {
         public int getIndexFromScalePointKey(int key) {
             int index = 0;
 
-            for(Map.Entry<Integer,String> entry : scale_points.entrySet()) {
+            for(Map.Entry<Float,String> entry : scale_points.entrySet()) {
                 if( entry.getKey() == key )
                     return index;
                 index++;
@@ -106,7 +106,7 @@ public  class ArdourPlugin {
             return 0;
         }
 
-        public void addScalePoint(int val, String name) {
+        public void addScalePoint(float val, String name) {
             scale_points.put(val, name);
         }
     }

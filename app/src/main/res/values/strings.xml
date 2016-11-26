@@ -31,4 +31,6 @@
     <string name="action_maskall">Show all</string>
     <string name="mute">Mute</string>
     <string name="solo">Solo</string>
+    <string name="synchwithright">Synch with the strip right of me</string>
+    <string name="action_processors">Processors...</string>
 </resources>

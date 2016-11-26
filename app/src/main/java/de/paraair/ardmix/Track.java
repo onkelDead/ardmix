@@ -3,6 +3,8 @@
  */
 package de.paraair.ardmix;
 
+import java.util.HashMap;
+
 /**
  * @author lincoln
  *
@@ -12,7 +14,7 @@ public class Track extends Fader {
 
     public int bank;
 
-    enum TrackType  {
+	enum TrackType  {
 		MASTER, AUDIO, MIDI, BUS, SEND, RECEIVE, PAN
     }
 
@@ -24,7 +26,7 @@ public class Track extends Fader {
 	public int trackVolume = 0;
     public float panPosition = 0.5f;
 	public int meter;
-	
+
 	public boolean recEnabled = false;
 	public boolean soloEnabled = false;
 	public boolean muteEnabled = false;
@@ -36,6 +38,8 @@ public class Track extends Fader {
 	//helper
 
 	public int sendCount = 0;
+
+	public HashMap<Integer, String> plugins = new HashMap<>();
 
 
 	public void setTrackVolumeOnSeekBar(boolean val){

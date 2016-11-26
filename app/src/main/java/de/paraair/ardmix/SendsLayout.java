@@ -5,12 +5,12 @@ import android.graphics.Color;
 import android.os.Handler;
 import android.os.Message;
 import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.view.View;
 import android.widget.TextView;
 
+
+import java.util.ArrayList;
 
 import static android.widget.CompoundButton.*;
 
@@ -30,6 +30,9 @@ public class SendsLayout extends LinearLayout implements OnClickListener {
     private int iStripIndex;
 
     private Handler onChangeHandler;
+
+    ArrayList<FaderView> fmSendGains = new ArrayList<>();
+    ArrayList<ToggleTextButton> ttbEnables = new ArrayList<>();
 
     public SendsLayout(Context context) {
         super(context);
@@ -52,19 +55,19 @@ public class SendsLayout extends LinearLayout implements OnClickListener {
     public void onClick(View v) {
 
         String vTag = (String)(v.getTag());
-        Message msgButtonClisk;
+        Message msgButtonClick;
         switch(vTag) {
             case "close":
-                msgButtonClisk = onChangeHandler.obtainMessage(MSG_WHAT_RESET_LAYOUT);
-                onChangeHandler.sendMessage(msgButtonClisk);
+                msgButtonClick = onChangeHandler.obtainMessage(MSG_WHAT_RESET_LAYOUT);
+                onChangeHandler.sendMessage(msgButtonClick);
                 break;
             case "prev":
-                msgButtonClisk = onChangeHandler.obtainMessage(MSG_WHAT_PREV_SEND_LAYOUT);
-                onChangeHandler.sendMessage(msgButtonClisk);
+                msgButtonClick = onChangeHandler.obtainMessage(MSG_WHAT_PREV_SEND_LAYOUT);
+                onChangeHandler.sendMessage(msgButtonClick);
                 break;
             case "next":
-                msgButtonClisk = onChangeHandler.obtainMessage(MSG_WHAT_NEXT_SEND_LAYOUT);
-                onChangeHandler.sendMessage(msgButtonClisk);
+                msgButtonClick = onChangeHandler.obtainMessage(MSG_WHAT_NEXT_SEND_LAYOUT);
+                onChangeHandler.sendMessage(msgButtonClick);
                 break;
 
         }
@@ -88,29 +91,29 @@ public class SendsLayout extends LinearLayout implements OnClickListener {
             llSend.setOrientation(HORIZONTAL);
             llSend.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
 
-            CheckBox cbSendEnable = new CheckBox(context);
-            cbSendEnable.setLayoutParams(new LayoutParams(160, 48));
-            cbSendEnable.setText((String) sargs[i+1]);
-            cbSendEnable.setChecked((int)sargs[i+4] > 0);
-            cbSendEnable.setTextColor(Color.WHITE);
-            cbSendEnable.setId((int)sargs[i+2]);
-            cbSendEnable.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    Message fm = onChangeHandler.obtainMessage(MSG_WHAT_SEND_ENABLED, iStripIndex, buttonView.getId(), isChecked ? 1 : 0);
-                    onChangeHandler.sendMessage(fm);
-                }
-            });
-            llSend.addView(cbSendEnable);
+            ToggleTextButton ttbEnable = new ToggleTextButton(context, "","", Color.CYAN, Color.GRAY);
+            LayoutParams slp = new LayoutParams(120, 32);
+            slp.setMargins(6,2,12,2);
+            ttbEnable.setPadding(0,0,0,0);
+            ttbEnable.setLayoutParams(slp);
+            ttbEnable.setAllText((String) sargs[i+1]);
+//            ttbEnable.setToggleState((int)sargs[i+4] > 0);
+            ttbEnable.setAutoToggle(false);
+            ttbEnable.setId((int)sargs[i+2]);
+            ttbEnable.setOnClickListener(checkedChangeListener);
+            llSend.addView(ttbEnable);
+            ttbEnables.add(ttbEnable);
 
-            FaderView fmSendGain = new FaderView(context);
-            fmSendGain.setLayoutParams(new LayoutParams(240, 48));
-            fmSendGain.setMax(1000);
-            fmSendGain.setOrientation(FaderView.Orientation.HORIZONTAL);
-            fmSendGain.setId((int)sargs[i+2]);
-            fmSendGain.setProgress((int)((float)sargs[i + 3] * 1000));
-            fmSendGain.setOnChangeHandler(mHandler);
-            llSend.addView(fmSendGain);
+            FaderView fmSend = new FaderView(context);
+            fmSend.setLayoutParams(new LayoutParams(240, 48));
+            fmSend.setMax(1000);
+            fmSend.setOrientation(FaderView.Orientation.HORIZONTAL);
+            fmSend.setId((int)sargs[i+2]);
+            fmSend.setProgress((int)((float)sargs[i + 3] * 1000));
+            fmSend.setOnChangeHandler(mHandler);
+            llSend.addView(fmSend);
+
+            fmSendGains.add(fmSend);
 
             addView(llSend);
         }
@@ -174,4 +177,33 @@ public class SendsLayout extends LinearLayout implements OnClickListener {
     public void setOnChangeHandler(Handler onChangeHandler) {
         this.onChangeHandler = onChangeHandler;
     }
+
+    public void sendChanged(int sendIndex, float value) {
+        if( sendIndex-1 < fmSendGains.size())
+            fmSendGains.get(sendIndex-1).setProgress((int)(value * 1000));
+    }
+
+    public void sendEnable(int sendIndex, float state) {
+        if( sendIndex-1 < ttbEnables.size()) {
+            ToggleTextButton cb = ttbEnables.get(sendIndex-1);
+            cb.setToggleState(state > 0);
+        }
+    }
+
+    public void deinit() {
+    }
+
+    OnClickListener checkedChangeListener = new OnClickListener() {
+        /**
+         * Called when a view has been clicked.
+         *
+         * @param v The view that was clicked.
+         */
+        @Override
+        public void onClick(View v) {
+            ToggleTextButton tb = (ToggleTextButton)v;
+            Message fm = onChangeHandler.obtainMessage(MSG_WHAT_SEND_ENABLED, iStripIndex, tb.getId(), !tb.getToggleState());
+            onChangeHandler.sendMessage(fm);
+        }
+    };
 }

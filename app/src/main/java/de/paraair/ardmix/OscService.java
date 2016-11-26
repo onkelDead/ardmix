@@ -194,6 +194,7 @@ public class OscService {
 					+ ArdourConstants.FEEDBACK_STRIP_METER_16BIT
                     + ArdourConstants.FEEDBACK_TIMECODE
                     + ArdourConstants.FEEDBACK_TRANSPORT_POSITION_SAMPLES
+					+ ArdourConstants.FEEDBACK_EXTRA_SELECT
 					;
 
 			System.out.println("OSC State: " + state);
@@ -702,6 +703,35 @@ public class OscService {
 						transportHandler.sendMessage(transportHandler.obtainMessage(ArdourConstants.MSG_WHAT_RECORD, (int)message.getArg(0), 0));
 						break;
 
+					case "select":
+						switch (pathes[2]) {
+							case "send_fader":
+								Object margs[] = new Object[message.getArgCount()];
+								for(int i = 0; i < message.getArgCount(); i++ ) {
+									margs[i] = message.getArg(i);
+								}
+								transportHandler.sendMessage(transportHandler.obtainMessage(ArdourConstants.MSG_WHAT_STRIP_SEND_FADER, margs));
+								break;
+
+							case "send_enable":
+								Object seargs[] = new Object[message.getArgCount()];
+								for(int i = 0; i < message.getArgCount(); i++ ) {
+									seargs[i] = message.getArg(i);
+								}
+								transportHandler.sendMessage(transportHandler.obtainMessage(ArdourConstants.MSG_WHAT_STRIP_SEND_ENABLE, seargs));
+								break;
+
+							case "send_name":
+								System.out.printf("path: %s, ", message.getName());
+								for( int a = 0; a < message.getArgCount(); a++) {
+									System.out.printf("%d-%s,  ", a, String.valueOf(message.getArg(a)));
+								}
+								System.out.printf("\n");
+								break;
+							default:
+								break;
+						}
+						break;
 					case "strip":
 						// argOffset represents if the strip index is part of the URI (argOffset=1) or not (argOffset=0)
 						int argOffset = 0;
@@ -714,6 +744,9 @@ public class OscService {
 							}
 						}
 						switch (pathes[2]) {
+							case "processors":
+								Log.d(TAG, "processors");
+								break;
 							case "plugin":
 								switch(pathes[3]) {
 									case "list":
@@ -1049,15 +1082,22 @@ public class OscService {
 				eargs[1] = sendIndex;
 				eargs[2] = (float)val;
 				this.sendOSCMessage("/strip/send/enable", eargs);
-/*				Object[] eargs  = new Object[2];
-				eargs[0] = sendTrack.remoteId;
-				eargs[1] = sendIndex;
-				if( val == 1 )
-					this.sendOSCMessage("/strip/plugin/activate", eargs);
-				else
-					this.sendOSCMessage("/strip/plugin/deactivate", eargs);*/
 				break;
 
 		}
+	}
+
+	public void getProcessors(int iStripIndex) {
+		Object[] eargs  = new Object[1];
+		eargs[0] = iStripIndex;
+		this.sendOSCMessage("/strip/processors", eargs);
+	}
+
+	public void selectStrip(int iStripIndex, boolean state) {
+		Object[] eargs  = new Object[2];
+
+		eargs[0] = iStripIndex;
+		eargs[1] = state ? 1 : 0;
+		this.sendOSCMessage("/strip/select", eargs);
 	}
 }

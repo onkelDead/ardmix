@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -117,12 +118,15 @@ public class PluginLayout extends LinearLayout implements View.OnClickListener  
     }
 
     public void init(Track track, ArdourPlugin plugin) {
-        pluginDescription.setText("(" + (plugin.getPluginId() + 1) + "/" + plugins.size() + ") - " + plugin.getName() + " - " + track.name);
+        pluginDescription.setText("(" + (plugin.getPluginId() + 1) + "/" + plugins.size() + ") - " + track.plugins.get(plugin.getPluginId()) + " - " + track.name);
         resetPlugin.setId(plugin.getPluginId());
         this.plugin = plugin;
 
+        int pi = 0;
+
+
         for(ArdourPlugin.InputParameter parameter: plugin.getParameters()) {
-            if( (parameter.flags & 128) == 128 ) {
+            if( (parameter.flags & 0x80) == 0x80 && (parameter.flags & 0x100) != 0x100) {
                 LinearLayout pLayout = new LinearLayout(context);
                 pLayout.setOrientation(HORIZONTAL);
                 pLayout.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
@@ -142,11 +146,11 @@ public class PluginLayout extends LinearLayout implements View.OnClickListener  
                         parameterValue.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                             @Override
                             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                                Message msg = mHandler.obtainMessage(40, (int)buttonView.getTag(), isChecked ? 1 : 0 );
+                                Message msg = mHandler.obtainMessage(40, (int)buttonView.getTag(), 0, (float)(isChecked ? 1 : 0) );
                                 mHandler.sendMessage(msg);
                             }
                         });
-                        parameterValue.setTag(parameter.parameter_index);
+                        parameterValue.setTag(pi);
                         pLayout.addView(parameterValue);
                     }
                     else {
@@ -155,7 +159,7 @@ public class PluginLayout extends LinearLayout implements View.OnClickListener  
                         parameterValue.setLayoutParams(new LayoutParams(240, PARAMETER_HEIGHT));
                         parameterValue.setMax(1000);
                         parameterValue.setOrientation(FaderView.Orientation.HORIZONTAL);
-                        parameterValue.setId(parameter.parameter_index);
+                        parameterValue.setId(pi);
                         parameterValue.setProgress(parameter.getFaderFromCurrent(1000));
                         parameterValue.setOnChangeHandler(mHandler);
                         pLayout.addView(parameterValue);
@@ -171,8 +175,8 @@ public class PluginLayout extends LinearLayout implements View.OnClickListener  
                     parameterValue.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                         @Override
                         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                            Map.Entry<Integer, String> e = aa.getItem(position);
-                            Message msg = mHandler.obtainMessage(40, (int)parent.getTag(), e.getKey() );
+                            Map.Entry<Float, String> e = aa.getItem(position);
+                            Message msg = mHandler.obtainMessage(40, (int)parent.getTag(), 0, e.getKey());
                             mHandler.sendMessage(msg);
                         }
 
@@ -182,12 +186,17 @@ public class PluginLayout extends LinearLayout implements View.OnClickListener  
                         }
 
                     });
-                    parameterValue.setTag(parameter.parameter_index);
+                    parameterValue.setTag(pi);
                     pLayout.addView(parameterValue);
                 }
                 addView(pLayout);
 
             }
+            else {
+                if( (parameter.flags & 0x80) != 0x80 )
+                    Log.d("Ardmix", "output parameter found: " + parameter.name);
+            }
+            pi++;
         }
 
 
@@ -196,7 +205,7 @@ public class PluginLayout extends LinearLayout implements View.OnClickListener  
     public class MyAdapter extends BaseAdapter {
         private final ArrayList mData;
 
-        public MyAdapter(Map<Integer, String> map) {
+        public MyAdapter(Map<Float, String> map) {
             mData = new ArrayList();
             mData.addAll(map.entrySet());
         }
@@ -207,7 +216,7 @@ public class PluginLayout extends LinearLayout implements View.OnClickListener  
         }
 
         @Override
-        public Map.Entry<Integer, String> getItem(int position) {
+        public Map.Entry<Float, String> getItem(int position) {
             return (Map.Entry) mData.get(position);
         }
 
@@ -227,7 +236,7 @@ public class PluginLayout extends LinearLayout implements View.OnClickListener  
                 result = convertView;
             }
 
-            Map.Entry<Integer, String> item = getItem(position);
+            Map.Entry<Float, String> item = getItem(position);
             TextView tw = (TextView) result.findViewById(R.id.itemText);
             tw.setText(item.getValue());
             tw.setTag(item.getValue());
@@ -275,8 +284,8 @@ public class PluginLayout extends LinearLayout implements View.OnClickListener  
                 case 40:
                     int pis = msg.arg1;
                     ArdourPlugin.InputParameter ips = plugin.getParameter(pis);
-                    if( ips.current != msg.arg2 ) {
-                        ips.current = (double)msg.arg2;
+                    if( ips.current != (float)msg.obj ) {
+                        ips.current = (float)msg.obj;
                         Object[] plsargs = new Object[2];
                         plsargs[0] = plugin.getParameter(pis).parameter_index;
                         plsargs[1] = ips.current;

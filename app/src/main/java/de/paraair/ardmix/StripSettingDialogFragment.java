@@ -77,6 +77,13 @@ public class StripSettingDialogFragment extends DialogFragment {
 
         stripIndex = args.getInt("stripIndex");
 
+        builder.setNeutralButton(R.string.action_processors, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                MainActivity callingActivity = (MainActivity) getActivity();
+                callingActivity.getProcessors(stripIndex);
+            }
+        });
+
         return builder.create();
     }
 
