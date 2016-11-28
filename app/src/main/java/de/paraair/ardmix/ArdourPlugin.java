@@ -13,6 +13,7 @@ import java.util.TreeMap;
 public  class ArdourPlugin {
     private int trackId;
     private int pluginId;
+    public boolean enabled = false;
 
     private String name;
 
@@ -20,10 +21,11 @@ public  class ArdourPlugin {
 
     public ArdourPlugin() {}
 
-    public ArdourPlugin(int trackId, int pluginId/*, String name*/) {
+    public ArdourPlugin(int trackId, int pluginId, int enabled) {
         this.name = name;
         this.trackId = trackId;
         this.pluginId = pluginId;
+        this.enabled = enabled == 1 ? true : false;
     }
 
     public InputParameter addParameter(InputParameter parameter) {

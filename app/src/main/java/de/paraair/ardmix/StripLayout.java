@@ -103,6 +103,7 @@ public class StripLayout extends LinearLayout {
         ttbFX.setOnClickListener(onClickListener);
         if( mask.bFX)
             this.addView(ttbFX);
+        ttbFX.setAutoToggle(true);
 
         ttbSends = new ToggleTextButton(context, "SEND","SEND", Color.CYAN, Color.GRAY);
         ttbSends.setPadding(0,0,0,0);
@@ -117,8 +118,7 @@ public class StripLayout extends LinearLayout {
         }
         if (mask.bSend)
             this.addView(ttbSends);
-
-
+        ttbSends.setAutoToggle(true);
 
         ttbRecord = new ToggleTextButton(context, "REC","REC", Color.RED, Color.GRAY);
         ttbRecord.setPadding(0,0,0,0);
@@ -131,16 +131,18 @@ public class StripLayout extends LinearLayout {
         }
         else if (track.type == Track.TrackType.MASTER) {
             ttbRecord.setEnabled(false);
+
             ttbRecord.setUntoggledText("");
             recChanged();
         }
         else {
             ttbRecord.setAllText("Receive");
             ttbRecord.onColor = Color.BLUE;
-            ttbRecord.offColor = Color.GRAY;
+            ttbRecord.setOffColor(Color.GRAY);
             ttbRecord.setTag("in");
             ttbRecord.setToggleState(false);
             ttbRecord.setOnClickListener(onClickListener);
+            ttbRecord.setAutoToggle(true);
         }
 
         if( mask.bRecord)
@@ -199,6 +201,7 @@ public class StripLayout extends LinearLayout {
         }
         if (mask.bPan)
             this.addView(ttbPan);
+        ttbPan.setAutoToggle(true);
 
         fwVolume = new FaderView(context);
         fwVolume.setLayoutParams(new LayoutParams(
@@ -316,7 +319,12 @@ public class StripLayout extends LinearLayout {
             track.trackVolume = (int)(sendVolume * 1000);
             fwVolume.setProgress(track.trackVolume);
             ttbSolo.setEnabled(false);
-            ttbMute.setToggleState(!enabled);
+            ttbMute.setAllText("Off");
+            ttbMute.setToggledText("On");
+            ttbMute.onColor = Color.CYAN;
+            ttbMute.setOffColor(Color.GRAY);
+            ttbMute.setToggleState(enabled);
+            ttbMute.setAutoToggle(true);
         }
         else if(type == Track.TrackType.PAN ) {
             fwVolume.setStrTopText("right");
@@ -332,7 +340,11 @@ public class StripLayout extends LinearLayout {
             track.trackVolume = oldVolume;
             fwVolume.setProgress(track.trackVolume);
             ttbSolo.setEnabled(true);
+            ttbMute.setAllText("Mute");
+            ttbMute.onColor = Color.YELLOW;
+            ttbMute.setOffColor(Color.GRAY);
             ttbMute.setToggleState(oldMute);
+            ttbMute.setAutoToggle(false);
             track.muteEnabled = oldMute;
         }
         showtype = type;

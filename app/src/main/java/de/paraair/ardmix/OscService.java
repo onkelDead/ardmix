@@ -727,6 +727,9 @@ public class OscService {
 									System.out.printf("%d-%s,  ", a, String.valueOf(message.getArg(a)));
 								}
 								System.out.printf("\n");
+
+								transportHandler.sendMessage(transportHandler.obtainMessage(
+										ArdourConstants.MSG_WHAT_STRIP_SEND_NAME, (int)message.getArg(0), 0, (String) message.getArg(1)));
 								break;
 							default:
 								break;
@@ -881,10 +884,15 @@ public class OscService {
 								}
 								break;
 
+							case "select":
+								transportHandler.sendMessage(transportHandler.obtainMessage(
+										ArdourConstants.MSG_WHAT_STRIP_SELECT, (int)message.getArg(0), (float)message.getArg(1) > 0 ? 1 : 0));
+								break;
+
 							default:
 
 								if(message.getName().equals("/strip/record_safe")) break;
-								if(message.getName().equals("/strip/select")) break;
+//								if(message.getName().equals("/strip/select")) break;
 								if(message.getName().equals("/strip/trimdB")) break;
 								if(message.getName().equals("/strip/gui_select")) break;
 								if(message.getName().equals("/strip/expand")) break;
@@ -1009,14 +1017,15 @@ public class OscService {
 		this.port = port;
 	}
 
-	public void setSendEnable(int trackIndex, int pluginIndex, float value) {
-/*
+	public void setSendEnable(int iAuxLayout, int source_id, float v) {
 		Object[] args  = new Object[3];
-		args[0] = trackIndex;
-		args[1] = pluginIndex + 1;
-		args[2] = value;
+		args[0] = iAuxLayout;
+		args[1] = source_id + 1;
+		args[2] = v;
 		this.sendOSCMessage("/strip/send/enable", args);
-*/
+	}
+
+	public void setSelectSendEnable(int trackIndex, int pluginIndex, float value) {
 		Object[] args  = new Object[2];
 		args[0] = pluginIndex + 1;
 		args[1] = value;
@@ -1100,4 +1109,13 @@ public class OscService {
 		eargs[1] = state ? 1 : 0;
 		this.sendOSCMessage("/strip/select", eargs);
 	}
+
+	public void pluginEnable(Track pluginTrack, int pluginId, boolean enabled) {
+		Object[] eargs  = new Object[2];
+
+		eargs[0] = pluginTrack.remoteId;
+		eargs[1] = pluginId;
+		this.sendOSCMessage(enabled ? "/strip/plugin/activate" : "/strip/plugin/deactivate", eargs);
+	}
+
 }

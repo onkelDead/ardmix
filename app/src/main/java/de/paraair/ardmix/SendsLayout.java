@@ -31,8 +31,10 @@ public class SendsLayout extends LinearLayout implements OnClickListener {
 
     private Handler onChangeHandler;
 
-    ArrayList<FaderView> fmSendGains = new ArrayList<>();
+    ArrayList<FaderView> fwSendGains = new ArrayList<>();
     ArrayList<ToggleTextButton> ttbEnables = new ArrayList<>();
+    ArrayList<LinearLayout> llSends = new ArrayList<>();
+
 
     public SendsLayout(Context context) {
         super(context);
@@ -86,37 +88,9 @@ public class SendsLayout extends LinearLayout implements OnClickListener {
         tvSendsDescription.setText("Sends of " + strip.getTrack().name);
         addView(tvSendsDescription);
 
-        for (int i = 0; i < sargs.length; i += 5) {
-            LinearLayout llSend = new LinearLayout(context);
-            llSend.setOrientation(HORIZONTAL);
-            llSend.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
-
-            ToggleTextButton ttbEnable = new ToggleTextButton(context, "","", Color.CYAN, Color.GRAY);
-            LayoutParams slp = new LayoutParams(120, 32);
-            slp.setMargins(6,2,12,2);
-            ttbEnable.setPadding(0,0,0,0);
-            ttbEnable.setLayoutParams(slp);
-            ttbEnable.setAllText((String) sargs[i+1]);
-//            ttbEnable.setToggleState((int)sargs[i+4] > 0);
-            ttbEnable.setAutoToggle(false);
-            ttbEnable.setId((int)sargs[i+2]);
-            ttbEnable.setOnClickListener(checkedChangeListener);
-            llSend.addView(ttbEnable);
-            ttbEnables.add(ttbEnable);
-
-            FaderView fmSend = new FaderView(context);
-            fmSend.setLayoutParams(new LayoutParams(240, 48));
-            fmSend.setMax(1000);
-            fmSend.setOrientation(FaderView.Orientation.HORIZONTAL);
-            fmSend.setId((int)sargs[i+2]);
-            fmSend.setProgress((int)((float)sargs[i + 3] * 1000));
-            fmSend.setOnChangeHandler(mHandler);
-            llSend.addView(fmSend);
-
-            fmSendGains.add(fmSend);
-
-            addView(llSend);
-        }
+//        for (int i = 0; i < sargs.length; i += 5) {
+//            addSend((int)sargs[i+2], (String) sargs[i+1]);
+//        }
 
         LinearLayout llButtons = new LinearLayout(context);
         llButtons.setOrientation(HORIZONTAL);
@@ -153,6 +127,39 @@ public class SendsLayout extends LinearLayout implements OnClickListener {
 
     }
 
+    private void addSend(int sendIndex, String name) {
+        LinearLayout llSend = new LinearLayout(context);
+        llSend.setOrientation(HORIZONTAL);
+        llSend.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+
+        ToggleTextButton ttbEnable = new ToggleTextButton(context, "","", Color.CYAN, Color.GRAY);
+        LayoutParams slp = new LayoutParams(120, 32);
+        slp.setMargins(6,2,12,2);
+        ttbEnable.setPadding(0,0,0,0);
+        ttbEnable.setLayoutParams(slp);
+        ttbEnable.setAllText(name);
+//            ttbEnable.setToggleState((int)sargs[i+4] > 0);
+        ttbEnable.setAutoToggle(false);
+        ttbEnable.setId(sendIndex);
+        ttbEnable.setOnClickListener(checkedChangeListener);
+        llSend.addView(ttbEnable);
+        ttbEnables.add(ttbEnable);
+
+        FaderView fmSend = new FaderView(context);
+        fmSend.setLayoutParams(new LayoutParams(240, 48));
+        fmSend.setMax(1000);
+        fmSend.setOrientation(FaderView.Orientation.HORIZONTAL);
+        fmSend.setId(sendIndex);
+//        fmSend.setProgress((int)((float)sargs[i + 3] * 1000));
+        fmSend.setOnChangeHandler(mHandler);
+        llSend.addView(fmSend);
+
+        fwSendGains.add(fmSend);
+
+        addView(llSend);
+        llSends.add(llSend);
+    }
+
     private Handler mHandler = new Handler() {
 
         /* (non-Javadoc)
@@ -179,8 +186,8 @@ public class SendsLayout extends LinearLayout implements OnClickListener {
     }
 
     public void sendChanged(int sendIndex, float value) {
-        if( sendIndex-1 < fmSendGains.size())
-            fmSendGains.get(sendIndex-1).setProgress((int)(value * 1000));
+        if( sendIndex-1 < fwSendGains.size())
+            fwSendGains.get(sendIndex-1).setProgress((int)(value * 1000));
     }
 
     public void sendEnable(int sendIndex, float state) {
@@ -191,6 +198,19 @@ public class SendsLayout extends LinearLayout implements OnClickListener {
     }
 
     public void deinit() {
+//        for( ToggleTextButton tb : ttbEnables) {
+//            removeView(tb);
+//        }
+//        ttbEnables.clear();
+//        for( FaderView fw: fwSendGains) {
+//            removeView(fw);
+//        }
+//        fwSendGains.clear();
+        for(LinearLayout ll: llSends) {
+            ll.removeAllViews();
+            removeView(ll);
+        }
+        llSends.clear();
     }
 
     OnClickListener checkedChangeListener = new OnClickListener() {
@@ -206,4 +226,15 @@ public class SendsLayout extends LinearLayout implements OnClickListener {
             onChangeHandler.sendMessage(fm);
         }
     };
+
+    public void sendName(int sendIndex, String name) {
+        int si = sendIndex - 1;
+        if( sendIndex >  ttbEnables.size() ) {
+            addSend(sendIndex, name);
+        }
+        else {
+            ttbEnables.get(si).setAllText(name);
+        }
+
+    }
 }
