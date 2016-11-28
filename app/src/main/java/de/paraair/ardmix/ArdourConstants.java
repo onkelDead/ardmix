@@ -69,5 +69,7 @@ final class ArdourConstants {
     public static final byte RECORD_ENABLED = 0x04;
 
 
+    public static final int MSG_WHAT_STRIP_SEND_NAME = 7100;
+    public static final int MSG_WHAT_STRIP_SELECT = 300;
 }
 

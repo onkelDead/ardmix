@@ -30,12 +30,16 @@ public class PluginLayout extends LinearLayout implements View.OnClickListener  
 
     public static final int MSG_WHAT_PLUGIN_CHANGED = 28;
     public static final int MSG_WHAT_PLUGIN_RESET = 29;
-    public static final int MSG_WHAT_PLUGIN_RESUEST = 22;
+    public static final int MSG_WHAT_PLUGIN_REQUEST = 22;
     public static final int MSG_WHAT_PLUGIN_NEXT = 31;
     public static final int MSG_WHAT_PLUGIN_PREV = 32;
+    public static final int MSG_WHAT_PLUGIN_ENABLE = 35;
+
     private static final int PARAMETER_HEIGHT = 32;
 
     private ArdourPlugin plugin;
+
+    ToggleTextButton ttbBypass;
 
     private Context context;
 
@@ -72,6 +76,16 @@ public class PluginLayout extends LinearLayout implements View.OnClickListener  
         btnLayout.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
         btnLayout.setPadding(0,16,0,0);
 
+        Button btnClose = new Button(context);
+        LayoutParams bclp = new LayoutParams(LayoutParams.WRAP_CONTENT, 26);
+        bclp.setMargins(0,0,0,0);
+        btnClose.setLayoutParams(bclp);
+        btnClose.setPadding(1, 0, 1, 0);
+        btnClose.setTag("close");
+        btnClose.setText("Close");
+        btnClose.setOnClickListener(this);
+        btnLayout.addView(btnClose);
+
         if( plugins.size() > 0 ) {
             resetPlugin = new Button(context);
             resetPlugin.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, 26));
@@ -80,20 +94,25 @@ public class PluginLayout extends LinearLayout implements View.OnClickListener  
             resetPlugin.setTag("resetPlugin");
             resetPlugin.setOnClickListener(this);
             btnLayout.addView(resetPlugin);
+
+            ttbBypass = new ToggleTextButton(context);
+            LayoutParams bblp = new LayoutParams(LayoutParams.WRAP_CONTENT, 26);
+            bblp.setMargins(2,0,24,0);
+            ttbBypass.setPadding(1,1,1,1);
+            ttbBypass.setLayoutParams(bblp);
+            ttbBypass.setPadding(1, 0, 1, 0);
+            ttbBypass.setTag("bypass");
+            ttbBypass.setAllText("bypass");
+            ttbBypass.setOnClickListener(this);
+            ttbBypass.onColor = 0xA0FF40FF;
+//        ttbBypass.offColor = 0x20FF40FF;
+            btnLayout.addView(ttbBypass);
+            ttbBypass.setAutoToggle(true);
+
         }
 
-        Button btnClose = new Button(context);
-        LayoutParams bclp = new LayoutParams(LayoutParams.WRAP_CONTENT, 26);
-        bclp.setMargins(0,0,48,0);
-        btnClose.setLayoutParams(bclp);
-        btnClose.setPadding(1, 0, 1, 0);
-        btnClose.setTag("close");
-        btnClose.setText("Close");
-        btnClose.setOnClickListener(this);
-        btnLayout.addView(btnClose);
-
         Button btnPrev = new Button(context);
-        btnPrev.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, 26));
+        btnPrev.setLayoutParams(new LayoutParams(48, 26));
         btnPrev.setPadding(1, 0, 1, 0);
         btnPrev.setTag("prev");
         btnPrev.setText("<");
@@ -101,7 +120,7 @@ public class PluginLayout extends LinearLayout implements View.OnClickListener  
         btnLayout.addView(btnPrev);
 
         Button btnNext = new Button(context);
-        btnNext.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, 26));
+        btnNext.setLayoutParams(new LayoutParams(48, 26));
         btnNext.setPadding(1, 0, 1, 0);
         btnNext.setTag("next");
         btnNext.setText(">");
@@ -111,7 +130,7 @@ public class PluginLayout extends LinearLayout implements View.OnClickListener  
         addView(btnLayout);
 
         if( inlude_request) {
-            Message fm = onChangeHandler.obtainMessage(MSG_WHAT_PLUGIN_RESUEST, getId(), 0);
+            Message fm = onChangeHandler.obtainMessage(MSG_WHAT_PLUGIN_REQUEST, getId(), 0);
             onChangeHandler.sendMessage(fm);
         }
 
@@ -121,7 +140,7 @@ public class PluginLayout extends LinearLayout implements View.OnClickListener  
         pluginDescription.setText("(" + (plugin.getPluginId() + 1) + "/" + plugins.size() + ") - " + track.plugins.get(plugin.getPluginId()) + " - " + track.name);
         resetPlugin.setId(plugin.getPluginId());
         this.plugin = plugin;
-
+        ttbBypass.setToggleState(!plugin.enabled);
         int pi = 0;
 
 
@@ -312,10 +331,10 @@ public class PluginLayout extends LinearLayout implements View.OnClickListener  
                 this.removeAllViews();
                 this.initLayout(false, plugins);
                 if(plugin.getPluginId() == plugins.size()-1) {
-                    onChangeHandler.sendMessage(onChangeHandler.obtainMessage(MSG_WHAT_PLUGIN_RESUEST, getId(), 0));
+                    onChangeHandler.sendMessage(onChangeHandler.obtainMessage(MSG_WHAT_PLUGIN_REQUEST, getId(), 0));
                 }
                 else {
-                    onChangeHandler.sendMessage(onChangeHandler.obtainMessage(MSG_WHAT_PLUGIN_RESUEST, getId(), plugin.getPluginId()+1));
+                    onChangeHandler.sendMessage(onChangeHandler.obtainMessage(MSG_WHAT_PLUGIN_REQUEST, getId(), plugin.getPluginId()+1));
                 }
                 break;
             case "close":
@@ -328,6 +347,10 @@ public class PluginLayout extends LinearLayout implements View.OnClickListener  
 
             case "prev":
                 onChangeHandler.sendMessage(onChangeHandler.obtainMessage(MSG_WHAT_PLUGIN_PREV));
+                break;
+
+            case "bypass":
+                onChangeHandler.sendMessage(onChangeHandler.obtainMessage(MSG_WHAT_PLUGIN_ENABLE, getId(), plugin.getPluginId(), !ttbBypass.getToggleState() ? 1 : 0));
                 break;
 
             default:
