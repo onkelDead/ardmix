@@ -210,6 +210,7 @@ public class StripLayout extends LinearLayout {
         fwVolume.setTag("volume");
         fwVolume.setId(track.remoteId);
         fwVolume.setOnChangeHandler(mHandler);
+        fwVolume.val0 = 782;
         fwVolume.setProgress(track.trackVolume);
         if (mask.bFader)
             this.addView(fwVolume);
@@ -417,5 +418,12 @@ public class StripLayout extends LinearLayout {
             track.trackVolume = 0;
         volumeChanged();
         onChangeHandler.sendMessage(onChangeHandler.obtainMessage(MSG_WHAT_RECEIVE_CHANGED, track.remoteId, track.trackVolume));
+    }
+
+    public void resetBackground() {
+        if( track.type == Track.TrackType.AUDIO)
+            setBackgroundColor(getResources().getColor(R.color.VeryDark, null));
+        if( track.type == Track.TrackType.BUS)
+            setBackgroundColor(0x200000FF);
     }
 }

@@ -1136,13 +1136,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     sendsLayout = null;
                 }
             }
-
-//            oscService.selectStrip(oscService.getRouteCount(), true);
-            if(strip.getTrack().type == Track.TrackType.AUDIO )
-                strip.setBackgroundColor(getResources().getColor(R.color.VeryDark, null));
-            if(strip.getTrack().type == Track.TrackType.BUS )
-                strip.setBackgroundColor(0x200000FF);
-
+            strip.resetBackground();
             strip.sendChanged(false);
             strip.pullVolume();
             iSendsLayout = -1;
@@ -1172,7 +1166,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         else {
             strip.ResetPan();
-            strip.setBackgroundColor(getResources().getColor(R.color.VeryDark, null));
+            strip.resetBackground();
+
             iPanLayout = -1;
             strip.volumeChanged();
         }
@@ -1196,10 +1191,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         llStripList.removeView(receiveLayout);
                 }
             }
-            if( strip.getTrack().type == Track.TrackType.AUDIO)
-                strip.setBackgroundColor(getResources().getColor(R.color.VeryDark, null));
-            if( strip.getTrack().type == Track.TrackType.BUS)
-                strip.setBackgroundColor(0x200000FF);
+            strip.resetBackground();
             oscService.getTrack(iStripIndex).recEnabled = false;
             strip.recChanged();
             iReceiveLayout = -1;
@@ -1226,7 +1218,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         llStripList.removeView(sl);
                 }
             }
-            strip.setBackgroundColor(getResources().getColor(R.color.VeryDark, null));
+            strip.resetBackground();
             strip.sendChanged(false);
             strip.pullVolume();
             iAuxLayout = -1;
@@ -1263,7 +1255,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 llStripList.removeView(pluginLayout);
             }
             strip.fxOff();
-            strip.setBackgroundColor(getResources().getColor(R.color.VeryDark, null));
+            strip.resetBackground();
+
             pluginLayout = null;
             iPluginLayout = -1;
         }

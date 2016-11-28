@@ -138,23 +138,22 @@ public class SendsLayout extends LinearLayout implements OnClickListener {
         ttbEnable.setPadding(0,0,0,0);
         ttbEnable.setLayoutParams(slp);
         ttbEnable.setAllText(name);
-//            ttbEnable.setToggleState((int)sargs[i+4] > 0);
         ttbEnable.setAutoToggle(false);
         ttbEnable.setId(sendIndex);
         ttbEnable.setOnClickListener(checkedChangeListener);
         llSend.addView(ttbEnable);
         ttbEnables.add(ttbEnable);
 
-        FaderView fmSend = new FaderView(context);
-        fmSend.setLayoutParams(new LayoutParams(240, 48));
-        fmSend.setMax(1000);
-        fmSend.setOrientation(FaderView.Orientation.HORIZONTAL);
-        fmSend.setId(sendIndex);
-//        fmSend.setProgress((int)((float)sargs[i + 3] * 1000));
-        fmSend.setOnChangeHandler(mHandler);
-        llSend.addView(fmSend);
+        FaderView fwSend = new FaderView(context);
+        fwSend.setLayoutParams(new LayoutParams(240, 48));
+        fwSend.setMax(1000);
+        fwSend.setOrientation(FaderView.Orientation.HORIZONTAL);
+        fwSend.setId(sendIndex);
+        fwSend.val0 = 782;
+        fwSend.setOnChangeHandler(mHandler);
+        llSend.addView(fwSend);
 
-        fwSendGains.add(fmSend);
+        fwSendGains.add(fwSend);
 
         addView(llSend);
         llSends.add(llSend);
