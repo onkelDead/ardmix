@@ -42,7 +42,7 @@ public class FaderView extends ImageView implements View.OnTouchListener {
     private boolean bBottomText = false;
     private String strBottomText = "";
 
-    public int val0 = 782;
+    public int val0 = 0;
 
     private Paint p;
     private Bitmap fader_bmp;
@@ -88,16 +88,18 @@ public class FaderView extends ImageView implements View.OnTouchListener {
 
             float fullheight = parentHeight - topEdge - bottomEdge;
 
-            float top0db = fullheight - ((float)val0 / max * (fullheight)) + topEdge;
             float topdb = fullheight - ((float)val / max * (fullheight)) + topEdge;
             p.setStrokeWidth(meterWidth);
 
             // bright bg till volume
             canvas.drawLine(leftEdge, topdb, rightEdge , fullheight + topEdge , p);
 
-            // 0dB line
-            p.setStrokeWidth(2);
-            canvas.drawLine(12, top0db, parentWidth - 12, top0db, p);
+            if( val0 > 0 ) {
+                // 0dB line
+                float top0db = fullheight - ((float)val0 / max * (fullheight)) + topEdge;
+                p.setStrokeWidth(2);
+                canvas.drawLine(12, top0db, parentWidth - 12, top0db, p);
+            }
 
             // full range background
             p.setColor(0x40808080);
@@ -122,24 +124,24 @@ public class FaderView extends ImageView implements View.OnTouchListener {
         }
         else {
             float leftEdge = parentHeight / 2;
-            float topEdge = 4;
-            float bottomEdge = 4;
-//            float left0db = ((float)val0 / max * (parentWidth - topEdge - bottomEdge)) - topEdge;
+            float topEdge = 0;
+            float bottomEdge = 0;
             p.setStrokeWidth(leftEdge);
             canvas.drawLine(0, leftEdge, (float) val / max * parentWidth, leftEdge, p);
 //
-//            p.setStrokeWidth(2);
-//            canvas.drawLine(left0db, 2, left0db, parentHeight - 2, p);
+            if( val0 > 0 ) {
+                float left0db = ((float)val0 / max * (parentWidth - topEdge - bottomEdge)) - topEdge;
+                p.setStrokeWidth(2);
+                canvas.drawLine(left0db, 4, left0db, parentHeight - 2, p);
+            }
 
             p.setColor(0x40808080);
             p.setStrokeWidth(1);
 //            p.setStyle(Paint.Style.STROKE);
-            canvas.drawRect(bottomEdge, leftEdge - leftEdge / 2, parentWidth - topEdge , parentHeight - bottomEdge, p);
-
-
-            p.setColor(0xffffffff);
+            canvas.drawRect(bottomEdge, leftEdge - leftEdge / 2, parentWidth - topEdge , parentHeight - leftEdge / 2, p);
 
             if( param != null ) {
+                p.setColor(0xffffffff);
                 p.setTextSize(12);
                 canvas.drawText(param.getTextFromCurrent(), 5, leftEdge+5, p);
             }
