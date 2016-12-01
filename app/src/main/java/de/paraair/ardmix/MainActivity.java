@@ -1146,6 +1146,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void showSends(StripLayout strip, Object[] sargs) {
 //        resetLayouts();
         sendsLayout = new SendsLayout(this);
+//        sendsLayout.setRotation(90);
         sendsLayout.init(strip, sargs);
         sendsLayout.setOnChangeHandler(topLevelHandler);
         llStripList.addView(sendsLayout, strip.getPosition() + 1);

@@ -34,6 +34,8 @@ public class PluginLayout extends LinearLayout implements View.OnClickListener  
     public static final int MSG_WHAT_PLUGIN_NEXT = 31;
     public static final int MSG_WHAT_PLUGIN_PREV = 32;
     public static final int MSG_WHAT_PLUGIN_ENABLE = 35;
+    private static final int NAVBUTTON_HEIGHT = 36;
+
 
     private static final int PARAMETER_HEIGHT = 32;
 
@@ -74,10 +76,10 @@ public class PluginLayout extends LinearLayout implements View.OnClickListener  
         LinearLayout btnLayout = new LinearLayout(context);
         btnLayout.setOrientation(HORIZONTAL);
         btnLayout.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
-        btnLayout.setPadding(0,16,0,0);
+        btnLayout.setPadding(0,0,0,16);
 
         Button btnClose = new Button(context);
-        LayoutParams bclp = new LayoutParams(LayoutParams.WRAP_CONTENT, 26);
+        LayoutParams bclp = new LayoutParams(LayoutParams.WRAP_CONTENT, NAVBUTTON_HEIGHT);
         bclp.setMargins(0,0,0,0);
         btnClose.setLayoutParams(bclp);
         btnClose.setPadding(1, 0, 1, 0);
@@ -88,7 +90,7 @@ public class PluginLayout extends LinearLayout implements View.OnClickListener  
 
         if( plugins.size() > 0 ) {
             resetPlugin = new Button(context);
-            resetPlugin.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, 26));
+            resetPlugin.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, NAVBUTTON_HEIGHT));
             resetPlugin.setText("reset");
             resetPlugin.setPadding(1, 0, 1, 0);
             resetPlugin.setTag("resetPlugin");
@@ -96,13 +98,13 @@ public class PluginLayout extends LinearLayout implements View.OnClickListener  
             btnLayout.addView(resetPlugin);
 
             ttbBypass = new ToggleTextButton(context);
-            LayoutParams bblp = new LayoutParams(LayoutParams.WRAP_CONTENT, 26);
+            LayoutParams bblp = new LayoutParams(LayoutParams.WRAP_CONTENT, NAVBUTTON_HEIGHT);
             bblp.setMargins(2,0,24,0);
             ttbBypass.setPadding(1,1,1,1);
             ttbBypass.setLayoutParams(bblp);
             ttbBypass.setPadding(1, 0, 1, 0);
-            ttbBypass.setTag("bypass");
-            ttbBypass.setAllText("bypass");
+            ttbBypass.setTag("BYPASS");
+            ttbBypass.setAllText("BYPASS");
             ttbBypass.setOnClickListener(this);
             ttbBypass.onColor = 0xA0FF40FF;
 //        ttbBypass.offColor = 0x20FF40FF;
@@ -112,7 +114,7 @@ public class PluginLayout extends LinearLayout implements View.OnClickListener  
         }
 
         Button btnPrev = new Button(context);
-        btnPrev.setLayoutParams(new LayoutParams(48, 26));
+        btnPrev.setLayoutParams(new LayoutParams(48, NAVBUTTON_HEIGHT));
         btnPrev.setPadding(1, 0, 1, 0);
         btnPrev.setTag("prev");
         btnPrev.setText("<");
@@ -120,7 +122,7 @@ public class PluginLayout extends LinearLayout implements View.OnClickListener  
         btnLayout.addView(btnPrev);
 
         Button btnNext = new Button(context);
-        btnNext.setLayoutParams(new LayoutParams(48, 26));
+        btnNext.setLayoutParams(new LayoutParams(48, NAVBUTTON_HEIGHT));
         btnNext.setPadding(1, 0, 1, 0);
         btnNext.setTag("next");
         btnNext.setText(">");
@@ -137,7 +139,7 @@ public class PluginLayout extends LinearLayout implements View.OnClickListener  
     }
 
     public void init(Track track, ArdourPlugin plugin) {
-        pluginDescription.setText("(" + (plugin.getPluginId() + 1) + "/" + plugins.size() + ") - " + track.plugins.get(plugin.getPluginId()) + " - " + track.name);
+        pluginDescription.setText("(" + (plugin.getPluginId() + 1) + "/" + plugins.size() + ") - " + track.plugins.get(plugin.getPluginId()+1) + " - " + track.name);
         resetPlugin.setId(plugin.getPluginId());
         this.plugin = plugin;
         ttbBypass.setToggleState(!plugin.enabled);

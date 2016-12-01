@@ -25,6 +25,7 @@ public class SendsLayout extends LinearLayout implements OnClickListener {
     public static final int MSG_WHAT_RESET_LAYOUT = 199;
     public static final int MSG_WHAT_PREV_SEND_LAYOUT = 197;
     public static final int MSG_WHAT_NEXT_SEND_LAYOUT = 198;
+    private static final int NAVBUTTON_HEIGHT = 36;
     private Context context;
 
     private int iStripIndex;
@@ -95,10 +96,10 @@ public class SendsLayout extends LinearLayout implements OnClickListener {
         LinearLayout llButtons = new LinearLayout(context);
         llButtons.setOrientation(HORIZONTAL);
         llButtons.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
-        llButtons.setPadding(0,32,0,0);
+        llButtons.setPadding(0,0,0,32);
 
         Button btnClose = new Button(context);
-        LayoutParams bclp = new LayoutParams(LayoutParams.WRAP_CONTENT, 26);
+        LayoutParams bclp = new LayoutParams(LayoutParams.WRAP_CONTENT, NAVBUTTON_HEIGHT);
         bclp.setMargins(0,0,48,0);
         btnClose.setLayoutParams(bclp);
         btnClose.setPadding(1, 0, 1, 0);
@@ -108,7 +109,7 @@ public class SendsLayout extends LinearLayout implements OnClickListener {
         llButtons.addView(btnClose);
 
         Button btnPrev = new Button(context);
-        btnPrev.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, 26));
+        btnPrev.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, NAVBUTTON_HEIGHT));
         btnPrev.setPadding(1, 0, 1, 0);
         btnPrev.setTag("prev");
         btnPrev.setText("<");
@@ -116,7 +117,7 @@ public class SendsLayout extends LinearLayout implements OnClickListener {
         llButtons.addView(btnPrev);
 
         Button btnNext = new Button(context);
-        btnNext.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, 26));
+        btnNext.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, NAVBUTTON_HEIGHT));
         btnNext.setPadding(1, 0, 1, 0);
         btnNext.setTag("next");
         btnNext.setText(">");
