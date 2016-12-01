@@ -39,7 +39,7 @@ public class Track extends Fader {
 
 	public int sendCount = 0;
 
-	public HashMap<Integer, String> plugins = new HashMap<>();
+	public HashMap<Integer, ArdourPlugin> pluginDescriptors = new HashMap<>();
 
 
 	public void setTrackVolumeOnSeekBar(boolean val){
@@ -48,5 +48,17 @@ public class Track extends Fader {
 	public boolean getTrackVolumeOnSeekBar(){
 		return trackVolumeOnSeekBar;
 	}
+
+
+	public void addPlugin(int pluginIndex, String pluginName) {
+		ArdourPlugin plugin = new ArdourPlugin(remoteId, pluginIndex, 1);
+		plugin.setName(pluginName);
+		pluginDescriptors.put(pluginIndex, plugin);
+	}
+
+	public ArdourPlugin getPluginDescriptor(int pluginIndex) {
+		return pluginDescriptors.get(pluginIndex + 1);
+	}
+
 
 }

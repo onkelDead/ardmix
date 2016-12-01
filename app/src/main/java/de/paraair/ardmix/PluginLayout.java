@@ -18,7 +18,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 
 
@@ -39,34 +38,35 @@ public class PluginLayout extends LinearLayout implements View.OnClickListener  
 
     private static final int PARAMETER_HEIGHT = 32;
 
-    private ArdourPlugin plugin;
-
     ToggleTextButton ttbBypass;
 
     private Context context;
 
-    HashMap<Integer, String> plugins;
+    Track track;
+
+    int defaultIndex = 0;
 
     private Handler onChangeHandler;
     private TextView pluginDescription;
     private Button resetPlugin;
+    private ArdourPlugin currentPlugin;
 
     public PluginLayout(Context context) {
         super(context);
         this.context = context;
     }
 
-    public void initLayout(boolean inlude_request, HashMap<Integer, String> plugins) {
+    public void initLayout(boolean inlude_request, Track t) {
 
-        this.plugins = plugins;
+        this.track = t;
         pluginDescription = new TextView(context);
         pluginDescription.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
         pluginDescription.setTextSize(18);
         pluginDescription.setPadding(4,4,4,4);
         pluginDescription.setTextColor(Color.WHITE);
         pluginDescription.setTag("pluginTitle");
-        if( plugins.size() > 0 ) {
-            if (plugins.size() > 1)
+        if( track.pluginDescriptors.size() > 0 ) {
+            if (track.pluginDescriptors.size() > 1)
                 pluginDescription.setOnClickListener(this);
         }
         else
@@ -88,7 +88,7 @@ public class PluginLayout extends LinearLayout implements View.OnClickListener  
         btnClose.setOnClickListener(this);
         btnLayout.addView(btnClose);
 
-        if( plugins.size() > 0 ) {
+        if( t.pluginDescriptors.size() > 0 ) {
             resetPlugin = new Button(context);
             resetPlugin.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, NAVBUTTON_HEIGHT));
             resetPlugin.setText("reset");
@@ -103,11 +103,10 @@ public class PluginLayout extends LinearLayout implements View.OnClickListener  
             ttbBypass.setPadding(1,1,1,1);
             ttbBypass.setLayoutParams(bblp);
             ttbBypass.setPadding(1, 0, 1, 0);
-            ttbBypass.setTag("BYPASS");
+            ttbBypass.setTag("bypass");
             ttbBypass.setAllText("BYPASS");
             ttbBypass.setOnClickListener(this);
             ttbBypass.onColor = 0xA0FF40FF;
-//        ttbBypass.offColor = 0x20FF40FF;
             btnLayout.addView(ttbBypass);
             ttbBypass.setAutoToggle(true);
 
@@ -138,15 +137,17 @@ public class PluginLayout extends LinearLayout implements View.OnClickListener  
 
     }
 
-    public void init(Track track, ArdourPlugin plugin) {
-        pluginDescription.setText("(" + (plugin.getPluginId() + 1) + "/" + plugins.size() + ") - " + track.plugins.get(plugin.getPluginId()+1) + " - " + track.name);
-        resetPlugin.setId(plugin.getPluginId());
-        this.plugin = plugin;
-        ttbBypass.setToggleState(!plugin.enabled);
+    public void init(int pluginId) {
+        defaultIndex = pluginId;
+        this.currentPlugin = track.getPluginDescriptor(pluginId);
+        setTag(currentPlugin);
+        pluginDescription.setText("(" + (currentPlugin.getPluginId() ) + "/" + track.pluginDescriptors.size() + ") - " + currentPlugin.getName() + " - " + track.name);
+        resetPlugin.setId(currentPlugin.getPluginId());
+        ttbBypass.setToggleState(!currentPlugin.enabled);
         int pi = 0;
 
 
-        for(ArdourPlugin.InputParameter parameter: plugin.getParameters()) {
+        for(ArdourPlugin.InputParameter parameter: currentPlugin.getParameters()) {
             if( (parameter.flags & 0x80) == 0x80 && (parameter.flags & 0x100) != 0x100) {
                 LinearLayout pLayout = new LinearLayout(context);
                 pLayout.setOrientation(HORIZONTAL);
@@ -277,40 +278,30 @@ public class PluginLayout extends LinearLayout implements View.OnClickListener  
 
             switch (msg.what) {
                 case 10:
-//                    Message bfm = onChangeHandler.obtainMessage(MSG_WHAT_BLOCK_SCROLL);
-//                    onChangeHandler.sendMessage(bfm );
                     break;
                 case 20:
                     int pi = msg.arg1;
-                    ArdourPlugin.InputParameter ip = plugin.getParameter(pi);
+                    ArdourPlugin.InputParameter ip = currentPlugin.getParameter(pi);
                     ip.setCurrentFromFader(msg.arg2, 1000);
                     Object[] plargs = new Object[2];
-                    plargs[0] = plugin.getParameter(pi).parameter_index;
+                    plargs[0] = currentPlugin.getParameter(pi).parameter_index;
                     plargs[1] = ip.current;
-                    Message fm = onChangeHandler.obtainMessage(MSG_WHAT_PLUGIN_CHANGED, plugin.getTrackId(), plugin.getPluginId(), plargs);
+                    Message fm = onChangeHandler.obtainMessage(MSG_WHAT_PLUGIN_CHANGED, currentPlugin.getTrackId(), currentPlugin.getPluginId(), plargs);
                     onChangeHandler.sendMessage(fm );
-//                    Message ufm = onChangeHandler.obtainMessage(MSG_WHAT_UNBLOCK_SCROLL);
-//                    onChangeHandler.sendMessage(ufm );
                     break;
                 case 30:
                     int pir = msg.arg1;
-                    ArdourPlugin.InputParameter ipr = plugin.getParameter(pir);
-//                    Object[] plargs = new Object[2];
-//                    plargs[0] = plugin.getParameter(pir).parameter_index;
-//                    plargs[1] = ipr.current;
-//                    Message fm = onChangeHandler.obtainMessage(MSG_WHAT_PLUGIN_CHANGED, plugin.getTrackId(), plugin.getPluginId(), plargs);
-//                    onChangeHandler.sendMessage(fm );
+                    ArdourPlugin.InputParameter ipr = currentPlugin.getParameter(pir);
                     break;
-//                    track.setTrackVolumeOnSeekBar(false)
                 case 40:
                     int pis = msg.arg1;
-                    ArdourPlugin.InputParameter ips = plugin.getParameter(pis);
+                    ArdourPlugin.InputParameter ips = currentPlugin.getParameter(pis);
                     if( ips.current != (float)msg.obj ) {
                         ips.current = (float)msg.obj;
                         Object[] plsargs = new Object[2];
-                        plsargs[0] = plugin.getParameter(pis).parameter_index;
+                        plsargs[0] = currentPlugin.getParameter(pis).parameter_index;
                         plsargs[1] = ips.current;
-                        Message fms = onChangeHandler.obtainMessage(MSG_WHAT_PLUGIN_CHANGED, plugin.getTrackId(), plugin.getPluginId(), plsargs);
+                        Message fms = onChangeHandler.obtainMessage(MSG_WHAT_PLUGIN_CHANGED, currentPlugin.getTrackId(), currentPlugin.getPluginId(), plsargs);
                         onChangeHandler.sendMessage(fms );
                     }
                     break;
@@ -327,16 +318,16 @@ public class PluginLayout extends LinearLayout implements View.OnClickListener  
     public void onClick(View v) {
         switch((String)v.getTag()) {
             case "resetPlugin":
-                onChangeHandler.sendMessage(onChangeHandler.obtainMessage(MSG_WHAT_PLUGIN_RESET, plugin.getTrackId(), plugin.getPluginId()) );
+                onChangeHandler.sendMessage(onChangeHandler.obtainMessage(MSG_WHAT_PLUGIN_RESET, currentPlugin.getTrackId(), currentPlugin.getPluginId()) );
                 break;
             case "pluginTitle":
                 this.removeAllViews();
-                this.initLayout(false, plugins);
-                if(plugin.getPluginId() == plugins.size()-1) {
+                this.initLayout(false, track);
+                if(currentPlugin.getPluginId() == track.pluginDescriptors.size()) {
                     onChangeHandler.sendMessage(onChangeHandler.obtainMessage(MSG_WHAT_PLUGIN_REQUEST, getId(), 0));
                 }
                 else {
-                    onChangeHandler.sendMessage(onChangeHandler.obtainMessage(MSG_WHAT_PLUGIN_REQUEST, getId(), plugin.getPluginId()+1));
+                    onChangeHandler.sendMessage(onChangeHandler.obtainMessage(MSG_WHAT_PLUGIN_REQUEST, getId(), currentPlugin.getPluginId()));
                 }
                 break;
             case "close":
@@ -352,7 +343,7 @@ public class PluginLayout extends LinearLayout implements View.OnClickListener  
                 break;
 
             case "bypass":
-                onChangeHandler.sendMessage(onChangeHandler.obtainMessage(MSG_WHAT_PLUGIN_ENABLE, getId(), plugin.getPluginId(), !ttbBypass.getToggleState() ? 1 : 0));
+                onChangeHandler.sendMessage(onChangeHandler.obtainMessage(MSG_WHAT_PLUGIN_ENABLE, getId(), currentPlugin.getPluginId(), !ttbBypass.getToggleState() ? 1 : 0));
                 break;
 
             default:

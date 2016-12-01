@@ -22,7 +22,6 @@ public  class ArdourPlugin {
     public ArdourPlugin() {}
 
     public ArdourPlugin(int trackId, int pluginId, int enabled) {
-        this.name = name;
         this.trackId = trackId;
         this.pluginId = pluginId;
         this.enabled = enabled == 1 ? true : false;
@@ -51,6 +50,10 @@ public  class ArdourPlugin {
 
     public int getPluginId() {
         return pluginId;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
 

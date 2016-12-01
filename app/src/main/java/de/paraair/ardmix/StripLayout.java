@@ -19,7 +19,7 @@ public class StripLayout extends LinearLayout {
     public static final int MSG_WHAT_RECEIVE_CHANGED = 26;
     public static final int MSG_WHAT_PAN_CHANGED = 27;
 
-    public static final int STRIP_WIDTH = 60;
+    public static final int STRIP_WIDTH = 72;
 
     private Track track;
     private TextView tvStripName;
@@ -59,7 +59,7 @@ public class StripLayout extends LinearLayout {
 
         LayoutParams switchLP = new LayoutParams(
                 LayoutParams.WRAP_CONTENT,
-                26);
+                32);
         switchLP.setMargins(1,1,1,1);
 
         LayoutParams testLP = new LayoutParams(

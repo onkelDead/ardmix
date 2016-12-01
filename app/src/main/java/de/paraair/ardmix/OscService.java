@@ -967,11 +967,6 @@ public class OscService {
     Track getTrack(int remoteId) {
 		if (remoteId-1 < routes.size())
 			return routes.get(remoteId-1);
-//        for (Track i : routes
-//             ) {
-//            if(i.remoteId == remoteId)
-//                return i;
-//        }
         return null;
     }
 
@@ -1059,7 +1054,7 @@ public class OscService {
 		Object[] args = new Object[4];
 		args[0] = pluginTrack.remoteId;
 		args[1] = pid;
-		args[2] = ppid;
+		args[2] = ppid+1;
 		args[3] = val;
 
 		this.sendOSCMessage("/strip/plugin/parameter", args);

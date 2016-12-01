@@ -76,8 +76,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private LinearLayout llStripList;
     private List<StripLayout> strips = new ArrayList<>();
 
-    // key/value array to store strips plugins temporaily. Used to display Plugin Layout per strip
-//    public HashMap<Integer, String> plugins = new HashMap<>();
+    // key/value array to store strips pluginDescriptors temporaily. Used to display Plugin Layout per strip
+//    public HashMap<Integer, String> pluginDescriptors = new HashMap<>();
 
     // some layouts for Sends, Receives, Panning, FX may be get more
     private int iAuxLayout = -1;
@@ -725,37 +725,41 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 case MSG_WHAT_PLUGIN_LIST:
                     Object plargs[] = (Object[]) msg.obj;
                     Track track = oscService.getTrack((int)plargs[0]);
-                    track.plugins.clear();
+                    track.pluginDescriptors.clear();
                     for( int pli = 1; pli < plargs.length; pli+=2 ) {
-                        track.plugins.put((int)plargs[pli], (String)plargs[pli+1]);
+                        track.addPlugin((int)plargs[pli], (String)plargs[pli+1]);
                     }
                     showPluginLayout(track);
                     break;
 
                 case MSG_WHAT_PLUGIN_DESCRIPTOR:
                     Object pdargs[] = (Object[]) msg.obj;
+                    int stripIndex = (int)pdargs[0];
+                    int pluginId = (int)pdargs[1];
+                    Track t = oscService.getTrack(stripIndex);
 
-                    ArdourPlugin pluginDes = new ArdourPlugin((int)pdargs[0], (int)pdargs[1], (int)pdargs[2]);
+                    if( t != null ) {
+                        ArdourPlugin pluginDes = t.getPluginDescriptor(pluginId);
+                        pluginDes.getParameters().clear();
+                        for (int pi = 3; pi < pdargs.length; pi += 9) {
+                            ArdourPlugin.InputParameter parameter = new ArdourPlugin.InputParameter((int) pdargs[pi], (String) pdargs[pi + 1]);
 
-                    for( int pi = 3; pi < pdargs.length; pi+=9 ) {
-                        ArdourPlugin.InputParameter parameter = new ArdourPlugin.InputParameter((int)pdargs[pi], (String)pdargs[pi+1]);
-
-                        parameter.flags = (int)pdargs[pi+2];
-                        parameter.type = (String)pdargs[pi+3];
-                        parameter.min = (float)pdargs[pi+4];
-                        parameter.max = (float)pdargs[pi+5];
-                        parameter.print_fmt = (String) pdargs[pi+6];
-                        parameter.scaleSize = (int)pdargs[pi+7];
-                        for( int spi = 0; spi < parameter.scaleSize; spi++ ) {
-                            parameter.addScalePoint((float)pdargs[pi+8], (String)pdargs[pi+9]);
-                            pi+=2;
+                            parameter.flags = (int) pdargs[pi + 2];
+                            parameter.type = (String) pdargs[pi + 3];
+                            parameter.min = (float) pdargs[pi + 4];
+                            parameter.max = (float) pdargs[pi + 5];
+                            parameter.print_fmt = (String) pdargs[pi + 6];
+                            parameter.scaleSize = (int) pdargs[pi + 7];
+                            for (int spi = 0; spi < parameter.scaleSize; spi++) {
+                                parameter.addScalePoint((float) pdargs[pi + 8], (String) pdargs[pi + 9]);
+                                pi += 2;
+                            }
+                            parameter.current = (float) pdargs[pi + 8];
+                            pluginDes.addParameter(parameter);
                         }
-                        parameter.current = (float)pdargs[pi+8];
-                        pluginDes.addParameter(parameter);
+
+                        showPlugin(pluginId, true);
                     }
-
-                    showPlugin(pluginDes, true);
-
                     break;
 
                 case MSG_WHAT_UPDATE_CLOCK:
@@ -923,7 +927,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             _bank.button.setPadding(0,0,0,0);
             _bank.button.setAllText(_bank.getName());
             _bank.button.setTag(iBankIndex);
-            _bank.button.setId(bankId + iBankIndex);
+            _bank.button.setId(bankId + iBankIndex + 1);
             _bank.button.setOnClickListener(this);
             _bank.button.setOnLongClickListener(this);
             _bank.button.setAutoToggle(true);
@@ -939,7 +943,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ttbAddBank.setLayoutParams(bankLP);
         ttbAddBank.setPadding(0,0,0,0);
         ttbAddBank.setAllText("+");
-        ttbAddBank.setId(bankId + banks.size());
+        ttbAddBank.setId(bankId + 0);
         ttbAddBank.setOnClickListener(this);
         ttbAddBank.setAutoToggle(false);
         ttbAddBank.setToggleState(false);
@@ -1027,14 +1031,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
 
             default:
-                int i = v.getId();
+                int i = v.getId() ;
 
-                if (i >= bankId && i < bankId + banks.size() ) {
-                    showBank((int)v.getTag());
+                if (i - 1 >= bankId && i - 1 < bankId + banks.size() ) {
+                    showBank((int)v.getTag() );
                     break;
                 }
 
-                if( i == bankId + banks.size()) {
+                if( i == bankId ) {
                     newBank();
                     break;
                 }
@@ -1264,8 +1268,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void showPluginLayout(Track track) {
-        pluginLayout.initLayout(true, track.plugins);
-        if( track.plugins.size() == 0)
+        pluginLayout.initLayout(true, track);
+        if( track.pluginDescriptors.size() == 0)
             forceVisible(pluginLayout);
     }
 
@@ -1282,14 +1286,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         });
     }
 
-    private void showPlugin(ArdourPlugin pluginDes, boolean bState) {
+    private void showPlugin(int pluginId, boolean bState) {
 
         if( bState ) {
             if( pluginLayout == null )
                 resetLayouts();
             else {
-                pluginLayout.init(oscService.getTrack(pluginDes.getTrackId()), pluginDes);
-                pluginLayout.setTag(pluginDes);
+                pluginLayout.init(pluginId);
+//                pluginLayout.setTag(pluginDes);
             }
             forceVisible(pluginLayout);
         }
