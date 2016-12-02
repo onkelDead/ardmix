@@ -1054,7 +1054,7 @@ public class OscService {
 		Object[] args = new Object[4];
 		args[0] = pluginTrack.remoteId;
 		args[1] = pid;
-		args[2] = ppid+1;
+		args[2] = ppid;
 		args[3] = val;
 
 		this.sendOSCMessage("/strip/plugin/parameter", args);

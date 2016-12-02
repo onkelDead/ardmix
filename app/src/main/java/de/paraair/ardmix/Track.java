@@ -57,7 +57,7 @@ public class Track extends Fader {
 	}
 
 	public ArdourPlugin getPluginDescriptor(int pluginIndex) {
-		return pluginDescriptors.get(pluginIndex + 1);
+		return pluginDescriptors.get(pluginIndex );
 	}
 
 

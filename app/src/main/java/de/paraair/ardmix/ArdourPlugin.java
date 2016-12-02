@@ -65,7 +65,7 @@ public  class ArdourPlugin {
         int flags;
         float min;
         float max;
-        float current;
+        double current;
         String print_fmt;
         int scaleSize;
 

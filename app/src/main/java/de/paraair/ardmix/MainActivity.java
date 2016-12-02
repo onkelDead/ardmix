@@ -76,9 +76,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private LinearLayout llStripList;
     private List<StripLayout> strips = new ArrayList<>();
 
-    // key/value array to store strips pluginDescriptors temporaily. Used to display Plugin Layout per strip
-//    public HashMap<Integer, String> pluginDescriptors = new HashMap<>();
-
     // some layouts for Sends, Receives, Panning, FX may be get more
     private int iAuxLayout = -1;
     private int iReceiveLayout = -1;
@@ -553,7 +550,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     Track pluginTrack = oscService.getTrack( msg.arg1 );
                     if( pluginTrack != null ) {
                         Object[] plargs = (Object[]) msg.obj;
-                        oscService.pluginFaderAction(pluginTrack, msg.arg2, (int) plargs[0], (float) plargs[1]);
+                        oscService.pluginFaderAction(pluginTrack, msg.arg2, (int) plargs[0], (double) plargs[1]);
                     }
                     break;
 
@@ -754,7 +751,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 parameter.addScalePoint((float) pdargs[pi + 8], (String) pdargs[pi + 9]);
                                 pi += 2;
                             }
-                            parameter.current = (float) pdargs[pi + 8];
+                            parameter.current = (double) pdargs[pi + 8];
                             pluginDes.addParameter(parameter);
                         }
 
@@ -1024,11 +1021,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
                 break;
 
-            case R.id.bankSelectOk:
-                EditText bankName = (EditText) stripSelect.getChildAt(0);
-                selectBank.setName(bankName.getText().toString());
-                llStripList.removeView(stripSelect);
-                break;
+//            case R.id.bankSelectOk:
+//                EditText bankName = (EditText) stripSelect.getChildAt(0);
+//                selectBank.setName(bankName.getText().toString());
+//                llStripList.removeView(stripSelect);
+//                break;
 
             default:
                 int i = v.getId() ;

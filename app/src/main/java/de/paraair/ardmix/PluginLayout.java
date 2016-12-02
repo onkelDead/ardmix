@@ -14,6 +14,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -131,7 +132,7 @@ public class PluginLayout extends LinearLayout implements View.OnClickListener  
         addView(btnLayout);
 
         if( inlude_request) {
-            Message fm = onChangeHandler.obtainMessage(MSG_WHAT_PLUGIN_REQUEST, getId(), 0);
+            Message fm = onChangeHandler.obtainMessage(MSG_WHAT_PLUGIN_REQUEST, getId(), 1);
             onChangeHandler.sendMessage(fm);
         }
 
@@ -146,6 +147,15 @@ public class PluginLayout extends LinearLayout implements View.OnClickListener  
         ttbBypass.setToggleState(!currentPlugin.enabled);
         int pi = 0;
 
+        ScrollView scrollView = new ScrollView(context);
+        scrollView.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+        scrollView.setFillViewport(true);
+        addView(scrollView);
+        LinearLayout scroller = new LinearLayout(context);
+        scroller.setOrientation(VERTICAL);
+        scroller.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+
+        scrollView.addView(scroller);
 
         for(ArdourPlugin.InputParameter parameter: currentPlugin.getParameters()) {
             if( (parameter.flags & 0x80) == 0x80 && (parameter.flags & 0x100) != 0x100) {
@@ -211,7 +221,7 @@ public class PluginLayout extends LinearLayout implements View.OnClickListener  
                     parameterValue.setTag(pi);
                     pLayout.addView(parameterValue);
                 }
-                addView(pLayout);
+                scroller.addView(pLayout);
 
             }
             else {
@@ -324,10 +334,10 @@ public class PluginLayout extends LinearLayout implements View.OnClickListener  
                 this.removeAllViews();
                 this.initLayout(false, track);
                 if(currentPlugin.getPluginId() == track.pluginDescriptors.size()) {
-                    onChangeHandler.sendMessage(onChangeHandler.obtainMessage(MSG_WHAT_PLUGIN_REQUEST, getId(), 0));
+                    onChangeHandler.sendMessage(onChangeHandler.obtainMessage(MSG_WHAT_PLUGIN_REQUEST, getId(), 1));
                 }
                 else {
-                    onChangeHandler.sendMessage(onChangeHandler.obtainMessage(MSG_WHAT_PLUGIN_REQUEST, getId(), currentPlugin.getPluginId()));
+                    onChangeHandler.sendMessage(onChangeHandler.obtainMessage(MSG_WHAT_PLUGIN_REQUEST, getId(), currentPlugin.getPluginId() + 1));
                 }
                 break;
             case "close":
