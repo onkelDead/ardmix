@@ -62,7 +62,7 @@ public class StripElementMask {
 
     }
 
-    public void loadSetting(SharedPreferences settings) {
+    public void loadSettings(SharedPreferences settings) {
         bTitle = settings.getBoolean("mskTitle", true);
         bFX = settings.getBoolean("mskFx", true);
         bSend = settings.getBoolean("mskSend", true);
@@ -78,6 +78,22 @@ public class StripElementMask {
         bFader = settings.getBoolean("mskFader", true);
 
         stripSize = settings.getInt("strip_wide", 1);
+
+    }
+
+    public void saveSettings(SharedPreferences.Editor editor) {
+        editor.putBoolean("mskTitle", bTitle);
+        editor.putBoolean("mskMeter", bMeter);
+        editor.putBoolean("mskFX", bFX);
+        editor.putBoolean("mskSend", bSend);
+        editor.putBoolean("mskRecord", bRecord);
+        editor.putBoolean("mskInput", bInput);
+        editor.putBoolean("mskSolo", bSolo);
+        editor.putBoolean("mskSoloIso", bSoloIso);
+        editor.putBoolean("mskSoloSafe", bSoloSafe);
+        editor.putBoolean("mskMute", bMute);
+
+        editor.putInt("strip_wide", stripSize);
 
     }
 }

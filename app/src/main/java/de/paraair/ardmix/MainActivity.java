@@ -124,7 +124,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         bankSize = settings.getInt("bankSize", 8);
         useSendsLayout = settings.getBoolean("useSendsLayout", false);
 
-        stripElementMask.loadSetting(settings);
+        stripElementMask.loadSettings(settings);
 
 
         mainSroller = (HorizontalScrollView) findViewById(R.id.main_scoller);
@@ -831,10 +831,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         final StripLayout stripLayout = new StripLayout(this, t);
         LinearLayout.LayoutParams stripLP = new LinearLayout.LayoutParams(
-                StripLayout.STRIP_SMALL_WIDTH,
+                LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.MATCH_PARENT);
         if( t.type == Track.TrackType.MASTER ) {
             masterStrip = stripLayout;
+            int strip_wide = StripLayout.STRIP_SMALL_WIDTH;
+            if( stripElementMask.stripSize == 1)
+                strip_wide = StripLayout.STRIP_MEDIUM_WIDTH;
+            else if( stripElementMask.stripSize == 2 )
+                strip_wide = StripLayout.STRIP_WIDE_WIDTH;
+            llMaster.getLayoutParams().width = strip_wide;
             llMaster.addView(masterStrip);
             stripLP.weight = 1;
         }
@@ -1513,18 +1519,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         SharedPreferences settings = getSharedPreferences(TAG, 0);
         SharedPreferences.Editor editor = settings.edit();
 
-        editor.putBoolean("mskTitle", stripElementMask.bTitle);
-        editor.putBoolean("mskMeter", stripElementMask.bMeter);
-        editor.putBoolean("mskFX", stripElementMask.bFX);
-        editor.putBoolean("mskSend", stripElementMask.bSend);
-        editor.putBoolean("mskRecord", stripElementMask.bRecord);
-        editor.putBoolean("mskInput", stripElementMask.bInput);
-        editor.putBoolean("mskSolo", stripElementMask.bSolo);
-        editor.putBoolean("mskSoloIso", stripElementMask.bSoloIso);
-        editor.putBoolean("mskSoloSafe", stripElementMask.bSoloSafe);
-        editor.putBoolean("mskMute", stripElementMask.bMute);
+        stripElementMask.saveSettings(editor);
 
-        editor.putInt("strip_wide", stripElementMask.stripSize);
 
         editor.commit();
     }

@@ -586,6 +586,8 @@ public class StripLayout extends LinearLayout {
             setBackgroundColor(getResources().getColor(R.color.VeryDark, null));
         if( track.type == Track.TrackType.BUS)
             setBackgroundColor(0x200000FF);
+        if( track.type == Track.TrackType.MASTER)
+            setBackgroundColor(getResources().getColor(R.color.VeryDark, null));
     }
 
 
