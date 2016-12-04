@@ -18,7 +18,6 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -445,13 +444,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         oscService.setHost(oscHost);
         oscService.setPort(oscPort);
 
-        llStripList.removeAllViews();
-        strips.clear();
+        stopConnectionToArdour();
 
-
-        if (oscService.isConnected()){
-            oscService.disconnect();
-        }
         oscService.connect();
 
         oscService.initSurfaceFeedback1();
@@ -478,7 +472,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     blinker.doBlink();
                     break;
 
-                case StripLayout.MSG_WHAT_FADER_CHANGED:
+                case StripLayout.STRIP_FADER_CHANGED:
                     _track = oscService.getTrack(msg.arg1 );
                     if ( iAuxLayout == msg.arg1) {
                         for( StripLayout _sl: strips) {
@@ -496,11 +490,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     }
                     break;
 
-                case SendsLayout.MSG_WHAT_RESET_LAYOUT:
+                case SendsLayout.RESET_LAYOUT:
                     resetLayouts();
                     break;
 
-                case SendsLayout.MSG_WHAT_NEXT_SEND_LAYOUT:
+                case SendsLayout.NEXT_SEND_LAYOUT:
                     int nl = currentBank.getStripPosition(iSendsLayout);
                     if( nl++ < currentBank.getStrips().size()-1 ) {
                         resetLayouts();
@@ -508,7 +502,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     }
                     break;
 
-                case SendsLayout.MSG_WHAT_PREV_SEND_LAYOUT:
+                case SendsLayout.PREV_SEND_LAYOUT:
                     int pl = currentBank.getStripPosition(iSendsLayout);
                     if( pl-- > 0) {
                         resetLayouts();
@@ -516,37 +510,37 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     }
                     break;
 
-                case SendsLayout.MSG_WHAT_SEND_CHANGED:
+                case SendsLayout.SEND_CHANGED:
                     Track sendTrack =    oscService.getTrack(msg.arg1 + 1);
                     if (sendTrack != null)
                         oscService.trackSendAction(OscService.SEND_CHANGED, sendTrack, msg.arg2, (int)msg.obj );
                     break;
 
-                case SendsLayout.MSG_WHAT_SEND_ENABLED:
+                case SendsLayout.SEND_ENABLED:
                     Track sendEnableTrack =    oscService.getTrack(msg.arg1 + 1);
                     if (sendEnableTrack != null)
                         oscService.trackSendAction(OscService.SEND_ENABLED, sendEnableTrack, msg.arg2, (boolean)msg.obj ? 1 : 0 );
                     break;
 
-                case StripLayout.MSG_WHAT_AUX_CHANGED:
+                case StripLayout.AUX_CHANGED:
                     Track auxTrack =    oscService.getTrack(msg.arg1 );
                     if (auxTrack != null)
                         oscService.trackListAction(OscService.AUX_CHANGED, auxTrack );
                     break;
 
-                case StripLayout.MSG_WHAT_RECEIVE_CHANGED:
+                case StripLayout.RECEIVE_CHANGED:
                     Track receiveTrack = oscService.getTrack(iAuxLayout);
                     if (receiveTrack != null)
                         oscService.recvListVolumeAction( receiveTrack, msg.arg1 );
                     break;
 
-                case StripLayout.MSG_WHAT_PAN_CHANGED:
+                case StripLayout.PAN_CHANGED:
                     Track panTrack = oscService.getTrack(iPanLayout);
                     if (panTrack != null)
                         oscService.panAction( panTrack, msg.arg1 );
                     break;
 
-                case PluginLayout.MSG_WHAT_PLUGIN_CHANGED:
+                case PluginLayout.PLUGIN_PARAMETER_CHANGED:
                     Track pluginTrack = oscService.getTrack( msg.arg1 );
                     if( pluginTrack != null ) {
                         Object[] plargs = (Object[]) msg.obj;
@@ -554,18 +548,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     }
                     break;
 
-                case PluginLayout.MSG_WHAT_PLUGIN_REQUEST:
+                case PluginLayout.PLUGIN_DESCRIPTOR_REQUEST:
                     oscService.requestPlugin(msg.arg1, msg.arg2);
                     break;
 
-                case PluginLayout.MSG_WHAT_PLUGIN_ENABLE:
+                case PluginLayout.PLUGIN_BYPASS:
                     Track pluginTrack2 = oscService.getTrack( msg.arg1 );
                     if( pluginTrack2 != null ) {
                         oscService.pluginEnable(pluginTrack2, msg.arg2, (int) msg.obj == 1 );
                     }
                     break;
 
-                case PluginLayout.MSG_WHAT_PLUGIN_RESET:
+                case PluginLayout.PLUGIN_RESET:
                     Track pluginTrack1 = oscService.getTrack( msg.arg1 );
                     if( pluginTrack1 != null ) {
                         oscService.pluginAction(OscService.PLUGIN_RESET, pluginTrack1, msg.arg2 );
@@ -573,14 +567,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     }
                     break;
 
-                case PluginLayout.MSG_WHAT_PLUGIN_NEXT:
+                case PluginLayout.PLUGIN_NEXT:
                     int np = currentBank.getStripPosition(iPluginLayout);
                     if( np++ < currentBank.getStrips().size()-1 ) {
                         enablePluginLayout(currentBank.getStrips().get(np).id, true);
                     }
                     break;
 
-                case PluginLayout.MSG_WHAT_PLUGIN_PREV:
+                case PluginLayout.PLUGIN_PREV:
                     int pp = currentBank.getStripPosition(iPluginLayout);
                     if( pp-- > 0) {
                         enablePluginLayout(currentBank.getStrips().get(pp).id, true);
@@ -588,62 +582,68 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     break;
 
 
-                case MSG_WHAT_FRAMERATE:
+                case OSC_FRAMERATE:
                     frameRate = (Long) msg.obj;
                     break;
 
-                case MSG_WHAT_MAXFRAMES:
+                case OSC_MAXFRAMES:
                     maxFrame = (Long) msg.obj;
                     break;
 
-                case MSG_WHAT_STRIPLIST:
+                case OSC_STRIPLIST:
 
                     updateStripList();
                     oscService.initSurfaceFeedback2();
 
                     break;
 
-                case MSG_WHAT_NEWSTRIP:
+                case OSC_NEWSTRIP:
                     addStrip((Track)msg.obj);
                     break;
 
-                case MSG_WHAT_STRIP_NAME:
+                case OSC_STRIP_NAME:
                     iRemoteId = msg.arg1;
                     if( strips.size() > iRemoteId )
                         getStripLayout(iRemoteId).nameChanged();
                     break;
 
-                case MSG_WHAT_STRIP_REC:
+                case OSC_STRIP_REC:
                     iRemoteId = msg.arg1;
                     if (strips.size() > iRemoteId)
                         getStripLayout(iRemoteId).recChanged();
                     break;
 
-                case MSG_WHAT_STRIP_MUTE:
+                case OSC_STRIP_MUTE:
                     iRemoteId = msg.arg1;
-                    if (strips.size() > iRemoteId)
+                    if (strips.size() > iRemoteId-1)
                         getStripLayout(iRemoteId).muteChanged();
                     break;
 
-                case MSG_WHAT_STRIP_SOLO:
+                case OSC_STRIP_SOLO:
                     iRemoteId = msg.arg1;
                     if (strips.size() > iRemoteId)
                         getStripLayout(iRemoteId).soloChanged();
                     break;
 
-                case MSG_WHAT_STRIP_PAN:
+                case OSC_STRIP_SOLOSAFE:
+                    iRemoteId = msg.arg1;
+                    if (strips.size() > iRemoteId)
+                        getStripLayout(iRemoteId).soloSafeChanged();
+                    break;
+
+                case OSC_STRIP_PAN:
                     iRemoteId = msg.arg1;
                     if (strips.size() > iRemoteId)
                         getStripLayout(iRemoteId).panChanged();
                     break;
 
-                case MSG_WHAT_STRIP_VOLUME:
+                case OSC_STRIP_FADER:
                     iRemoteId = msg.arg1;
                     if (strips.size() > iRemoteId-1)
                         getStripLayout(iRemoteId).volumeChanged();
                     break;
 
-                case MSG_WHAT_STRIP_RECEIVES:
+                case OSC_STRIP_RECEIVES:
                     Object args[] = (Object[]) msg.obj;
 
                     for( int i = 0; i < args.length; i+=5 ) {
@@ -654,7 +654,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     }
                     break;
 
-                case MSG_WHAT_STRIP_SELECT:
+                case OSC_STRIP_SELECT:
                     if( msg.arg2  == 1 ) {
                         iSelectStrip = msg.arg1;
                     }
@@ -663,7 +663,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     }
                     break;
 
-                case MSG_WHAT_STRIP_SENDS:
+                case OSC_STRIP_SENDS:
                     iRemoteId = msg.arg1;
                     Object sargs[] = (Object[]) msg.obj;
 
@@ -687,21 +687,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     }
                     break;
 
-                case MSG_WHAT_STRIP_SEND_FADER:
+                case OSC_SELECT_SEND_FADER:
                     if( sendsLayout != null && iSelectStrip == iSendsLayout  ) {
                         Object sfargs[] = (Object[]) msg.obj;
                         sendsLayout.sendChanged((int)sfargs[0], (float) sfargs[1]);
                     }
                     break;
 
-                case MSG_WHAT_STRIP_SEND_ENABLE:
+                case OSC_SELECT_SEND_ENABLE:
                     if( sendsLayout != null && iSelectStrip == iSendsLayout  ) {
                         Object sfargs[] = (Object[]) msg.obj;
                         sendsLayout.sendEnable((int)sfargs[0], (float) sfargs[1]);
                     }
                     break;
 
-                case MSG_WHAT_STRIP_SEND_NAME:
+                case OSC_SELECT_SEND_NAME:
                     if( sendsLayout != null && iSelectStrip == iSendsLayout ) {
                         String newName = (String) msg.obj;
                         if( !newName.equals(" ") )
@@ -710,7 +710,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     break;
 
 
-                case MSG_WHAT_STRIP_METER:
+                case OSC_STRIP_METER:
                     iRemoteId = msg.arg1;
                     _StripLayout = getStripLayout(iRemoteId);
                     if ( _StripLayout!= null ) {
@@ -719,7 +719,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     }
                     break;
 
-                case MSG_WHAT_PLUGIN_LIST:
+                case OSC_PLUGIN_LIST:
                     Object plargs[] = (Object[]) msg.obj;
                     Track track = oscService.getTrack((int)plargs[0]);
                     track.pluginDescriptors.clear();
@@ -729,7 +729,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     showPluginLayout(track);
                     break;
 
-                case MSG_WHAT_PLUGIN_DESCRIPTOR:
+                case OSC_PLUGIN_DESCRIPTOR:
                     Object pdargs[] = (Object[]) msg.obj;
                     int stripIndex = (int)pdargs[0];
                     int pluginId = (int)pdargs[1];
@@ -738,6 +738,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     if( t != null ) {
                         ArdourPlugin pluginDes = t.getPluginDescriptor(pluginId);
                         pluginDes.getParameters().clear();
+                        pluginDes.enabled = ((int)pdargs[2] == 1);
                         for (int pi = 3; pi < pdargs.length; pi += 9) {
                             ArdourPlugin.InputParameter parameter = new ArdourPlugin.InputParameter((int) pdargs[pi], (String) pdargs[pi + 1]);
 
@@ -759,7 +760,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     }
                     break;
 
-                case MSG_WHAT_UPDATE_CLOCK:
+                case OSC_UPDATE_CLOCK:
                     long clock = (long)msg.obj;
 
                     if( transportState == (transportState & RECORD_ENABLED)) {
@@ -769,7 +770,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     sbLocation.refreshDrawableState();
                     break;
 
-                case MSG_WHAT_RECORD:
+                case OSC_RECORD:
                     if( msg.arg1 == 1 ) {
                         transportState = (byte) (transportState | RECORD_ENABLED);
                         recordButton.setToggleState(true, true);
@@ -779,7 +780,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         recordButton.setToggleState(false, false);
                     }
                     break;
-                case MSG_WHAT_PLAY:
+                case OSC_PLAY:
                     if( msg.arg1 == 1 ) {
                         if (RECORD_ENABLED == (RECORD_ENABLED & transportState)) {
                             transportState = TRANSPORT_RUNNING | RECORD_ENABLED;
@@ -802,7 +803,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     }
                     break;
 
-                case MSG_WHAT_STOP:
+                case OSC_STOP:
                     if( msg.arg1 == 1 ) {
                         transportState = 0;
                     }
@@ -1334,6 +1335,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         settingsBundle.putBoolean("stripMute", t.muteEnabled);
         settingsBundle.putBoolean("stripSolo", t.soloEnabled);
+        settingsBundle.putBoolean("stripSoloIso", t.soloIsolateEnabled);
+        settingsBundle.putBoolean("stripSoloSafe", t.soloSafeEnabled);
 
 
         dfStripSetting.setArguments(settingsBundle);
@@ -1347,7 +1350,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return null;
     }
 
-    public void onStripDlg(int iStripIndex, String strName, boolean bStripIn, boolean bRecord, boolean bMute, boolean bSolo) {
+    public void onStripDlg(int iStripIndex, String strName, boolean bStripIn, boolean bRecord, boolean bMute, boolean bSolo, boolean bSoloIso, boolean bSoloSafe) {
         Track t = oscService.getTrack(iStripIndex);
         t.name = strName;
         oscService.trackListAction(OscService.NAME_CHANGED, oscService.getTrack(iStripIndex));
@@ -1359,6 +1362,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             oscService.trackListAction(OscService.MUTE_CHANGED, oscService.getTrack(iStripIndex));
         if(t.soloEnabled != bSolo)
             oscService.trackListAction(OscService.SOLO_CHANGED, oscService.getTrack(iStripIndex));
+        if(t.soloIsolateEnabled != bSoloIso)
+            oscService.trackListAction(OscService.SOLO_ISOLATE_CHANGED, oscService.getTrack(iStripIndex));
+        if(t.soloSafeEnabled != bSoloSafe)
+            oscService.trackListAction(OscService.SOLO_SAFE_CHANGED, oscService.getTrack(iStripIndex));
     }
 
     public void onBankDlg(int iBankIndex, Bank bank) {

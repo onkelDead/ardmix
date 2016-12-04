@@ -14,12 +14,12 @@ import android.widget.TextView;
 
 public class StripLayout extends LinearLayout {
 
-    public static final int MSG_WHAT_FADER_CHANGED = 20;
-    public static final int MSG_WHAT_AUX_CHANGED = 25;
-    public static final int MSG_WHAT_RECEIVE_CHANGED = 26;
-    public static final int MSG_WHAT_PAN_CHANGED = 27;
+    public static final int STRIP_FADER_CHANGED = 20;
+    public static final int AUX_CHANGED = 25;
+    public static final int RECEIVE_CHANGED = 26;
+    public static final int PAN_CHANGED = 27;
 
-    public static final int STRIP_WIDTH = 72;
+    public static final int STRIP_WIDTH = 56;
 
     private Track track;
     private TextView tvStripName;
@@ -242,6 +242,13 @@ public class StripLayout extends LinearLayout {
         ttbSolo.setToggleState(track.soloEnabled);
     }
 
+    public void soloSafeChanged() {
+        if( track.soloSafeEnabled)
+            ttbSolo.setEnabled(false);
+        else
+            ttbSolo.setEnabled(true);
+    }
+
     public void panChanged() {
         if( showtype == Track.TrackType.PAN)
             fwVolume.setProgress((int) (track.panPosition * 1000));
@@ -279,19 +286,19 @@ public class StripLayout extends LinearLayout {
                 case 20:
                     if(showtype == Track.TrackType.RECEIVE) {
                         track.trackVolume = msg.arg2;
-                        onChangeHandler.sendMessage(onChangeHandler.obtainMessage(MSG_WHAT_RECEIVE_CHANGED, msg.arg1, track.trackVolume));
+                        onChangeHandler.sendMessage(onChangeHandler.obtainMessage(RECEIVE_CHANGED, msg.arg1, track.trackVolume));
                     }
                     else if(showtype == Track.TrackType.SEND) {
                         track.trackVolume = msg.arg2;
-                        onChangeHandler.sendMessage(onChangeHandler.obtainMessage(MSG_WHAT_AUX_CHANGED, msg.arg1, track.trackVolume));
+                        onChangeHandler.sendMessage(onChangeHandler.obtainMessage(AUX_CHANGED, msg.arg1, track.trackVolume));
                     }
                     else if(showtype == Track.TrackType.PAN) {
                         track.panPosition = (float)msg.arg2 / 1000;
-                        onChangeHandler.sendMessage(onChangeHandler.obtainMessage(MSG_WHAT_PAN_CHANGED, msg.arg1, msg.arg2));
+                        onChangeHandler.sendMessage(onChangeHandler.obtainMessage(PAN_CHANGED, msg.arg1, msg.arg2));
                     }
                     else {
                         track.trackVolume = msg.arg2;
-                        onChangeHandler.sendMessage(onChangeHandler.obtainMessage(MSG_WHAT_FADER_CHANGED, msg.arg1, track.trackVolume));
+                        onChangeHandler.sendMessage(onChangeHandler.obtainMessage(STRIP_FADER_CHANGED, msg.arg1, track.trackVolume));
                     }
                     break;
                 case 30:
@@ -417,7 +424,7 @@ public class StripLayout extends LinearLayout {
         if(track.trackVolume < 0)
             track.trackVolume = 0;
         volumeChanged();
-        onChangeHandler.sendMessage(onChangeHandler.obtainMessage(MSG_WHAT_RECEIVE_CHANGED, track.remoteId, track.trackVolume));
+        onChangeHandler.sendMessage(onChangeHandler.obtainMessage(RECEIVE_CHANGED, track.remoteId, track.trackVolume));
     }
 
     public void resetBackground() {
@@ -426,4 +433,6 @@ public class StripLayout extends LinearLayout {
         if( track.type == Track.TrackType.BUS)
             setBackgroundColor(0x200000FF);
     }
+
+
 }

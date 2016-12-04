@@ -20,11 +20,11 @@ import static android.widget.CompoundButton.*;
 
 public class SendsLayout extends LinearLayout implements OnClickListener {
 
-    public static final int MSG_WHAT_SEND_CHANGED = 98;
-    public static final int MSG_WHAT_SEND_ENABLED = 99;
-    public static final int MSG_WHAT_RESET_LAYOUT = 199;
-    public static final int MSG_WHAT_PREV_SEND_LAYOUT = 197;
-    public static final int MSG_WHAT_NEXT_SEND_LAYOUT = 198;
+    public static final int SEND_CHANGED = 98;
+    public static final int SEND_ENABLED = 99;
+    public static final int RESET_LAYOUT = 199;
+    public static final int PREV_SEND_LAYOUT = 197;
+    public static final int NEXT_SEND_LAYOUT = 198;
     private static final int NAVBUTTON_HEIGHT = 36;
     private Context context;
 
@@ -61,15 +61,15 @@ public class SendsLayout extends LinearLayout implements OnClickListener {
         Message msgButtonClick;
         switch(vTag) {
             case "close":
-                msgButtonClick = onChangeHandler.obtainMessage(MSG_WHAT_RESET_LAYOUT);
+                msgButtonClick = onChangeHandler.obtainMessage(RESET_LAYOUT);
                 onChangeHandler.sendMessage(msgButtonClick);
                 break;
             case "prev":
-                msgButtonClick = onChangeHandler.obtainMessage(MSG_WHAT_PREV_SEND_LAYOUT);
+                msgButtonClick = onChangeHandler.obtainMessage(PREV_SEND_LAYOUT);
                 onChangeHandler.sendMessage(msgButtonClick);
                 break;
             case "next":
-                msgButtonClick = onChangeHandler.obtainMessage(MSG_WHAT_NEXT_SEND_LAYOUT);
+                msgButtonClick = onChangeHandler.obtainMessage(NEXT_SEND_LAYOUT);
                 onChangeHandler.sendMessage(msgButtonClick);
                 break;
 
@@ -172,7 +172,7 @@ public class SendsLayout extends LinearLayout implements OnClickListener {
                     break;
                 case 20:
                     int pi = msg.arg1;
-                    Message fm = onChangeHandler.obtainMessage(MSG_WHAT_SEND_CHANGED, iStripIndex, pi, msg.arg2);
+                    Message fm = onChangeHandler.obtainMessage(SEND_CHANGED, iStripIndex, pi, msg.arg2);
                     onChangeHandler.sendMessage(fm);
                     break;
                 case 30:
@@ -222,7 +222,7 @@ public class SendsLayout extends LinearLayout implements OnClickListener {
         @Override
         public void onClick(View v) {
             ToggleTextButton tb = (ToggleTextButton)v;
-            Message fm = onChangeHandler.obtainMessage(MSG_WHAT_SEND_ENABLED, iStripIndex, tb.getId(), !tb.getToggleState());
+            Message fm = onChangeHandler.obtainMessage(SEND_ENABLED, iStripIndex, tb.getId(), !tb.getToggleState());
             onChangeHandler.sendMessage(fm);
         }
     };

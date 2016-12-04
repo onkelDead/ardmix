@@ -23,6 +23,8 @@ public class StripSettingDialogFragment extends DialogFragment {
     private CheckBox cbStripRecord;
     private CheckBox cbStripMute;
     private CheckBox cbStripSolo;
+    private CheckBox cbStripSoloIso;
+    private CheckBox cbStripSoloSafe;
 
     @NonNull
     @Override
@@ -40,7 +42,8 @@ public class StripSettingDialogFragment extends DialogFragment {
             public void onClick(DialogInterface dialog, int id) {
 
                 MainActivity callingActivity = (MainActivity) getActivity();
-                callingActivity.onStripDlg(stripIndex, txtStripName.getText().toString(), cbStripIn.isChecked(), cbStripRecord.isChecked(), cbStripMute.isChecked(), cbStripSolo.isChecked());
+                callingActivity.onStripDlg(stripIndex, txtStripName.getText().toString(), cbStripIn.isChecked(), cbStripRecord.isChecked(),
+                        cbStripMute.isChecked(), cbStripSolo.isChecked(), cbStripSoloIso.isChecked(), cbStripSoloSafe.isChecked());
             }
         });
         builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -74,6 +77,18 @@ public class StripSettingDialogFragment extends DialogFragment {
             cbStripSolo.setChecked(args.getBoolean("stripSolo"));
         else
             cbStripSolo.setEnabled(false);
+
+        cbStripSoloIso = (CheckBox) view.findViewById(R.id.sripsoloiso);
+        if (args.keySet().contains("stripSoloIso"))
+            cbStripSoloIso.setChecked(args.getBoolean("stripSoloIso"));
+        else
+            cbStripSoloIso.setEnabled(false);
+
+        cbStripSoloSafe = (CheckBox) view.findViewById(R.id.sripsolosafe);
+        if (args.keySet().contains("stripSoloSafe"))
+            cbStripSoloSafe.setChecked(args.getBoolean("stripSoloSafe"));
+        else
+            cbStripSoloSafe.setEnabled(false);
 
         stripIndex = args.getInt("stripIndex");
 

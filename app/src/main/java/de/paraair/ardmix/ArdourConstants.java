@@ -34,33 +34,35 @@ final class ArdourConstants {
 
 
     // Ardour msg.what values
-    public static final int MSG_WHAT_STRIP_NAME = 50;
-    public static final int MSG_WHAT_STRIP_REC = 60;
-    public static final int MSG_WHAT_STRIP_MUTE = 70;
-    public static final int MSG_WHAT_STRIP_SOLO = 80;
-    public static final int MSG_WHAT_STRIP_PAN = 100;
-    public static final int MSG_WHAT_MAXFRAMES = 400;
-    public static final int MSG_WHAT_FRAMERATE = 500;
-    public static final int MSG_WHAT_STRIPLIST = 1000;
-    public static final int MSG_WHAT_STRIP_VOLUME = 90;
+    public static final int OSC_STRIP_NAME = 50;
+    public static final int OSC_STRIP_REC = 60;
+    public static final int OSC_STRIP_MUTE = 70;
+    public static final int OSC_STRIP_SOLO = 80;
+    public static final int OSC_STRIP_SOLOISO = 81;
+    public static final int OSC_STRIP_SOLOSAFE = 82;
+    public static final int OSC_STRIP_PAN = 100;
+    public static final int OSC_MAXFRAMES = 400;
+    public static final int OSC_FRAMERATE = 500;
+    public static final int OSC_STRIPLIST = 1000;
+    public static final int OSC_STRIP_FADER = 90;
 
 
-    public static final int MSG_WHAT_UPDATE_CLOCK = 3000;
-    public static final int MSG_WHAT_RECORD = 3500;
-    public static final int MSG_WHAT_PLAY = 3600;
-    public static final int MSG_WHAT_STOP = 3700;
+    public static final int OSC_UPDATE_CLOCK = 3000;
+    public static final int OSC_RECORD = 3500;
+    public static final int OSC_PLAY = 3600;
+    public static final int OSC_STOP = 3700;
 
-    public static final int MSG_WHAT_STRIP_METER = 6000;
+    public static final int OSC_STRIP_METER = 6000;
 
-    public static final int MSG_WHAT_STRIP_SENDS = 7000;
-    public static final int MSG_WHAT_STRIP_SEND_FADER = 7500;
-    public static final int MSG_WHAT_STRIP_SEND_ENABLE = 7600;
+    public static final int OSC_STRIP_SENDS = 7000;
+    public static final int OSC_SELECT_SEND_FADER = 7500;
+    public static final int OSC_SELECT_SEND_ENABLE = 7600;
 
-    public static final int MSG_WHAT_STRIP_RECEIVES = 8000;
-    public static final int MSG_WHAT_NEWSTRIP = 1010;
+    public static final int OSC_STRIP_RECEIVES = 8000;
+    public static final int OSC_NEWSTRIP = 1010;
 
-    public static final int MSG_WHAT_PLUGIN_LIST = 4010;
-    public static final int MSG_WHAT_PLUGIN_DESCRIPTOR = 4000;
+    public static final int OSC_PLUGIN_LIST = 4010;
+    public static final int OSC_PLUGIN_DESCRIPTOR = 4000;
 
 
     // constants about Ardour Transport
@@ -69,7 +71,7 @@ final class ArdourConstants {
     public static final byte RECORD_ENABLED = 0x04;
 
 
-    public static final int MSG_WHAT_STRIP_SEND_NAME = 7100;
-    public static final int MSG_WHAT_STRIP_SELECT = 300;
+    public static final int OSC_SELECT_SEND_NAME = 7100;
+    public static final int OSC_STRIP_SELECT = 300;
 }
 

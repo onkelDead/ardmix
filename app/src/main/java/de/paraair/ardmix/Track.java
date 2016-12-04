@@ -32,6 +32,7 @@ public class Track extends Fader {
 	public boolean muteEnabled = false;
 	public boolean stripIn = false;
 	public boolean soloIsolateEnabled = false;
+	public boolean soloSafeEnabled = false;
 
 	// private
 	private boolean trackVolumeOnSeekBar = false;

@@ -28,16 +28,16 @@ import java.util.Map;
 
 public class PluginLayout extends LinearLayout implements View.OnClickListener  {
 
-    public static final int MSG_WHAT_PLUGIN_CHANGED = 28;
-    public static final int MSG_WHAT_PLUGIN_RESET = 29;
-    public static final int MSG_WHAT_PLUGIN_REQUEST = 22;
-    public static final int MSG_WHAT_PLUGIN_NEXT = 31;
-    public static final int MSG_WHAT_PLUGIN_PREV = 32;
-    public static final int MSG_WHAT_PLUGIN_ENABLE = 35;
+    public static final int PLUGIN_PARAMETER_CHANGED = 28;
+    public static final int PLUGIN_RESET = 29;
+    public static final int PLUGIN_DESCRIPTOR_REQUEST = 22;
+    public static final int PLUGIN_NEXT = 31;
+    public static final int PLUGIN_PREV = 32;
+    public static final int PLUGIN_BYPASS = 35;
     private static final int NAVBUTTON_HEIGHT = 36;
 
 
-    private static final int PARAMETER_HEIGHT = 32;
+    private static final int PARAMETER_HEIGHT = 36;
 
     ToggleTextButton ttbBypass;
 
@@ -132,7 +132,7 @@ public class PluginLayout extends LinearLayout implements View.OnClickListener  
         addView(btnLayout);
 
         if( inlude_request) {
-            Message fm = onChangeHandler.obtainMessage(MSG_WHAT_PLUGIN_REQUEST, getId(), 1);
+            Message fm = onChangeHandler.obtainMessage(PLUGIN_DESCRIPTOR_REQUEST, getId(), 1);
             onChangeHandler.sendMessage(fm);
         }
 
@@ -161,7 +161,7 @@ public class PluginLayout extends LinearLayout implements View.OnClickListener  
             if( (parameter.flags & 0x80) == 0x80 && (parameter.flags & 0x100) != 0x100) {
                 LinearLayout pLayout = new LinearLayout(context);
                 pLayout.setOrientation(HORIZONTAL);
-                pLayout.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+                pLayout.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, PARAMETER_HEIGHT));
 
                 TextView parameterName = new TextView(context);
                 parameterName.setLayoutParams(new LayoutParams(160, PARAMETER_HEIGHT));
@@ -296,7 +296,7 @@ public class PluginLayout extends LinearLayout implements View.OnClickListener  
                     Object[] plargs = new Object[2];
                     plargs[0] = currentPlugin.getParameter(pi).parameter_index;
                     plargs[1] = ip.current;
-                    Message fm = onChangeHandler.obtainMessage(MSG_WHAT_PLUGIN_CHANGED, currentPlugin.getTrackId(), currentPlugin.getPluginId(), plargs);
+                    Message fm = onChangeHandler.obtainMessage(PLUGIN_PARAMETER_CHANGED, currentPlugin.getTrackId(), currentPlugin.getPluginId(), plargs);
                     onChangeHandler.sendMessage(fm );
                     break;
                 case 30:
@@ -311,7 +311,7 @@ public class PluginLayout extends LinearLayout implements View.OnClickListener  
                         Object[] plsargs = new Object[2];
                         plsargs[0] = currentPlugin.getParameter(pis).parameter_index;
                         plsargs[1] = ips.current;
-                        Message fms = onChangeHandler.obtainMessage(MSG_WHAT_PLUGIN_CHANGED, currentPlugin.getTrackId(), currentPlugin.getPluginId(), plsargs);
+                        Message fms = onChangeHandler.obtainMessage(PLUGIN_PARAMETER_CHANGED, currentPlugin.getTrackId(), currentPlugin.getPluginId(), plsargs);
                         onChangeHandler.sendMessage(fms );
                     }
                     break;
@@ -328,32 +328,32 @@ public class PluginLayout extends LinearLayout implements View.OnClickListener  
     public void onClick(View v) {
         switch((String)v.getTag()) {
             case "resetPlugin":
-                onChangeHandler.sendMessage(onChangeHandler.obtainMessage(MSG_WHAT_PLUGIN_RESET, currentPlugin.getTrackId(), currentPlugin.getPluginId()) );
+                onChangeHandler.sendMessage(onChangeHandler.obtainMessage(PLUGIN_RESET, currentPlugin.getTrackId(), currentPlugin.getPluginId()) );
                 break;
             case "pluginTitle":
                 this.removeAllViews();
                 this.initLayout(false, track);
                 if(currentPlugin.getPluginId() == track.pluginDescriptors.size()) {
-                    onChangeHandler.sendMessage(onChangeHandler.obtainMessage(MSG_WHAT_PLUGIN_REQUEST, getId(), 1));
+                    onChangeHandler.sendMessage(onChangeHandler.obtainMessage(PLUGIN_DESCRIPTOR_REQUEST, getId(), 1));
                 }
                 else {
-                    onChangeHandler.sendMessage(onChangeHandler.obtainMessage(MSG_WHAT_PLUGIN_REQUEST, getId(), currentPlugin.getPluginId() + 1));
+                    onChangeHandler.sendMessage(onChangeHandler.obtainMessage(PLUGIN_DESCRIPTOR_REQUEST, getId(), currentPlugin.getPluginId() + 1));
                 }
                 break;
             case "close":
-                onChangeHandler.sendMessage(onChangeHandler.obtainMessage(SendsLayout.MSG_WHAT_RESET_LAYOUT));
+                onChangeHandler.sendMessage(onChangeHandler.obtainMessage(SendsLayout.RESET_LAYOUT));
                 break;
 
             case "next":
-                onChangeHandler.sendMessage(onChangeHandler.obtainMessage(MSG_WHAT_PLUGIN_NEXT));
+                onChangeHandler.sendMessage(onChangeHandler.obtainMessage(PLUGIN_NEXT));
                 break;
 
             case "prev":
-                onChangeHandler.sendMessage(onChangeHandler.obtainMessage(MSG_WHAT_PLUGIN_PREV));
+                onChangeHandler.sendMessage(onChangeHandler.obtainMessage(PLUGIN_PREV));
                 break;
 
             case "bypass":
-                onChangeHandler.sendMessage(onChangeHandler.obtainMessage(MSG_WHAT_PLUGIN_ENABLE, getId(), currentPlugin.getPluginId(), !ttbBypass.getToggleState() ? 1 : 0));
+                onChangeHandler.sendMessage(onChangeHandler.obtainMessage(PLUGIN_BYPASS, getId(), currentPlugin.getPluginId(), !ttbBypass.getToggleState() ? 1 : 0));
                 break;
 
             default:
