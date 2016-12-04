@@ -3,6 +3,33 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <RadioGroup
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+        <RadioButton
+            android:text="Small Strips"
+            android:id="@+id/small_strips"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <RadioButton
+            android:text="Medium Strips"
+            android:id="@+id/medium_strips"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <RadioButton
+            android:text="Wide Strips"
+            android:id="@+id/wide_strips"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+    </RadioGroup>
+
     <CheckBox
         android:text="Strip Title"
         android:layout_width="match_parent"
@@ -23,6 +50,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/chkMaskRecord" />
+    <CheckBox
+        android:text="Strip Input Button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/chkMaskInput" />
     <CheckBox
         android:text="Strip Meter"
         android:layout_width="match_parent"

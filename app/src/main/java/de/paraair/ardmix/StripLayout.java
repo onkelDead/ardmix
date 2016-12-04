@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.os.Handler;
 import android.os.Message;
 import android.view.Gravity;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -19,13 +20,16 @@ public class StripLayout extends LinearLayout {
     public static final int RECEIVE_CHANGED = 26;
     public static final int PAN_CHANGED = 27;
 
-    public static final int STRIP_WIDTH = 56;
+    public static final int STRIP_SMALL_WIDTH = 56;
+    public static final int STRIP_MEDIUM_WIDTH = 72;
+    public static final int STRIP_WIDE_WIDTH = 96;
 
     private Track track;
     private TextView tvStripName;
     private ToggleTextButton ttbSends;
     private ToggleTextButton ttbFX;
     private ToggleTextButton ttbRecord;
+    private ToggleTextButton ttbInput;
     private ToggleTextButton ttbMute;
     private ToggleTextButton ttbSolo;
     private ToggleTextButton ttbSoloIso;
@@ -44,6 +48,7 @@ public class StripLayout extends LinearLayout {
     public Track.TrackType showtype;
     private int iPosition;
 
+    private int strip_wide;
 
     public StripLayout(Context context) {
         super(context);
@@ -55,13 +60,33 @@ public class StripLayout extends LinearLayout {
         this.track = track;
     }
 
+
     public void init(Context context, StripElementMask mask) {
 
         removeAllViews();
 
+        switch( mask.stripSize ) {
+            case 0:
+                strip_wide = STRIP_SMALL_WIDTH;
+                break;
+            case 1:
+                strip_wide = STRIP_MEDIUM_WIDTH;
+                break;
+            case 2:
+                strip_wide = STRIP_WIDE_WIDTH;
+                break;
+
+        }
+        this.getLayoutParams().width = strip_wide;
+
         LayoutParams switchLP = new LayoutParams(
-                LayoutParams.WRAP_CONTENT,
+                strip_wide,
                 32);
+
+        LayoutParams switchWLP = new LayoutParams(
+                STRIP_WIDE_WIDTH / 2,
+                32);
+
         switchLP.setMargins(1,1,1,1);
 
         LayoutParams testLP = new LayoutParams(
@@ -103,9 +128,8 @@ public class StripLayout extends LinearLayout {
         ttbFX.setId(track.remoteId);
         ttbFX.setTag("fx");
         ttbFX.setOnClickListener(onClickListener);
-        if( mask.bFX)
-            this.addView(ttbFX);
         ttbFX.setAutoToggle(true);
+
 
         ttbSends = new ToggleTextButton(context, "SEND","SEND", Color.CYAN, Color.GRAY);
         ttbSends.setPadding(0,0,0,0);
@@ -118,9 +142,33 @@ public class StripLayout extends LinearLayout {
             ttbSends.setEnabled(false);
             ttbSends.setUntoggledText("");
         }
-        if (mask.bSend)
-            this.addView(ttbSends);
         ttbSends.setAutoToggle(true);
+
+        if( mask.stripSize == 2) {
+            LinearLayout send_fx = new LinearLayout(context);
+            send_fx.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+            send_fx.setOrientation(HORIZONTAL);
+            if( track.type != Track.TrackType.MASTER) {
+            ttbFX.setLayoutParams(switchWLP);
+            ttbSends.setLayoutParams(switchWLP);
+            if (mask.bFX)
+                send_fx.addView(ttbFX);
+            if (mask.bSend)
+                send_fx.addView(ttbSends);
+            }
+            else {
+                ttbFX.setLayoutParams(switchLP);
+                if (mask.bFX)
+                    send_fx.addView(ttbFX);
+            }
+            this.addView(send_fx);
+        }
+        else {
+            if (mask.bFX)
+                this.addView(ttbFX);
+            if (mask.bSend)
+                this.addView(ttbSends);
+        }
 
         ttbRecord = new ToggleTextButton(context, "REC","REC", Color.RED, Color.GRAY);
         ttbRecord.setPadding(0,0,0,0);
@@ -133,7 +181,6 @@ public class StripLayout extends LinearLayout {
         }
         else if (track.type == Track.TrackType.MASTER) {
             ttbRecord.setEnabled(false);
-
             ttbRecord.setUntoggledText("");
             recChanged();
         }
@@ -147,8 +194,39 @@ public class StripLayout extends LinearLayout {
             ttbRecord.setAutoToggle(true);
         }
 
-        if( mask.bRecord)
-            this.addView(ttbRecord);
+
+        ttbInput = new ToggleTextButton(context, "INPUT", "INPUT", 0xFFFFAA00, Color.GRAY);
+        ttbInput.setPadding(0,0,0,0);
+        ttbInput.setLayoutParams(switchLP);
+        ttbInput.setTag("input");
+        ttbInput.setId(track.remoteId);
+        ttbInput.setToggleState(track.stripIn);
+        ttbInput.setOnClickListener(onClickListener);
+        if( mask.stripSize == 2) {
+            LinearLayout rec_in = new LinearLayout(context);
+            rec_in.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+            rec_in.setOrientation(HORIZONTAL);
+            if(track.type == Track.TrackType.AUDIO) {
+                ttbRecord.setLayoutParams(switchWLP);
+                ttbInput.setLayoutParams(switchWLP);
+                if (mask.bRecord)
+                    rec_in.addView(ttbRecord);
+                if (mask.bInput)
+                    rec_in.addView(ttbInput);
+            }
+            else if(track.type == Track.TrackType.BUS) {
+                ttbRecord.setLayoutParams(switchLP);
+                if (mask.bRecord)
+                    rec_in.addView(ttbRecord);
+            }
+            this.addView(rec_in);
+        }
+        else {
+            if (mask.bRecord)
+                this.addView(ttbRecord);
+            if (mask.bInput && track.type == Track.TrackType.AUDIO)
+                this.addView(ttbInput);
+        }
 
 
         LayoutParams meterParam = new LayoutParams(
@@ -170,11 +248,7 @@ public class StripLayout extends LinearLayout {
         ttbMute.setTag("mute");
         ttbMute.setId(track.remoteId);
         ttbMute.setToggleState(track.muteEnabled );
-        if (mask.bMute) {
-            this.addView(ttbMute);
-        }
         ttbMute.setOnClickListener(onClickListener);
-
 
         ttbSolo = new ToggleTextButton(context, "SOLO", "SOLO", Color.GREEN, Color.GRAY);
         ttbSolo.setPadding(0,0,0,0);
@@ -187,10 +261,35 @@ public class StripLayout extends LinearLayout {
             ttbSolo.setEnabled(track.soloEnabled);
             ttbSolo.setUntoggledText("");
         }
-        if (mask.bSolo)
-            this.addView(ttbSolo);
 
-        ttbSoloIso = new ToggleTextButton(context, "SoloIso", "SoloIso", Color.GREEN, Color.GRAY);
+
+        if( mask.stripSize == 2) {
+            LinearLayout mute_solo = new LinearLayout(context);
+            mute_solo.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+            mute_solo.setOrientation(HORIZONTAL);
+            if( track.type != Track.TrackType.MASTER) {
+                ttbMute.setLayoutParams(switchWLP);
+                ttbSolo.setLayoutParams(switchWLP);
+                if (mask.bMute)
+                    mute_solo.addView(ttbMute);
+                if (mask.bSolo)
+                    mute_solo.addView(ttbSolo);
+            }
+            else {
+                ttbMute.setLayoutParams(switchLP);
+                if (mask.bMute)
+                    mute_solo.addView(ttbMute);
+            }
+            this.addView(mute_solo);
+        }
+        else {
+            if (mask.bMute)
+                this.addView(ttbMute);
+            if (mask.bSolo)
+                this.addView(ttbSolo);
+        }
+        
+        ttbSoloIso = new ToggleTextButton(context, "I", "I", Color.GREEN, Color.GRAY);
         ttbSoloIso.setPadding(0,0,0,0);
         ttbSoloIso.setLayoutParams(switchLP);
         ttbSoloIso.setTag("soloiso");
@@ -201,10 +300,8 @@ public class StripLayout extends LinearLayout {
             ttbSoloIso.setEnabled(track.soloIsolateEnabled);
             ttbSoloIso.setUntoggledText("");
         }
-        if (mask.bSoloIso)
-            this.addView(ttbSoloIso);
 
-        ttbSoloSafe = new ToggleTextButton(context, "SoloSafe", "SoloSafe", Color.GREEN, Color.GRAY);
+        ttbSoloSafe = new ToggleTextButton(context, "L", "L", Color.GREEN, Color.GRAY);
         ttbSoloSafe.setPadding(0,0,0,0);
         ttbSoloSafe.setLayoutParams(switchLP);
         ttbSoloSafe.setTag("solosafe");
@@ -215,9 +312,26 @@ public class StripLayout extends LinearLayout {
             ttbSoloSafe.setEnabled(track.soloSafeEnabled);
             ttbSoloSafe.setUntoggledText("");
         }
-        if (mask.bSoloSafe)
-            this.addView(ttbSoloSafe);
 
+        if( mask.stripSize == 2) {
+            LinearLayout iso_safe = new LinearLayout(context);
+            iso_safe.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+            iso_safe.setOrientation(HORIZONTAL);
+            ttbSoloIso.setLayoutParams(switchWLP);
+            ttbSoloSafe.setLayoutParams(switchWLP);
+            if (mask.bSoloIso)
+                iso_safe.addView(ttbSoloIso);
+            if (mask.bSoloSafe)
+                iso_safe.addView(ttbSoloSafe);
+            this.addView(iso_safe);
+        }
+        else {
+            if (mask.bSoloIso)
+                this.addView(ttbSoloIso);
+            if (mask.bSoloSafe)
+                this.addView(ttbSoloSafe);
+        }
+        
         ttbPan = new ToggleTextButton(context, "PAN", "PAN", 0xffffbb33, Color.GRAY);
         ttbPan.setPadding(0,0,0,0);
         ttbPan.setLayoutParams(switchLP);
@@ -282,6 +396,11 @@ public class StripLayout extends LinearLayout {
 
     public void soloIsoChanged() {
         ttbSoloIso.setToggleState(track.soloIsolateEnabled);
+    }
+
+
+    public void inputChanged() {
+        ttbInput.setToggleState(track.stripIn);
     }
 
     public void panChanged() {
@@ -468,7 +587,6 @@ public class StripLayout extends LinearLayout {
         if( track.type == Track.TrackType.BUS)
             setBackgroundColor(0x200000FF);
     }
-
 
 
 }

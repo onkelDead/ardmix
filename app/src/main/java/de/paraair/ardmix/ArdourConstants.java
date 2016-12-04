@@ -45,6 +45,7 @@ final class ArdourConstants {
     public static final int OSC_FRAMERATE = 500;
     public static final int OSC_STRIPLIST = 1000;
     public static final int OSC_STRIP_FADER = 90;
+    public static final int OSC_STRIP_INPUT = 110;
 
 
     public static final int OSC_UPDATE_CLOCK = 3000;

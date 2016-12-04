@@ -89,6 +89,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private StripElementMask stripElementMask = new StripElementMask();
 
+
+
     private StripLayout masterStrip;
     private LinearLayout llMain;
     private StripSelectLayout stripSelect;
@@ -122,8 +124,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         bankSize = settings.getInt("bankSize", 8);
         useSendsLayout = settings.getBoolean("useSendsLayout", false);
 
-        stripElementMask.bTitle = settings.getBoolean("mskTitle", true);
-        stripElementMask.bMeter = settings.getBoolean("mskMeter", true);
+        stripElementMask.loadSetting(settings);
+
 
         mainSroller = (HorizontalScrollView) findViewById(R.id.main_scoller);
         llStripList = (LinearLayout) findViewById(R.id.strip_list);
@@ -637,6 +639,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         getStripLayout(iRemoteId).soloIsoChanged();
                     break;
 
+                case OSC_STRIP_INPUT:
+                    iRemoteId = msg.arg1;
+                    if (strips.size() > iRemoteId)
+                        getStripLayout(iRemoteId).inputChanged();
+                    break;
+
                 case OSC_STRIP_PAN:
                     iRemoteId = msg.arg1;
                     if (strips.size() > iRemoteId)
@@ -823,7 +831,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         final StripLayout stripLayout = new StripLayout(this, t);
         LinearLayout.LayoutParams stripLP = new LinearLayout.LayoutParams(
-                StripLayout.STRIP_WIDTH,
+                StripLayout.STRIP_SMALL_WIDTH,
                 LinearLayout.LayoutParams.MATCH_PARENT);
         if( t.type == Track.TrackType.MASTER ) {
             masterStrip = stripLayout;
@@ -1083,6 +1091,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                     case "solosafe":
                         oscService.trackListAction(OscService.SOLO_SAFE_CHANGED, oscService.getTrack(i));
+                        break;
+
+                    case "input":
+                        oscService.trackListAction(OscService.STRIPIN_CHANGED, oscService.getTrack(i));
                         break;
 
                     case "in":
@@ -1503,6 +1515,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         editor.putBoolean("mskTitle", stripElementMask.bTitle);
         editor.putBoolean("mskMeter", stripElementMask.bMeter);
+        editor.putBoolean("mskFX", stripElementMask.bFX);
+        editor.putBoolean("mskSend", stripElementMask.bSend);
+        editor.putBoolean("mskRecord", stripElementMask.bRecord);
+        editor.putBoolean("mskInput", stripElementMask.bInput);
+        editor.putBoolean("mskSolo", stripElementMask.bSolo);
+        editor.putBoolean("mskSoloIso", stripElementMask.bSoloIso);
+        editor.putBoolean("mskSoloSafe", stripElementMask.bSoloSafe);
+        editor.putBoolean("mskMute", stripElementMask.bMute);
+
+        editor.putInt("strip_wide", stripElementMask.stripSize);
 
         editor.commit();
     }

@@ -892,23 +892,19 @@ public class OscService {
 								t = getTrack(stripIndex);
 								if (t!=null) {
 									t.panPosition = (Float) message.getArg(argOffset);
-									Message somsg = transportHandler.obtainMessage(ArdourConstants.OSC_STRIP_PAN);
-									somsg.arg1 = stripIndex;
-									transportHandler.sendMessage(somsg);
+									transportHandler.sendMessage(transportHandler.obtainMessage(ArdourConstants.OSC_STRIP_PAN, stripIndex, 0));
 								}
 								break;
 
-//							case "monitor_input":
-//								t = getTrack(stripIndex);
-//								if( t != null ) {
-//									if( message.getArg(argOffset) instanceof Integer) {
-//										int ie = (int) message.getArg(argOffset);
-//										t.stripIn = ie > 0;
-//										Message inmsg = transportHandler.obtainMessage(2000, routes);
-//										transportHandler.sendMessage(inmsg);
-//									}
-//								}
-//								break;
+							case "monitor_input":
+								t = getTrack(stripIndex);
+								if( t != null ) {
+									if( message.getArg(argOffset) instanceof Integer) {
+										t.stripIn = (int) message.getArg(argOffset) > 0;
+										transportHandler.sendMessage(transportHandler.obtainMessage(ArdourConstants.OSC_STRIP_INPUT, stripIndex, 0));
+									}
+								}
+								break;
 
 							case "select":
 								transportHandler.sendMessage(transportHandler.obtainMessage(
