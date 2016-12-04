@@ -24,6 +24,8 @@ public class StripMaskDialogFragment extends DialogFragment {
     private CheckBox cbStripMeter;
     private CheckBox cbStripMute;
     private CheckBox cbStripSolo;
+    private CheckBox cbStripSoloIso;
+    private CheckBox cbStripSoloSafe;
     private CheckBox cbStripPan;
     private CheckBox cbStripFader;
 
@@ -50,6 +52,8 @@ public class StripMaskDialogFragment extends DialogFragment {
                 item.bMeter = cbStripMeter.isChecked();
                 item.bMute = cbStripMute.isChecked();
                 item.bSolo = cbStripSolo.isChecked();
+                item.bSoloIso = cbStripSoloIso.isChecked();
+                item.bSoloSafe = cbStripSoloSafe.isChecked();
                 item.bPan = cbStripPan.isChecked();
                 item.bFader = cbStripFader.isChecked();
 
@@ -84,6 +88,12 @@ public class StripMaskDialogFragment extends DialogFragment {
         cbStripSolo = (CheckBox) view.findViewById(R.id.chkMaskSolo);
         cbStripSolo.setChecked(args.getBoolean("solo"));
 
+        cbStripSoloIso = (CheckBox) view.findViewById(R.id.chkMaskSoloIso);
+        cbStripSoloIso.setChecked(args.getBoolean("soloiso"));
+
+        cbStripSoloSafe = (CheckBox) view.findViewById(R.id.chkMaskSoloSafe);
+        cbStripSoloSafe.setChecked(args.getBoolean("solosafe"));
+
         cbStripPan = (CheckBox) view.findViewById(R.id.chkMaskPan);
         cbStripPan.setChecked(args.getBoolean("pan"));
 
@@ -99,6 +109,8 @@ public class StripMaskDialogFragment extends DialogFragment {
                 item.bMeter = true;
                 item.bMute = true;
                 item.bSolo = true;
+                item.bSoloIso = false;
+                item.bSoloSafe = false;
                 item.bPan = true;
                 item.bFader = true;
 

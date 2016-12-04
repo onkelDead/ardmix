@@ -631,6 +631,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         getStripLayout(iRemoteId).soloSafeChanged();
                     break;
 
+                case OSC_STRIP_SOLOISO:
+                    iRemoteId = msg.arg1;
+                    if (strips.size() > iRemoteId)
+                        getStripLayout(iRemoteId).soloIsoChanged();
+                    break;
+
                 case OSC_STRIP_PAN:
                     iRemoteId = msg.arg1;
                     if (strips.size() > iRemoteId)
@@ -1069,6 +1075,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                     case "solo":
                         oscService.trackListAction(OscService.SOLO_CHANGED, oscService.getTrack(i));
+                        break;
+
+                    case "soloiso":
+                        oscService.trackListAction(OscService.SOLO_ISOLATE_CHANGED, oscService.getTrack(i));
+                        break;
+
+                    case "solosafe":
+                        oscService.trackListAction(OscService.SOLO_SAFE_CHANGED, oscService.getTrack(i));
                         break;
 
                     case "in":

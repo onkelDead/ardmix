@@ -30,6 +30,8 @@ public class StripElementMask {
 
     public boolean bPan = true;
     public boolean bFader = true;
+    public boolean bSoloIso = false;
+    public boolean bSoloSafe = false;
 
     public void config(AppCompatActivity context) {
         StripMaskDialogFragment sdlg = new StripMaskDialogFragment();
@@ -42,6 +44,8 @@ public class StripElementMask {
         settingsBundle.putBoolean("meter", bMeter);
         settingsBundle.putBoolean("mute", bMute);
         settingsBundle.putBoolean("solo", bSolo);
+        settingsBundle.putBoolean("soloiso", bSoloIso);
+        settingsBundle.putBoolean("solosafe", bSoloSafe);
         settingsBundle.putBoolean("pan", bPan);
         settingsBundle.putBoolean("fader", bFader);
 

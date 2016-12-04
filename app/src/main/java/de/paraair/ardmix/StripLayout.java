@@ -28,6 +28,8 @@ public class StripLayout extends LinearLayout {
     private ToggleTextButton ttbRecord;
     private ToggleTextButton ttbMute;
     private ToggleTextButton ttbSolo;
+    private ToggleTextButton ttbSoloIso;
+    private ToggleTextButton ttbSoloSafe;
     private ToggleTextButton ttbPan;
     LinearLayout faderLayout;
     private FaderView fwVolume = null;
@@ -188,6 +190,34 @@ public class StripLayout extends LinearLayout {
         if (mask.bSolo)
             this.addView(ttbSolo);
 
+        ttbSoloIso = new ToggleTextButton(context, "SoloIso", "SoloIso", Color.GREEN, Color.GRAY);
+        ttbSoloIso.setPadding(0,0,0,0);
+        ttbSoloIso.setLayoutParams(switchLP);
+        ttbSoloIso.setTag("soloiso");
+        ttbSoloIso.setId(track.remoteId);
+        ttbSoloIso.setToggleState(track.soloIsolateEnabled);
+        ttbSoloIso.setOnClickListener(onClickListener);
+        if (track.type == Track.TrackType.MASTER) {
+            ttbSoloIso.setEnabled(track.soloIsolateEnabled);
+            ttbSoloIso.setUntoggledText("");
+        }
+        if (mask.bSoloIso)
+            this.addView(ttbSoloIso);
+
+        ttbSoloSafe = new ToggleTextButton(context, "SoloSafe", "SoloSafe", Color.GREEN, Color.GRAY);
+        ttbSoloSafe.setPadding(0,0,0,0);
+        ttbSoloSafe.setLayoutParams(switchLP);
+        ttbSoloSafe.setTag("solosafe");
+        ttbSoloSafe.setId(track.remoteId);
+        ttbSoloSafe.setToggleState(track.soloSafeEnabled);
+        ttbSoloSafe.setOnClickListener(onClickListener);
+        if (track.type == Track.TrackType.MASTER) {
+            ttbSoloSafe.setEnabled(track.soloSafeEnabled);
+            ttbSoloSafe.setUntoggledText("");
+        }
+        if (mask.bSoloSafe)
+            this.addView(ttbSoloSafe);
+
         ttbPan = new ToggleTextButton(context, "PAN", "PAN", 0xffffbb33, Color.GRAY);
         ttbPan.setPadding(0,0,0,0);
         ttbPan.setLayoutParams(switchLP);
@@ -247,6 +277,11 @@ public class StripLayout extends LinearLayout {
             ttbSolo.setEnabled(false);
         else
             ttbSolo.setEnabled(true);
+        ttbSoloSafe.setToggleState(track.soloSafeEnabled);
+    }
+
+    public void soloIsoChanged() {
+        ttbSoloIso.setToggleState(track.soloIsolateEnabled);
     }
 
     public void panChanged() {
@@ -433,6 +468,7 @@ public class StripLayout extends LinearLayout {
         if( track.type == Track.TrackType.BUS)
             setBackgroundColor(0x200000FF);
     }
+
 
 
 }

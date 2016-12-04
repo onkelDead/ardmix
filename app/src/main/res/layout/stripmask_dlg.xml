@@ -39,6 +39,16 @@
         android:layout_height="wrap_content"
         android:id="@+id/chkMaskSolo" />
     <CheckBox
+        android:text="Strip Solo Isolsate Button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/chkMaskSoloIso" />
+    <CheckBox
+        android:text="Strip Solo Lock Button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/chkMaskSoloSafe" />
+    <CheckBox
         android:text="Strip Pan Button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

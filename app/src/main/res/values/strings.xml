@@ -28,7 +28,7 @@
     <string name="action_loadbanks">Load Bank...</string>
     <string name="action_Mask">Strip Elements...</string>
     <string name="action_consettings">Connection...</string>
-    <string name="action_maskall">Show all</string>
+    <string name="action_maskall">Show default</string>
     <string name="mute">Mute</string>
     <string name="solo">Solo</string>
     <string name="synchwithright">Synch with the strip right of me</string>
