@@ -6,21 +6,18 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.RectF;
 import android.os.Handler;
 import android.os.Message;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewParent;
-import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
-import android.widget.SeekBar;
 
 /**
  * Created by onkel on 06.10.16.
  */
 
 public class FaderView extends ImageView implements View.OnTouchListener {
+
 
 
     enum Orientation {
@@ -31,6 +28,7 @@ public class FaderView extends ImageView implements View.OnTouchListener {
     public ArdourPlugin.InputParameter param;
 
     private int max = 1000;
+    private int min = 0;
     public int meterLevel = 0;
     public float parentWidth;
     public float parentHeight;
@@ -45,18 +43,23 @@ public class FaderView extends ImageView implements View.OnTouchListener {
     public int val0 = 0;
 
     private Paint p;
-    private Bitmap fader_bmp;
+    private final Bitmap fader_bmp_vertical;
+    private final Bitmap fader_bmp_horizontal;
 
     private Handler myListener;
     private int progressColor = getResources().getColor(R.color.fader, null);
+    private int progressOffColor = getResources().getColor(R.color.VeryDark, null);
 
     public FaderView(Context context) {
         super(context);
         p = new Paint(Paint.ANTI_ALIAS_FLAG);
         this.setOnTouchListener(this);
 
-        fader_bmp = BitmapFactory.decodeResource(getResources(),
+        fader_bmp_vertical = BitmapFactory.decodeResource(getResources(),
                 R.drawable.fader_image);
+
+        fader_bmp_horizontal = BitmapFactory.decodeResource(getResources(),
+                R.drawable.fader_image_horizontal);
 
     }
 
@@ -68,6 +71,10 @@ public class FaderView extends ImageView implements View.OnTouchListener {
         this.max = max;
     }
 
+    public void setMin(int min) {
+        this.min = min;
+    }
+
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
@@ -77,22 +84,27 @@ public class FaderView extends ImageView implements View.OnTouchListener {
 
         int val = meterLevel;
 
-        p.setColor(progressColor);
-
         if( orientation == Orientation.VERTICAL) {
             float leftEdge = parentWidth / 2;
             float rightEdge = parentWidth / 2;
-            float meterWidth = parentWidth / 4;
+            float meterWidth = parentWidth / 6;
             float topEdge = 12 + (bTopText ? 24 : 0);
             float bottomEdge = 12 + (bBottomText ? 24 : 0);
 
             float fullheight = parentHeight - topEdge - bottomEdge;
 
             float topdb = fullheight - ((float)val / max * (fullheight)) + topEdge;
-            p.setStrokeWidth(meterWidth);
+
+            // full range background
+            p.setColor(progressColor);
+            p.setStrokeWidth(1);
+            p.setStyle(Paint.Style.STROKE);
+            canvas.drawRect(leftEdge - meterWidth / 6, topEdge , rightEdge + meterWidth / 6, parentHeight - bottomEdge, p);
 
             // bright bg till volume
-            canvas.drawLine(leftEdge, topdb, rightEdge , fullheight + topEdge , p);
+            p.setColor(progressColor);
+            p.setStrokeWidth(meterWidth);
+            canvas.drawLine(leftEdge, topdb, rightEdge , fullheight + topEdge - ((float)min  / (float)max) * fullheight  , p);
 
             if( val0 > 0 ) {
                 // 0dB line
@@ -101,49 +113,57 @@ public class FaderView extends ImageView implements View.OnTouchListener {
                 canvas.drawLine(12, top0db, parentWidth - 12, top0db, p);
             }
 
-            // full range background
-            p.setColor(0x40808080);
-            p.setStrokeWidth(1);
-            canvas.drawRect(leftEdge - meterWidth / 2, topEdge , rightEdge + meterWidth / 2, parentHeight - bottomEdge, p);
-
             // the bitmap
-            canvas.drawBitmap(fader_bmp, leftEdge - 24, topdb - fader_bmp.getHeight() / 2, null);
+            canvas.drawBitmap(fader_bmp_vertical, leftEdge - fader_bmp_vertical.getWidth() / 2, topdb - fader_bmp_vertical.getHeight() / 2, null);
 
+            p.setStrokeWidth(1);
             // top text
             if( bTopText ) {
-                p.setColor(0xffffbb33);
-                p.setTextSize(12);
+                p.setColor(getResources().getColor(R.color.BUTTON_PAN, null));
+                p.setTextSize(14);
                 canvas.drawText(strTopText, 12, 18, p);
             }
             // bottom text
             if( bBottomText ) {
-                p.setColor(0xffffbb33);
-                p.setTextSize(12);
+                p.setColor(getResources().getColor(R.color.BUTTON_PAN, null));
+                p.setTextSize(14);
                 canvas.drawText(strBottomText, 12, parentHeight - bottomEdge + 30, p);
             }
         }
         else {
-            float leftEdge = parentHeight / 2;
-            float topEdge = 0;
-            float bottomEdge = 0;
-            p.setStrokeWidth(leftEdge);
-            canvas.drawLine(0, leftEdge, (float) val / max * parentWidth, leftEdge, p);
-//
+            float vCenter = parentHeight / 2;
+            float leftEdge = 12;
+            float rightEdge = 12;
+
+            float fullWidth = parentWidth - leftEdge - rightEdge;
+            float leftdb = ((float)val / max * (fullWidth)) + leftEdge;
+
+            // full range background
+            p.setColor(progressColor);
+            p.setStrokeWidth(1);
+            p.setStyle(Paint.Style.STROKE);
+            canvas.drawRect(leftEdge, vCenter - 2 , parentWidth - rightEdge , vCenter + 2, p);
+
+            // bright bg till volume
+            p.setColor(this.progressColor);
+            p.setStrokeWidth(vCenter / 2);
+            canvas.drawLine(leftEdge, vCenter, leftdb, vCenter, p);
+
             if( val0 > 0 ) {
-                float left0db = ((float)val0 / max * (parentWidth - topEdge - bottomEdge)) - topEdge;
+                // 0dB line
+                float left0db = ((float)val0 / max * (fullWidth - leftEdge - rightEdge));
                 p.setStrokeWidth(2);
                 canvas.drawLine(left0db, 4, left0db, parentHeight - 2, p);
             }
 
-            p.setColor(0x40808080);
-            p.setStrokeWidth(1);
-//            p.setStyle(Paint.Style.STROKE);
-            canvas.drawRect(bottomEdge, leftEdge - leftEdge / 2, parentWidth - topEdge , parentHeight - leftEdge / 2, p);
+            // the bitmap
+            canvas.drawBitmap(fader_bmp_horizontal, leftdb - fader_bmp_horizontal.getWidth() / 2, vCenter - fader_bmp_horizontal.getHeight() /2, null);
 
             if( param != null ) {
-                p.setColor(0xffffffff);
+                p.setColor(Color.WHITE);
+                p.setStrokeWidth(0);
                 p.setTextSize(12);
-                canvas.drawText(param.getTextFromCurrent(), 5, leftEdge+5, p);
+                canvas.drawText(param.getTextFromCurrent(), leftEdge + 5, vCenter+5, p);
             }
         }
     }

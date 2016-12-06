@@ -44,7 +44,7 @@ public class SendsLayout extends LinearLayout implements OnClickListener {
         lp.setMargins(1,1,1,1);
         this.setLayoutParams(lp);
         this.setOrientation(LinearLayout.VERTICAL);
-        this.setBackgroundColor(getResources().getColor(R.color.BUS_AUX_BACKGROUND, null));
+        this.setBackgroundColor(getResources().getColor(R.color.SENDS_BACKGROUND, null));
         this.setPadding(1, 0, 1, 0);
 
     }
@@ -134,7 +134,7 @@ public class SendsLayout extends LinearLayout implements OnClickListener {
         llSend.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
 
         ToggleTextButton ttbEnable = new ToggleTextButton(context, "","", Color.CYAN, Color.GRAY);
-        LayoutParams slp = new LayoutParams(120, 32);
+        LayoutParams slp = new LayoutParams(80, 32);
         slp.setMargins(6,2,12,2);
         ttbEnable.setPadding(0,0,0,0);
         ttbEnable.setLayoutParams(slp);
@@ -150,6 +150,7 @@ public class SendsLayout extends LinearLayout implements OnClickListener {
         fwSend.setMax(1000);
         fwSend.setOrientation(FaderView.Orientation.HORIZONTAL);
         fwSend.setId(sendIndex);
+        fwSend.setProgressColor(getResources().getColor(R.color.BUTTON_SEND, null));
         fwSend.val0 = 782;
         fwSend.setOnChangeHandler(mHandler);
         llSend.addView(fwSend);

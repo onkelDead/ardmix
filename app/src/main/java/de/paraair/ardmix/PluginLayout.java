@@ -107,7 +107,7 @@ public class PluginLayout extends LinearLayout implements View.OnClickListener  
             ttbBypass.setTag("bypass");
             ttbBypass.setAllText("BYPASS");
             ttbBypass.setOnClickListener(this);
-            ttbBypass.onColor = 0xA0FF40FF;
+            ttbBypass.onColor = getResources().getColor(R.color.BUTTON_FX, null);
             btnLayout.addView(ttbBypass);
             ttbBypass.setAutoToggle(true);
 

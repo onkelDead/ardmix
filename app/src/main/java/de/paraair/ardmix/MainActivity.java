@@ -1041,12 +1041,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
                 break;
 
-//            case R.id.bankSelectOk:
-//                EditText bankName = (EditText) stripSelect.getChildAt(0);
-//                selectBank.setName(bankName.getText().toString());
-//                llStripList.removeView(stripSelect);
-//                break;
-
             default:
                 int i = v.getId() ;
 
@@ -1075,7 +1069,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         if (sl.getShowType() == Track.TrackType.RECEIVE) {
                             ToggleTextButton b = (ToggleTextButton)v;
                             System.out.printf("set plugin param strip:%d, piid:%d\n", iAuxLayout, oscService.getTrack(sl.getId()).source_id);
-                            oscService.setSendEnable(iAuxLayout, oscService.getTrack(sl.getId()).source_id, b.getToggleState() ? 0f : 1f);
+                            oscService.setSendEnable(iAuxLayout, oscService.getTrack(sl.getId()).source_id, b.getToggleState() ? 1f : 0f);
                         }
                         else if(sl.getShowType() == Track.TrackType.SEND) {
                             ToggleTextButton b = (ToggleTextButton)v;
@@ -1144,7 +1138,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             sendsLayout.setOnChangeHandler(topLevelHandler);
             llStripList.addView(sendsLayout, strip.getPosition() + 1);
 
-            strip.setBackgroundColor(getResources().getColor(R.color.BUS_AUX_BACKGROUND, null));
+            strip.setBackgroundColor(getResources().getColor(R.color.SENDS_BACKGROUND, null));
             strip.pushVolume();
             iSendsLayout = iStripIndex;
             forceVisible(sendsLayout);
@@ -1193,7 +1187,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             resetLayouts();
 
             iPanLayout = iStripIndex;
-            strip.setBackgroundColor(0x40ffbb33);
+            strip.setBackgroundColor(getResources().getColor(R.color.BUTTON_PAN, null));
             strip.setType(Track.TrackType.PAN, 0f, 0, false);
             strip.panChanged();
 
@@ -1214,7 +1208,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             oscService.requestReceives(iStripIndex);
 
-            strip.setBackgroundColor(getResources().getColor(R.color.BUS_IN_BACKGROUND, null));
+            strip.setBackgroundColor(getResources().getColor(R.color.BUS_AUX_BACKGROUND, null));
             iReceiveLayout = iStripIndex;
         }
         else {
@@ -1267,7 +1261,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             pluginLayout = new PluginLayout(this);
             pluginLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
             pluginLayout.setOrientation(LinearLayout.VERTICAL);
-            pluginLayout.setBackgroundColor(0x20FF40FF);
+            pluginLayout.setBackgroundColor(getResources().getColor(R.color.PLUGIN_BACKGROUND, null));
             pluginLayout.setPadding(1, 0, 1, 0);
             pluginLayout.setId(iStripIndex);
             pluginLayout.setOnChangeHandler(topLevelHandler);
@@ -1281,7 +1275,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             iPluginLayout = iStripIndex;
             // we are ready to receive plugin list
             oscService.requestPluginList(iStripIndex);
-            strip.setBackgroundColor(0x20FF40FF);
+            strip.setBackgroundColor(getResources().getColor(R.color.PLUGIN_BACKGROUND, null));
         }
         else {
             if(pluginLayout != null ) {
@@ -1365,10 +1359,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             settingsBundle.putBoolean("stripRecord", t.recEnabled);
         }
         settingsBundle.putBoolean("stripMute", t.muteEnabled);
-        settingsBundle.putBoolean("stripSolo", t.soloEnabled);
-        settingsBundle.putBoolean("stripSoloIso", t.soloIsolateEnabled);
-        settingsBundle.putBoolean("stripSoloSafe", t.soloSafeEnabled);
-
+        if(t.type != Track.TrackType.MASTER) {
+            settingsBundle.putBoolean("stripSolo", t.soloEnabled);
+            settingsBundle.putBoolean("stripSoloIso", t.soloIsolateEnabled);
+            settingsBundle.putBoolean("stripSoloSafe", t.soloSafeEnabled);
+        }
 
         dfStripSetting.setArguments(settingsBundle);
         dfStripSetting.show(getSupportFragmentManager(), "Strip Settings");
@@ -1385,18 +1380,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Track t = oscService.getTrack(iStripIndex);
         t.name = strName;
         oscService.trackListAction(OscService.NAME_CHANGED, oscService.getTrack(iStripIndex));
-        if(t.stripIn != bStripIn)
-            oscService.trackListAction(OscService.STRIPIN_CHANGED, oscService.getTrack(iStripIndex));
-        if(t.recEnabled != bRecord)
-            oscService.trackListAction(OscService.REC_CHANGED, oscService.getTrack(iStripIndex));
         if(t.muteEnabled != bMute)
             oscService.trackListAction(OscService.MUTE_CHANGED, oscService.getTrack(iStripIndex));
-        if(t.soloEnabled != bSolo)
-            oscService.trackListAction(OscService.SOLO_CHANGED, oscService.getTrack(iStripIndex));
-        if(t.soloIsolateEnabled != bSoloIso)
-            oscService.trackListAction(OscService.SOLO_ISOLATE_CHANGED, oscService.getTrack(iStripIndex));
-        if(t.soloSafeEnabled != bSoloSafe)
-            oscService.trackListAction(OscService.SOLO_SAFE_CHANGED, oscService.getTrack(iStripIndex));
+        if( t.type != Track.TrackType.MASTER) {
+            if (t.soloEnabled != bSolo)
+                oscService.trackListAction(OscService.SOLO_CHANGED, oscService.getTrack(iStripIndex));
+            if (t.soloIsolateEnabled != bSoloIso)
+                oscService.trackListAction(OscService.SOLO_ISOLATE_CHANGED, oscService.getTrack(iStripIndex));
+            if (t.soloSafeEnabled != bSoloSafe)
+               oscService.trackListAction(OscService.SOLO_SAFE_CHANGED, oscService.getTrack(iStripIndex));
+            if( t.type != Track.TrackType.BUS) {
+                if(t.stripIn != bStripIn)
+                    oscService.trackListAction(OscService.STRIPIN_CHANGED, oscService.getTrack(iStripIndex));
+                if(t.recEnabled != bRecord)
+                    oscService.trackListAction(OscService.REC_CHANGED, oscService.getTrack(iStripIndex));
+            }
+        }
     }
 
     public void onBankDlg(int iBankIndex, Bank bank) {

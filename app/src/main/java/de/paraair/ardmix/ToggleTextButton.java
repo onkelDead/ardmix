@@ -23,8 +23,8 @@ public class ToggleTextButton extends Button implements ToggleListener {
     private String untoggledText = "Off";
     private String toggledText = "On";
 
-    public int onColor = Color.rgb(255,187,51);
-    private int offColor = Color.rgb(224,224,224);
+    public int onColor = Color.WHITE;
+    private int offColor = Color.BLACK;
 
 
     private Paint p;
