@@ -188,6 +188,7 @@ public class PluginLayout extends LinearLayout implements View.OnClickListener  
                     else {
                         FaderView parameterValue = new FaderView(context);
                         parameterValue.param = parameter;
+
                         parameterValue.setLayoutParams(new LayoutParams(240, PARAMETER_HEIGHT));
                         parameterValue.setMax(1000);
                         parameterValue.setOrientation(FaderView.Orientation.HORIZONTAL);

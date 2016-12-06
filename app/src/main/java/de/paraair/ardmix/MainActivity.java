@@ -833,21 +833,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         LinearLayout.LayoutParams stripLP = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.MATCH_PARENT);
-        if( t.type == Track.TrackType.MASTER ) {
-            masterStrip = stripLayout;
-            int strip_wide = StripLayout.STRIP_SMALL_WIDTH;
-            if( stripElementMask.stripSize == 1)
-                strip_wide = StripLayout.STRIP_MEDIUM_WIDTH;
-            else if( stripElementMask.stripSize == 2 )
-                strip_wide = StripLayout.STRIP_WIDE_WIDTH;
-            llMaster.getLayoutParams().width = strip_wide;
-            llMaster.addView(masterStrip);
-            stripLP.weight = 1;
-        }
-        stripLP.gravity = Gravity.CENTER_HORIZONTAL;
+//        if( t.type == Track.TrackType.MASTER ) {
+//            masterStrip = stripLayout;
+//
+//            llMaster.addView(masterStrip);
+//        }
         stripLayout.setPadding(0, 0, 0, 0);
         stripLayout.setLayoutParams(stripLP);
-        stripLayout.setBackgroundColor(getResources().getColor(R.color.VeryDark, null));
+        stripLayout.setBackgroundColor(getResources().getColor(R.color.fader, null));
 
         stripLayout.setId(t.remoteId-1);
 
@@ -855,6 +848,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         stripLayout.setOnChangeHandler(topLevelHandler);
 
         stripLayout.init(context, stripElementMask);
+
+        if( t.type == Track.TrackType.MASTER ) {
+            masterStrip = stripLayout;
+
+            llMaster.addView(masterStrip);
+        }
         strips.add(stripLayout);
 
         System.out.printf("adding strip %s with id %d\n", t.name, t.remoteId-1);

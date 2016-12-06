@@ -18,7 +18,7 @@ public class MeterImageView extends ImageView {
     public float parentHeight;
 
     public int meterLevel = 0;
-
+    private Bitmap meter_bmp;
     private Paint p;
 
     public MeterImageView(Context context, AttributeSet attrs) {
@@ -29,10 +29,15 @@ public class MeterImageView extends ImageView {
     public MeterImageView(Context context) {
         super(context);
         p = new Paint(Paint.ANTI_ALIAS_FLAG);
+        this.setBackgroundColor(getResources().getColor(R.color.VeryDark, null));
+        meter_bmp = BitmapFactory.decodeResource(getResources(),
+                R.drawable.gain_image);
     }
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
+
+        canvas.drawBitmap(Bitmap.createScaledBitmap(meter_bmp, (int)parentWidth, (int)parentHeight, true),0,0,p);
 
         int ledheight =  (int)parentHeight / 13;
 

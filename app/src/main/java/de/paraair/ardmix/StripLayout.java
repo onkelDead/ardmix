@@ -20,9 +20,10 @@ public class StripLayout extends LinearLayout {
     public static final int RECEIVE_CHANGED = 26;
     public static final int PAN_CHANGED = 27;
 
-    public static final int STRIP_SMALL_WIDTH = 56;
+    public static final int STRIP_SMALL_WIDTH = 52;
     public static final int STRIP_MEDIUM_WIDTH = 72;
     public static final int STRIP_WIDE_WIDTH = 96;
+    private static final int METER_IMAGE_HIGHT = 160;
 
     private Track track;
     private TextView tvStripName;
@@ -57,6 +58,7 @@ public class StripLayout extends LinearLayout {
     public StripLayout(Context context, Track track) {
         super(context);
         this.setOrientation(LinearLayout.VERTICAL);
+        this.setBackgroundColor(getResources().getColor(R.color.fader,null));
         this.track = track;
     }
 
@@ -84,15 +86,16 @@ public class StripLayout extends LinearLayout {
                 32);
 
         LayoutParams switchWLP = new LayoutParams(
-                STRIP_WIDE_WIDTH / 2,
+                strip_wide / 2,
                 32);
 
-        switchLP.setMargins(1,1,1,1);
+        switchLP.setMargins(1,1,0,0);
+        switchWLP.setMargins(1,1,0,0);
 
         LayoutParams testLP = new LayoutParams(
                 LayoutParams.MATCH_PARENT,
                 26);
-        testLP.setMargins(1,1,1,1);
+        testLP.setMargins(1,1,0,0);
         tvStripName = new TextView(context);
         tvStripName.setPadding(1,0,1,0);
         tvStripName.setMaxLines(1);
@@ -111,7 +114,7 @@ public class StripLayout extends LinearLayout {
                 break;
             case BUS:
                 tvStripName.setBackgroundColor(Color.BLUE);
-                setBackgroundColor(0x200000FF);
+                setBackgroundColor(0xc00000FF);
                 tvStripName.setTextColor(Color.WHITE);
                 break;
             default:
@@ -121,7 +124,20 @@ public class StripLayout extends LinearLayout {
         if( mask.bTitle )
             this.addView(tvStripName);
 
-        ttbFX = new ToggleTextButton(context, "FX","FX", 0xffFF80FF, Color.GRAY);
+
+        LayoutParams meterParam = new LayoutParams(
+                LayoutParams.MATCH_PARENT,
+                METER_IMAGE_HIGHT);
+        meterParam.setMargins(1,1,0,0);
+        meterImage = new MeterImageView(context);
+        meterImage.setLayoutParams(meterParam);
+        meterImage.setId(track.remoteId);
+        meterImage.setBackgroundColor(getResources().getColor(R.color.VeryDark, null));
+
+        if (mask.bMeter)
+            this.addView(meterImage);
+
+        ttbFX = new ToggleTextButton(context, "FX","FX", 0xffFF80FF, R.color.VeryDark);
         ttbFX.setPadding(0,0,0,0);
         ttbFX.setLayoutParams(switchLP);
         ttbFX.setToggleState(false);
@@ -131,7 +147,7 @@ public class StripLayout extends LinearLayout {
         ttbFX.setAutoToggle(true);
 
 
-        ttbSends = new ToggleTextButton(context, "SEND","SEND", Color.CYAN, Color.GRAY);
+        ttbSends = new ToggleTextButton(context, "SEND","SEND", Color.CYAN, R.color.VeryDark);
         ttbSends.setPadding(0,0,0,0);
         ttbSends.setLayoutParams(switchLP);
         ttbSends.setToggleState(false);
@@ -170,7 +186,7 @@ public class StripLayout extends LinearLayout {
                 this.addView(ttbSends);
         }
 
-        ttbRecord = new ToggleTextButton(context, "REC","REC", Color.RED, Color.GRAY);
+        ttbRecord = new ToggleTextButton(context, "REC","REC", Color.RED, R.color.VeryDark);
         ttbRecord.setPadding(0,0,0,0);
         ttbRecord.setLayoutParams(switchLP);
         ttbRecord.setId(track.remoteId);
@@ -187,7 +203,7 @@ public class StripLayout extends LinearLayout {
         else {
             ttbRecord.setAllText("Receive");
             ttbRecord.onColor = Color.BLUE;
-            ttbRecord.setOffColor(Color.GRAY);
+            ttbRecord.setOffColor(R.color.VeryDark);
             ttbRecord.setTag("in");
             ttbRecord.setToggleState(false);
             ttbRecord.setOnClickListener(onClickListener);
@@ -195,7 +211,7 @@ public class StripLayout extends LinearLayout {
         }
 
 
-        ttbInput = new ToggleTextButton(context, "INPUT", "INPUT", 0xFFFFAA00, Color.GRAY);
+        ttbInput = new ToggleTextButton(context, "INPUT", "INPUT", 0xFFFFAA00, R.color.VeryDark);
         ttbInput.setPadding(0,0,0,0);
         ttbInput.setLayoutParams(switchLP);
         ttbInput.setTag("input");
@@ -229,20 +245,8 @@ public class StripLayout extends LinearLayout {
         }
 
 
-        LayoutParams meterParam = new LayoutParams(
-                LayoutParams.MATCH_PARENT,
-                160);
-        meterParam.setMargins(0,0,0,0);
-        meterImage = new MeterImageView(context);
-        meterImage.setLayoutParams(meterParam);
-        meterImage.setId(track.remoteId);
-        meterImage.setBackgroundColor(Color.BLACK);
-        meterImage.setBackgroundResource(R.drawable.gain_image);
 
-        if (mask.bMeter)
-            this.addView(meterImage);
-
-        ttbMute = new ToggleTextButton(context, "MUTE", "MUTE", Color.YELLOW, Color.GRAY);
+        ttbMute = new ToggleTextButton(context, "MUTE", "MUTE", Color.YELLOW, R.color.VeryDark);
         ttbMute.setPadding(0,0,0,0);
         ttbMute.setLayoutParams(switchLP);
         ttbMute.setTag("mute");
@@ -250,7 +254,7 @@ public class StripLayout extends LinearLayout {
         ttbMute.setToggleState(track.muteEnabled );
         ttbMute.setOnClickListener(onClickListener);
 
-        ttbSolo = new ToggleTextButton(context, "SOLO", "SOLO", Color.GREEN, Color.GRAY);
+        ttbSolo = new ToggleTextButton(context, "SOLO", "SOLO", Color.GREEN, R.color.VeryDark);
         ttbSolo.setPadding(0,0,0,0);
         ttbSolo.setLayoutParams(switchLP);
         ttbSolo.setTag("solo");
@@ -289,7 +293,7 @@ public class StripLayout extends LinearLayout {
                 this.addView(ttbSolo);
         }
         
-        ttbSoloIso = new ToggleTextButton(context, "I", "I", Color.GREEN, Color.GRAY);
+        ttbSoloIso = new ToggleTextButton(context, "I", "I", Color.GREEN, R.color.VeryDark);
         ttbSoloIso.setPadding(0,0,0,0);
         ttbSoloIso.setLayoutParams(switchLP);
         ttbSoloIso.setTag("soloiso");
@@ -301,7 +305,7 @@ public class StripLayout extends LinearLayout {
             ttbSoloIso.setUntoggledText("");
         }
 
-        ttbSoloSafe = new ToggleTextButton(context, "L", "L", Color.GREEN, Color.GRAY);
+        ttbSoloSafe = new ToggleTextButton(context, "L", "L", Color.GREEN, R.color.VeryDark);
         ttbSoloSafe.setPadding(0,0,0,0);
         ttbSoloSafe.setLayoutParams(switchLP);
         ttbSoloSafe.setTag("solosafe");
@@ -332,7 +336,7 @@ public class StripLayout extends LinearLayout {
                 this.addView(ttbSoloSafe);
         }
         
-        ttbPan = new ToggleTextButton(context, "PAN", "PAN", 0xffffbb33, Color.GRAY);
+        ttbPan = new ToggleTextButton(context, "PAN", "PAN", 0xffffbb33, R.color.VeryDark);
         ttbPan.setPadding(0,0,0,0);
         ttbPan.setLayoutParams(switchLP);
         ttbPan.setTag("pan");
@@ -347,10 +351,13 @@ public class StripLayout extends LinearLayout {
             this.addView(ttbPan);
         ttbPan.setAutoToggle(true);
 
-        fwVolume = new FaderView(context);
-        fwVolume.setLayoutParams(new LayoutParams(
+        LayoutParams fwLP = new LayoutParams(
                 LayoutParams.MATCH_PARENT,
-                LayoutParams.MATCH_PARENT));
+                LayoutParams.MATCH_PARENT);
+        fwLP.setMargins(1,1,0,0);
+        fwVolume = new FaderView(context);
+        fwVolume.setLayoutParams(fwLP);
+        fwVolume.setBackgroundColor(getResources().getColor(R.color.VeryDark, null));
         fwVolume.setTag("volume");
         fwVolume.setId(track.remoteId);
         fwVolume.setOnChangeHandler(mHandler);
@@ -484,7 +491,7 @@ public class StripLayout extends LinearLayout {
             ttbMute.setAllText("Off");
             ttbMute.setToggledText("On");
             ttbMute.onColor = Color.CYAN;
-            ttbMute.setOffColor(Color.GRAY);
+            ttbMute.setOffColor(R.color.VeryDark);
             ttbMute.setToggleState(enabled);
             ttbMute.setAutoToggle(true);
         }
@@ -504,7 +511,7 @@ public class StripLayout extends LinearLayout {
             ttbSolo.setEnabled(true);
             ttbMute.setAllText("Mute");
             ttbMute.onColor = Color.YELLOW;
-            ttbMute.setOffColor(Color.GRAY);
+            ttbMute.setOffColor(R.color.VeryDark);
             ttbMute.setToggleState(oldMute);
             ttbMute.setAutoToggle(false);
             track.muteEnabled = oldMute;
@@ -583,11 +590,11 @@ public class StripLayout extends LinearLayout {
 
     public void resetBackground() {
         if( track.type == Track.TrackType.AUDIO)
-            setBackgroundColor(getResources().getColor(R.color.VeryDark, null));
+            setBackgroundColor(getResources().getColor(R.color.fader, null));
         if( track.type == Track.TrackType.BUS)
-            setBackgroundColor(0x200000FF);
+            setBackgroundColor(0xc00000FF);
         if( track.type == Track.TrackType.MASTER)
-            setBackgroundColor(getResources().getColor(R.color.VeryDark, null));
+            setBackgroundColor(getResources().getColor(R.color.fader, null));
     }
 
 

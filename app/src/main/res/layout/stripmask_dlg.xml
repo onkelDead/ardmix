@@ -6,7 +6,11 @@
     <RadioGroup
         android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" >
+        android:layout_height="match_parent"
+        android:layout_marginTop="16dp"
+        android:layout_marginLeft="4dp"
+        android:layout_marginRight="4dp"
+        android:layout_marginBottom="4dp" >
 
         <RadioButton
             android:text="Small Strips"
@@ -32,61 +36,85 @@
 
     <CheckBox
         android:text="Strip Title"
+        android:layout_marginLeft="4dp"
+        android:layout_marginRight="4dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/chkMaskTitle" />
     <CheckBox
         android:text="Strip FX Button"
+        android:layout_marginLeft="4dp"
+        android:layout_marginRight="4dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/chkMaskFX" />
     <CheckBox
         android:text="Strip Send Button"
+        android:layout_marginLeft="4dp"
+        android:layout_marginRight="4dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/chkMaskSend" />
     <CheckBox
         android:text="Strip Record/Receive Button"
+        android:layout_marginLeft="4dp"
+        android:layout_marginRight="4dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/chkMaskRecord" />
     <CheckBox
         android:text="Strip Input Button"
+        android:layout_marginLeft="4dp"
+        android:layout_marginRight="4dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/chkMaskInput" />
     <CheckBox
         android:text="Strip Meter"
+        android:layout_marginLeft="4dp"
+        android:layout_marginRight="4dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/chkMaskMeter" />
     <CheckBox
         android:text="Strip Mute Button"
+        android:layout_marginLeft="4dp"
+        android:layout_marginRight="4dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/chkMaskMute" />
     <CheckBox
         android:text="Strip Solo Button"
+        android:layout_marginLeft="4dp"
+        android:layout_marginRight="4dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/chkMaskSolo" />
     <CheckBox
         android:text="Strip Solo Isolsate Button"
+        android:layout_marginLeft="4dp"
+        android:layout_marginRight="4dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/chkMaskSoloIso" />
     <CheckBox
         android:text="Strip Solo Lock Button"
+        android:layout_marginLeft="4dp"
+        android:layout_marginRight="4dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/chkMaskSoloSafe" />
     <CheckBox
         android:text="Strip Pan Button"
+        android:layout_marginLeft="4dp"
+        android:layout_marginRight="4dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/chkMaskPan" />
     <CheckBox
         android:text="Strip Fader"
+        android:layout_marginLeft="4dp"
+        android:layout_marginRight="4dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/chkMaskFader" />
