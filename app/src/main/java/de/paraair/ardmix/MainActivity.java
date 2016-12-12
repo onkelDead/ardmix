@@ -22,6 +22,7 @@ import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
+import android.widget.TextView;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -58,6 +59,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private byte transportState = TRANSPORT_STOPPED;
 
     private BankLoadDialog dfBankLoad = null;
+
+    // clock
+    private TextView tvClock = null;
 
     // top level IO elements
     private ImageButton gotoStartButton = null;
@@ -126,6 +130,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         stripElementMask.loadSettings(settings);
 
+        tvClock = (TextView) findViewById(R.id.str_clock);
 
         mainSroller = (HorizontalScrollView) findViewById(R.id.main_scoller);
         llStripList = (LinearLayout) findViewById(R.id.strip_list);
@@ -158,39 +163,39 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         transportToggleGroup.addToGroup(stopButton);
 //        transportToggleGroup.addToGroup(loopButton);
 
-        sbLocation = (SeekBar) this.findViewById(R.id.locationBaR);
-        sbLocation.setMax(10000);
-        sbLocation.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-
-                @Override
-                public void onStopTrackingTouch(SeekBar arg0) {
-                }
-
-                @Override
-                public void onStartTrackingTouch(SeekBar arg0) {
-                }
-
-                @Override
-                public void onProgressChanged(SeekBar sb, int pos, boolean fromUser) {
-
-                    if (fromUser){
-
-                        if (!(RECORD_ENABLED == (transportState & RECORD_ENABLED)
-                        )){
-// && TRANSPORT_RUNNING == (transportState & TRANSPORT_RUNNING)
-
-                            int loc = Math.round(( sbLocation.getProgress() * maxFrame) / 10000);
-                            oscService.transportAction(OscService.LOCATE, loc, TRANSPORT_RUNNING == (transportState & TRANSPORT_RUNNING) );
-
-                            transportState = TRANSPORT_STOPPED;
-
-                            transportToggleGroup.toggle(stopButton, true);
-                            recordButton.toggleOff();
-                        }
-                    }
-                }
-            }
-        );
+//        sbLocation = (SeekBar) this.findViewById(R.id.locationBaR);
+//        sbLocation.setMax(10000);
+//        sbLocation.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+//
+//                @Override
+//                public void onStopTrackingTouch(SeekBar arg0) {
+//                }
+//
+//                @Override
+//                public void onStartTrackingTouch(SeekBar arg0) {
+//                }
+//
+//                @Override
+//                public void onProgressChanged(SeekBar sb, int pos, boolean fromUser) {
+//
+//                    if (fromUser){
+//
+//                        if (!(RECORD_ENABLED == (transportState & RECORD_ENABLED)
+//                        )){
+//// && TRANSPORT_RUNNING == (transportState & TRANSPORT_RUNNING)
+//
+//                            int loc = Math.round(( sbLocation.getProgress() * maxFrame) / 10000);
+//                            oscService.transportAction(OscService.LOCATE, loc, TRANSPORT_RUNNING == (transportState & TRANSPORT_RUNNING) );
+//
+//                            transportState = TRANSPORT_STOPPED;
+//
+//                            transportToggleGroup.toggle(stopButton, true);
+//                            recordButton.toggleOff();
+//                        }
+//                    }
+//                }
+//            }
+//        );
     }
 
     /**
@@ -780,8 +785,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     if( transportState == (transportState & RECORD_ENABLED)) {
                         maxFrame = clock;
                     }
-                    sbLocation.setProgress(Math.round(( (float) clock/ (float) maxFrame) * 10000));
-                    sbLocation.refreshDrawableState();
+//                    sbLocation.setProgress(Math.round(( (float) clock/ (float) maxFrame) * 10000));
+//                    sbLocation.refreshDrawableState();
+                    break;
+
+                case OSC_UPDATE_CLOCKSTRING:
+                    String strClock = (String)msg.obj;
+
+                    tvClock.setText(strClock);
+//                    sbLocation.setProgress(Math.round(( (float) clock/ (float) maxFrame) * 10000));
+//                    sbLocation.refreshDrawableState();
                     break;
 
                 case OSC_RECORD:
@@ -901,6 +914,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             break;
                         case BUS:
                             nb.setType(Bank.BankType.BUS);
+                            break;
+                        case MIDI:
+                            nb.setType(Bank.BankType.MIDI);
                             break;
                     }
                     iTrackInBank = 0;

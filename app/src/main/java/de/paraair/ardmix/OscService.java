@@ -173,6 +173,7 @@ public class OscService {
             Object[] args = {
 					0 // bank size
 					, ArdourConstants.STRIP_TRACK_AUDIO // strip types
+					+ ArdourConstants.STRIP_HIDDEN
 					+ ArdourConstants.STRIP_BUS_AUDIO
 					+ ArdourConstants.STRIP_AUX
                     + ArdourConstants.STRIP_MASTER
@@ -201,6 +202,7 @@ public class OscService {
 			Object[] args = {
 					0 // bank size
 					, ArdourConstants.STRIP_TRACK_AUDIO // strip types
+					+ ArdourConstants.STRIP_HIDDEN
 					+ ArdourConstants.STRIP_BUS_AUDIO
 					+ ArdourConstants.STRIP_MASTER
 					+ ArdourConstants.STRIP_AUX
@@ -913,19 +915,21 @@ public class OscService {
 
 							default:
 
-								System.out.printf("path: %s, ", message.getName());
-								for( int a = 0; a < message.getArgCount(); a++) {
-									System.out.printf("%d-%s,  ", a, String.valueOf(message.getArg(a)));
-								}
-								System.out.printf("\n");
+//								System.out.printf("path: %s, ", message.getName());
+//								for( int a = 0; a < message.getArgCount(); a++) {
+//									System.out.printf("%d-%s,  ", a, String.valueOf(message.getArg(a)));
+//								}
+//								System.out.printf("\n");
 								break;
 						}
 						break;
 					case "position":
 						switch (pathes[2]) {
 							case "samples":
-								Message pomsg = transportHandler.obtainMessage(ArdourConstants.OSC_UPDATE_CLOCK, Long.parseLong((String) message.getArg(0)));
-								transportHandler.sendMessage(pomsg);
+								transportHandler.sendMessage(transportHandler.obtainMessage(ArdourConstants.OSC_UPDATE_CLOCK, Long.parseLong((String) message.getArg(0))));
+								break;
+							case "smpte":
+								transportHandler.sendMessage(transportHandler.obtainMessage(ArdourConstants.OSC_UPDATE_CLOCKSTRING, (String) message.getArg(0)));
 								break;
 					}
 					case "master":
@@ -965,11 +969,11 @@ public class OscService {
 								}
 								break;
                         default:
-                            System.out.printf("path: %s, ", message.getName());
-                            for( int a = 0; a < message.getArgCount(); a++) {
-                                System.out.printf("%d-%s,  ", a, String.valueOf(message.getArg(a)));
-                            }
-                            System.out.printf("\n");
+//                            System.out.printf("path: %s, ", message.getName());
+//                            for( int a = 0; a < message.getArgCount(); a++) {
+//                                System.out.printf("%d-%s,  ", a, String.valueOf(message.getArg(a)));
+//                            }
+//                            System.out.printf("\n");
                             break;
 
 						}

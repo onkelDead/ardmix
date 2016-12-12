@@ -11,17 +11,25 @@
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="wrap_content"
-        android:layout_height="24dp"
+        android:layout_height="28dp"
         android:layout_gravity="top|right"
         android:id="@+id/btTransport"
 
         android:background="?attr/colorPrimary"
         android:layout_marginTop="5dp">
 
+        <TextView
+            android:id="@+id/str_clock"
+            android:layout_width="wrap_content"
+            android:layout_height="24dp"
+            android:textColor="#ffffff88"
+            android:layout_marginRight="8dp"/>
+
+
         <ImageButton
             android:id="@+id/bGotoStart"
             android:layout_width="48dp"
-            android:layout_height="wrap_content"
+            android:layout_height="26dp"
             android:layout_margin="2dp"
             android:layout_weight="0.1"
             android:background="@drawable/ard_btn1"
@@ -31,7 +39,7 @@
 
         <de.paraair.ardmix.ToggleImageButton
             android:layout_width="48dp"
-            android:layout_height="wrap_content"
+            android:layout_height="26dp"
             android:id="@+id/bLoopEnable"
             android:layout_weight="0.1"
             android:layout_margin="2dp"
@@ -43,7 +51,7 @@
         <de.paraair.ardmix.ToggleImageButton
             android:id="@+id/bPlay"
             android:layout_width="48dp"
-            android:layout_height="wrap_content"
+            android:layout_height="26dp"
             android:layout_margin="2dp"
             android:layout_weight="0.2"
             android:minHeight="100dp"
@@ -54,7 +62,7 @@
         <de.paraair.ardmix.ToggleImageButton
             android:id="@+id/bStop"
             android:layout_width="48dp"
-            android:layout_height="wrap_content"
+            android:layout_height="26dp"
             android:layout_margin="2dp"
             android:layout_weight="0.2"
             android:minHeight="100dp"
@@ -65,7 +73,7 @@
         <de.paraair.ardmix.ToggleImageButton
             android:id="@+id/bRec"
             android:layout_width="48dp"
-            android:layout_height="wrap_content"
+            android:layout_height="26dp"
             android:layout_margin="2dp"
             android:layout_weight="0.2"
             android:minHeight="100dp"
@@ -77,7 +85,7 @@
         <ImageButton
             android:id="@+id/bGotoEnd"
             android:layout_width="48dp"
-            android:layout_height="wrap_content"
+            android:layout_height="26dp"
             android:layout_margin="2dp"
             android:layout_weight="0.1"
             android:background="@drawable/ard_btn1"

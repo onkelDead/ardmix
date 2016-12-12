@@ -187,7 +187,7 @@ public class StripLayout extends LinearLayout {
             ttbRecord.setPadding(0, 0, 0, 0);
             ttbRecord.setLayoutParams(switchLP);
             ttbRecord.setId(track.remoteId);
-            if (track.type == Track.TrackType.AUDIO) {
+            if (track.type == Track.TrackType.AUDIO || track.type == Track.TrackType.MIDI ) {
                 ttbRecord.setTag("rec");
                 ttbRecord.setToggleState(track.recEnabled);
                 ttbRecord.setOnClickListener(onClickListener);

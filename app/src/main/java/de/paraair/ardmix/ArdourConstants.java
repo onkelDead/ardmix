@@ -49,6 +49,7 @@ final class ArdourConstants {
 
 
     public static final int OSC_UPDATE_CLOCK = 3000;
+    public static final int OSC_UPDATE_CLOCKSTRING = 3100;
     public static final int OSC_RECORD = 3500;
     public static final int OSC_PLAY = 3600;
     public static final int OSC_STOP = 3700;

@@ -11,11 +11,11 @@
     tools:showIn="@layout/activity_main">
 
 
-    <SeekBar
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/locationBaR"
-        android:background="@color/VeryDark" />
+    <!--<SeekBar-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:id="@+id/locationBaR"-->
+        <!--android:background="@color/VeryDark" />-->
 
     <LinearLayout
         android:id="@+id/bank_list"

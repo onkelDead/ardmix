@@ -84,14 +84,15 @@ public class ToggleTextButton extends Button implements ToggleListener {
         //((textPaint.descent() + textPaint.ascent()) / 2) is the distance from the baseline to the center.
 
         String text = state == 0 ? untoggledText : toggledText;
-        float width = p.measureText(text, 0, text.length());
+        if( text != null) {
+            float width = p.measureText(text, 0, text.length());
 
-        if( state == 1 )
-            p.setColor(offColor);
-        else if(!isEnabled())
-            p.setColor(0);
-        canvas.drawText(state == 0 ? untoggledText : toggledText, xPos - width / 2, yPos, p);
-
+            if (state == 1)
+                p.setColor(offColor);
+            else if (!isEnabled())
+                p.setColor(0);
+            canvas.drawText(state == 0 ? untoggledText : toggledText, xPos - width / 2, yPos, p);
+        }
 
 
     }

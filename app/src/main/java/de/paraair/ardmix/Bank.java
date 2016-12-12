@@ -21,7 +21,7 @@ public class Bank implements Cloneable{
         return -1;
     }
 
-    enum BankType { ALL, AUDIO, BUS }
+    enum BankType { ALL, AUDIO, MIDI, BUS }
 
     private ArrayList<Strip> strips = new ArrayList();
     private String name;
