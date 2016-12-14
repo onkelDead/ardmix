@@ -822,9 +822,7 @@ public class OscService {
 								t = getTrack(stripIndex);
 								if (t!=null) {
 									t.name = (String) message.getArg(argOffset);
-									Message namemsg = transportHandler.obtainMessage(ArdourConstants.OSC_STRIP_NAME);
-									namemsg.arg1 = stripIndex;
-									transportHandler.sendMessage(namemsg);
+									transportHandler.sendMessage(transportHandler.obtainMessage(ArdourConstants.OSC_STRIP_NAME, stripIndex, 0));
 								}
 								break;
 							case "fader":
@@ -934,6 +932,7 @@ public class OscService {
 					}
 					case "master":
 						switch (pathes[2]) {
+
 							case "meter":
 								stripIndex = routes.size();
 								t = getTrack(stripIndex);
@@ -947,6 +946,7 @@ public class OscService {
 									transportHandler.sendMessage(mmsg);
 								}
 								break;
+
 							case "fader":
 								t = getTrack(routes.size()-1);
 								if ( t!=null && !t.getTrackVolumeOnSeekBar() ) {
@@ -961,6 +961,7 @@ public class OscService {
 										Log.d(TAG, "fader change missed\n");
 								}
 								break;
+
 							case "mute":
 								t = getMaster();
 								if (t!=null) {
@@ -968,12 +969,20 @@ public class OscService {
 									transportHandler.sendMessage(transportHandler.obtainMessage(ArdourConstants.OSC_STRIP_MUTE, t.remoteId-1, 0));
 								}
 								break;
+
+							case "name":
+								t = getMaster();
+								if (t!=null) {
+									t.name = (String) message.getArg(0);
+									transportHandler.sendMessage(transportHandler.obtainMessage(ArdourConstants.OSC_STRIP_NAME, t.remoteId-1, 0));
+								}
+								break;
                         default:
-//                            System.out.printf("path: %s, ", message.getName());
-//                            for( int a = 0; a < message.getArgCount(); a++) {
-//                                System.out.printf("%d-%s,  ", a, String.valueOf(message.getArg(a)));
-//                            }
-//                            System.out.printf("\n");
+                            System.out.printf("path: %s, ", message.getName());
+                            for( int a = 0; a < message.getArgCount(); a++) {
+                                System.out.printf("%d-%s,  ", a, String.valueOf(message.getArg(a)));
+                            }
+                            System.out.printf("\n");
                             break;
 
 						}

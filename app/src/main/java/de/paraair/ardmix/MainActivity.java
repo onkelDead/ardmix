@@ -610,7 +610,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 case OSC_STRIP_NAME:
                     iRemoteId = msg.arg1;
-                    if( strips.size() > iRemoteId )
+                    if( strips.size() > iRemoteId-1 )
                         getStripLayout(iRemoteId).nameChanged();
                     break;
 
