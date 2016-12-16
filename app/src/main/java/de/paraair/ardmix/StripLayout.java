@@ -216,18 +216,22 @@ public class StripLayout extends LinearLayout {
                 if (track.type == Track.TrackType.AUDIO) {
                     ttbRecord.setLayoutParams(switchWLP);
                     ttbInput.setLayoutParams(switchWLP);
-                    if (mask.bRecord)
+                    if (( (mask.bRecord && track.type == Track.TrackType.AUDIO)
+                            || mask.bReceive && track.type == Track.TrackType.BUS ))
                         rec_in.addView(ttbRecord);
                     if (mask.bInput)
                         rec_in.addView(ttbInput);
                 } else if (track.type == Track.TrackType.BUS) {
                     ttbRecord.setLayoutParams(switchLP);
-                    if (mask.bRecord)
+                    if (( (mask.bRecord && track.type == Track.TrackType.AUDIO)
+                            || mask.bReceive && track.type == Track.TrackType.BUS ))
                         rec_in.addView(ttbRecord);
                 }
                 this.addView(rec_in);
             } else {
-                if (mask.bRecord && track.type != Track.TrackType.MASTER)
+                if ( ( (mask.bRecord && track.type == Track.TrackType.AUDIO)
+                        || mask.bReceive && track.type == Track.TrackType.BUS )
+                        && track.type != Track.TrackType.MASTER )
                     this.addView(ttbRecord);
                 if (mask.bInput && track.type == Track.TrackType.AUDIO)
                     this.addView(ttbInput);

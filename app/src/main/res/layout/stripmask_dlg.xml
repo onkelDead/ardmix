@@ -56,12 +56,19 @@
         android:layout_height="wrap_content"
         android:id="@+id/chkMaskSend" />
     <CheckBox
-        android:text="Strip Record/Receive Button"
+        android:text="Strip Record Button"
         android:layout_marginLeft="4dp"
         android:layout_marginRight="4dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/chkMaskRecord" />
+    <CheckBox
+        android:text="Strip Receive Button"
+        android:layout_marginLeft="4dp"
+        android:layout_marginRight="4dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/chkMaskReceive" />
     <CheckBox
         android:text="Strip Input Button"
         android:layout_marginLeft="4dp"

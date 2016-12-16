@@ -12,7 +12,7 @@
     <color name="BUTTON_SEND">#98fafa</color>
     <color name="BUTTON_RECORD">#fc5858</color>
     <color name="BUTTON_INPUT">#FFFFAA00</color>
-    <color name="BUTTON_MUTE">#FFFFFF00</color>
+    <color name="BUTTON_MUTE">#ffff00</color>
     <color name="BUTTON_SOLO">#FF00FF00</color>
     <color name="BUTTON_PAN">#ffffbb33</color>
     <color name="PLUGIN_BACKGROUND">#20FF40FF</color>

@@ -22,8 +22,9 @@
             android:id="@+id/str_clock"
             android:layout_width="wrap_content"
             android:layout_height="24dp"
-            android:textColor="#ffffff88"
-            android:layout_marginRight="8dp"/>
+            android:layout_marginRight="8dp"
+            android:textSize="18sp"
+            android:textColor="@color/BUTTON_MUTE" />
 
 
         <ImageButton

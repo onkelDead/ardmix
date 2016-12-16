@@ -25,6 +25,7 @@ public class StripMaskDialogFragment extends DialogFragment {
     private CheckBox cbStripFX;
     private CheckBox cbStripSend;
     private CheckBox cbStripRecord;
+    private CheckBox cbStripReceive;
     private CheckBox cbStripInput;
     private CheckBox cbStripMeter;
     private CheckBox cbStripMute;
@@ -54,6 +55,7 @@ public class StripMaskDialogFragment extends DialogFragment {
                 item.bFX = cbStripFX.isChecked();
                 item.bSend = cbStripSend.isChecked();
                 item.bRecord = cbStripRecord.isChecked();
+                item.bReceive = cbStripReceive.isChecked();
                 item.bInput = cbStripInput.isChecked();
                 item.bMeter = cbStripMeter.isChecked();
                 item.bMute = cbStripMute.isChecked();
@@ -91,6 +93,9 @@ public class StripMaskDialogFragment extends DialogFragment {
 
         cbStripRecord = (CheckBox) view.findViewById(R.id.chkMaskRecord);
         cbStripRecord.setChecked(args.getBoolean("record"));
+
+        cbStripReceive = (CheckBox) view.findViewById(R.id.chkMaskReceive);
+        cbStripReceive.setChecked(args.getBoolean("receive"));
 
         cbStripInput = (CheckBox) view.findViewById(R.id.chkMaskInput);
         cbStripInput.setChecked(args.getBoolean("input"));
@@ -140,6 +145,7 @@ public class StripMaskDialogFragment extends DialogFragment {
                 item.bFX = true;
                 item.bSend = true;
                 item.bRecord = true;
+                item.bReceive = true;
                 item.bInput = false;
                 item.bMeter = true;
                 item.bMute = true;

@@ -24,6 +24,7 @@ public class StripElementMask {
     public boolean bFX = true;
     public boolean bSend = true;
     public boolean bRecord = true;
+    public boolean bReceive = true;
     public boolean bInput = true;
 
     public boolean bMeter = true;
@@ -46,6 +47,7 @@ public class StripElementMask {
         settingsBundle.putBoolean("fx", bFX);
         settingsBundle.putBoolean("send", bSend);
         settingsBundle.putBoolean("record", bRecord);
+        settingsBundle.putBoolean("receive", bReceive);
         settingsBundle.putBoolean("input", bInput);
         settingsBundle.putBoolean("meter", bMeter);
         settingsBundle.putBoolean("mute", bMute);
@@ -67,6 +69,7 @@ public class StripElementMask {
         bFX = settings.getBoolean("mskFx", true);
         bSend = settings.getBoolean("mskSend", true);
         bRecord = settings.getBoolean("mskRecord", true);
+        bReceive = settings.getBoolean("mskReceive", true);
         bInput = settings.getBoolean("mskInput", true);
 
         bMeter = settings.getBoolean("mskMeter", true);
@@ -87,6 +90,7 @@ public class StripElementMask {
         editor.putBoolean("mskFX", bFX);
         editor.putBoolean("mskSend", bSend);
         editor.putBoolean("mskRecord", bRecord);
+        editor.putBoolean("mskReceive", bReceive);
         editor.putBoolean("mskInput", bInput);
         editor.putBoolean("mskSolo", bSolo);
         editor.putBoolean("mskSoloIso", bSoloIso);
