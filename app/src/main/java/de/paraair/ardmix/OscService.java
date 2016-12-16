@@ -18,6 +18,8 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author lincoln
@@ -27,6 +29,7 @@ public class OscService {
 
 	private static String TAG = "OscService";
 
+    private int masterId;
 
 	// States
 	private static final int READY = 0;
@@ -77,8 +80,9 @@ public class OscService {
 
 	private OSCClient oscClient;
 
-	
-	private ArrayList<Track> routes= new ArrayList<>();
+
+	private HashMap<Integer, Track> routes= new HashMap<>();
+//	private ArrayList<Track> routes= new ArrayList<>();
 
 	private int state = 0;
 	
@@ -176,9 +180,9 @@ public class OscService {
 					+ ArdourConstants.STRIP_HIDDEN
 					+ ArdourConstants.STRIP_BUS_AUDIO
 					+ ArdourConstants.STRIP_AUX
-                    + ArdourConstants.STRIP_MASTER
+//                    + ArdourConstants.STRIP_MASTER
 					, feedback
-					, 1 // fader mode (loat from 0 to 1)
+					, 1 // fader mode (float from 0 to 1)
 			};
 
 			sendOSCMessage("/set_surface", args);
@@ -221,14 +225,12 @@ public class OscService {
 
 			routes.clear();
 			state = OscService.ROUTES_REQUESTED;
-			try {
-				Thread.sleep(500);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-//			sendOSCMessage("/set_surface", null);
+//			try {
+//				Thread.sleep(500);
+//			} catch (InterruptedException e) {
+//				e.printStackTrace();
+//			}
 			sendOSCMessage("/strip/list");
-
 		}
 	}
 
@@ -252,9 +254,9 @@ public class OscService {
         sendOSCMessage("/set_surface", sargs);
 
         Integer[] args = new Integer[routes.size()];
-        for(int i = 0; i < routes.size(); i++){
-            Track t = routes.get(i);
-            args[i] = t.remoteId;
+		int j = 0;
+		for( int index : routes.keySet()) {
+			args[j++] = index;
         }
         sendOSCMessage("/strip/ignore", args);
 
@@ -304,8 +306,8 @@ public class OscService {
 			break;
 
 		case ALL_REC_ENABLE:
-			for( Track t: routes) {
-
+			for( int index : routes.keySet()) {
+				Track t = routes.get(index);
 				if( t.type == Track.TrackType.AUDIO && !t.recEnabled) {
 					trackListAction(REC_CHANGED, t);
 				}
@@ -314,8 +316,8 @@ public class OscService {
 			break;
 
 		case ALL_REC_DISABLE:
-			for( Track t: routes) {
-
+			for( int index : routes.keySet()) {
+				Track t = routes.get(index);
 				if( t.type == Track.TrackType.AUDIO && t.recEnabled) {
 					trackListAction(REC_CHANGED, t);
 				}
@@ -324,7 +326,8 @@ public class OscService {
 			break;
 
 		case ALL_REC_TOGGLE:
-			for( Track t: routes) {
+			for( int index : routes.keySet()) {
+				Track t = routes.get(index);
 				if( t.type == Track.TrackType.AUDIO ) {
 					trackListAction(REC_CHANGED, t);
 				}
@@ -333,9 +336,9 @@ public class OscService {
 			break;
 
         case ALL_STRIPIN_ENABLE:
-            for( Track t: routes) {
+			for( int index : routes.keySet()) {
+				Track t = routes.get(index);
                 if( t.type == Track.TrackType.AUDIO && !t.stripIn) {
-//                    t.stripIn = !t.stripIn;
                     trackListAction(STRIPIN_CHANGED, t);
                 }
             }
@@ -343,9 +346,9 @@ public class OscService {
             break;
 
         case ALL_STRIPIN_DISABLE:
-            for( Track t: routes) {
+			for( int index : routes.keySet()) {
+				Track t = routes.get(index);
                 if( t.type == Track.TrackType.AUDIO && t.stripIn ) {
-//                    t.stripIn = !t.stripIn;
                     trackListAction(STRIPIN_CHANGED, t);
                 }
             }
@@ -353,9 +356,9 @@ public class OscService {
             break;
 
         case ALL_STRIPIN_TOGGLE:
-            for( Track t: routes) {
+			for( int index : routes.keySet()) {
+				Track t = routes.get(index);
                 if( t.type == Track.TrackType.AUDIO ) {
-//                    t.stripIn = !t.stripIn;
                     trackListAction(STRIPIN_CHANGED, t);
                 }
             }
@@ -480,64 +483,73 @@ public class OscService {
 		Object[] args = new Object[2];
 		args[0] = track.remoteId;
 		
+        String stripURI = "/strip";
+        int argValueIndex = 1;
+
+        if( track.remoteId == masterId ) {
+            args = new Object[1];
+            stripURI = "/master";
+            argValueIndex = 0;
+        }
 		
 		switch(cmd){
             case REC_CHANGED:
-                uri = "/strip/recenable";
-                args[1] = track.recEnabled ? 0 : 1;
+                uri = "/recenable";
+                args[argValueIndex] = track.recEnabled ? 0 : 1;
 
                 break;
 
             case MUTE_CHANGED:
-                uri = "/strip/mute";
-                args[1] = track.muteEnabled ? 0 : 1;
+                uri = "/mute";
+                args[argValueIndex] = track.muteEnabled ? 0 : 1;
 
                 break;
 
 			case SOLO_CHANGED:
-				uri = "/strip/solo";
-				args[1] = track.soloEnabled ? 0 : 1;
+				uri = "/solo";
+				args[argValueIndex] = track.soloEnabled ? 0 : 1;
 
 				break;
 
 			case SOLO_ISOLATE_CHANGED:
-				uri = "/strip/solo_iso";
-				args[1] = track.soloIsolateEnabled ? 0 : 1;
+				uri = "/solo_iso";
+				args[argValueIndex] = track.soloIsolateEnabled ? 0 : 1;
 
 				break;
 
 			case SOLO_SAFE_CHANGED:
-				uri = "/strip/solo_safe";
-				args[1] = track.soloSafeEnabled ? 0 : 1;
+				uri = "/solo_safe";
+				args[argValueIndex] = track.soloSafeEnabled ? 0 : 1;
 
 				break;
 
 			case STRIPIN_CHANGED:
-                uri = "/strip/monitor_input";
-                args[1] = track.stripIn ? 0 : 1;
+                uri = "/monitor_input";
+                args[argValueIndex] = track.stripIn ? 0 : 1;
 
                 break;
 
 			case FADER_CHANGED:
-				uri = "/strip/fader";
-				args[1] = (float) track.trackVolume / 1000;
+				uri = "/fader";
+				args[argValueIndex] = (float) track.trackVolume / 1000;
 				break;
 
             case AUX_CHANGED:
                 args = new Object[3];
-                uri = "/strip/send/fader";
+                stripURI = "/strip/send";
+                uri = "/fader";
                 args[0] = track.remoteId;
                 args[1] = track.source_id;
                 args[2] = (float) track.trackVolume / 1000;
                 break;
 
             case NAME_CHANGED:
-				uri = "/strip/name";
-				args[1] = track.name;
+				uri = "/name";
+				args[argValueIndex] = track.name;
 				break;
 		}
 
-		sendOSCMessage(uri, args);
+		sendOSCMessage(stripURI + uri, args);
 	}
 
 
@@ -620,13 +632,14 @@ public class OscService {
 					Message msg1 = transportHandler.obtainMessage(ArdourConstants.OSC_MAXFRAMES, maxFrame);
 					transportHandler.sendMessage(msg1);
 
+                    masterId = routes.size() + 1;
 					Track t = new Track();
 					t.name = "Master";
 					t.type = Track.TrackType.MASTER;
-                    t.remoteId = routes.size()+1;
+                    t.remoteId = masterId;
                     t.muteEnabled = false;
 
-                    routes.add(t);
+                    routes.put(t.remoteId, t);
 					Message msg4 = transportHandler.obtainMessage(ArdourConstants.OSC_NEWSTRIP, t);
 					transportHandler.sendMessage(msg4);
 
@@ -683,7 +696,7 @@ public class OscService {
                     i = (Integer) message.getArg(7);
                     t.recEnabled = (i > 0);
                 }
-                routes.add(t);
+				routes.put(t.remoteId, t);
 
 				Message msg3 = transportHandler.obtainMessage(ArdourConstants.OSC_NEWSTRIP, t);
 				transportHandler.sendMessage(msg3);
@@ -935,21 +948,20 @@ public class OscService {
 						switch (pathes[2]) {
 
 							case "meter":
-								stripIndex = routes.size();
-								t = getTrack(stripIndex);
+								t = getTrack(masterId);
 
 								int newMeter = ((int)message.getArg(0)) & 0xffff;
 								newMeter = (newMeter != 0xffff) ? newMeter & 0x1FFF : 0;
 
 								if( t != null && t.meter != newMeter ) {
 									t.meter = newMeter;
-									Message mmsg = transportHandler.obtainMessage(ArdourConstants.OSC_STRIP_METER, stripIndex, 0);
+									Message mmsg = transportHandler.obtainMessage(ArdourConstants.OSC_STRIP_METER, masterId, 0);
 									transportHandler.sendMessage(mmsg);
 								}
 								break;
 
 							case "fader":
-								t = getTrack(routes.size()-1);
+								t = getTrack(masterId);
 								if ( t!=null && !t.getTrackVolumeOnSeekBar() ) {
 									Float val = (Float) message.getArg(0);
 									t.trackVolume = Math.round(val * 1000);
@@ -995,26 +1007,14 @@ public class OscService {
 	};
 
     private Track getMaster() {
-        return routes.get(routes.size()-1);
+        return getTrack(masterId);
     }
 
 
     Track getTrack(int remoteId) {
-		if (remoteId-1 < routes.size())
-			return routes.get(remoteId-1);
-        return null;
+        return routes.get(remoteId);
     }
 
-
-	public int getRouteCount() {
-		return routes.size();
-	}
-
-	public Track getRoute(int index) {
-		if (routes.size() > index)
-			return routes.get(index);
-		return null;
-	}
 
 	public void requestSends(int trackIndex) {
 		Object[] args  = new Object[1];
@@ -1062,7 +1062,8 @@ public class OscService {
 		this.sendOSCMessage("/select/send_enable", args);
 	}
 
-    public ArrayList<Track> getRoutes() {
+    public HashMap<Integer, Track> getRoutes() {
+		// TODO: change to hashMap implementation
         return routes;
     }
 

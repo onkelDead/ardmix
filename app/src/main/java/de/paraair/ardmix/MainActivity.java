@@ -463,6 +463,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     int nLastVolume = -1;
+    StripLayout sl;
     private Handler topLevelHandler = new Handler() {
 
         @Override
@@ -598,10 +599,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     break;
 
                 case OSC_STRIPLIST:
-
                     updateStripList();
                     oscService.initSurfaceFeedback2();
-
                     break;
 
                 case OSC_NEWSTRIP:
@@ -609,67 +608,66 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     break;
 
                 case OSC_STRIP_NAME:
-                    iRemoteId = msg.arg1;
-                    if( strips.size() > iRemoteId-1 )
-                        getStripLayout(iRemoteId).nameChanged();
+                    sl = getStripLayout(msg.arg1);
+                    if (sl != null)
+                        sl.nameChanged();
                     break;
 
                 case OSC_STRIP_REC:
-                    iRemoteId = msg.arg1;
-                    if (strips.size() > iRemoteId)
-                        getStripLayout(iRemoteId).recChanged();
+                    sl = getStripLayout(msg.arg1);
+                    if (sl != null)
+                        sl.recChanged();
                     break;
 
                 case OSC_STRIP_MUTE:
-                    iRemoteId = msg.arg1;
-                    if (strips.size() > iRemoteId-1)
-                        getStripLayout(iRemoteId).muteChanged();
+                    sl = getStripLayout(msg.arg1);
+                    if (sl != null)
+                        sl.muteChanged();
                     break;
 
                 case OSC_STRIP_SOLO:
-                    iRemoteId = msg.arg1;
-                    if (strips.size() > iRemoteId)
-                        getStripLayout(iRemoteId).soloChanged();
+                    sl = getStripLayout(msg.arg1);
+                    if (sl != null)
+                        sl.soloChanged();
                     break;
 
                 case OSC_STRIP_SOLOSAFE:
-                    iRemoteId = msg.arg1;
-                    if (strips.size() > iRemoteId)
-                        getStripLayout(iRemoteId).soloSafeChanged();
+                    sl = getStripLayout(msg.arg1);
+                    if (sl != null)
+                        sl.soloSafeChanged();
                     break;
 
                 case OSC_STRIP_SOLOISO:
-                    iRemoteId = msg.arg1;
-                    if (strips.size() > iRemoteId)
-                        getStripLayout(iRemoteId).soloIsoChanged();
+                    sl = getStripLayout(msg.arg1);
+                    if (sl != null)
+                        sl.soloIsoChanged();
                     break;
 
                 case OSC_STRIP_INPUT:
-                    iRemoteId = msg.arg1;
-                    if (strips.size() > iRemoteId)
-                        getStripLayout(iRemoteId).inputChanged();
+                    sl = getStripLayout(msg.arg1);
+                    if (sl != null)
+                        sl.inputChanged();
                     break;
 
                 case OSC_STRIP_PAN:
-                    iRemoteId = msg.arg1;
-                    if (strips.size() > iRemoteId)
-                        getStripLayout(iRemoteId).panChanged();
+                    sl = getStripLayout(msg.arg1);
+                    if (sl != null)
+                        sl.panChanged();
                     break;
 
                 case OSC_STRIP_FADER:
-                    iRemoteId = msg.arg1;
-                    if (strips.size() > iRemoteId-1)
-                        getStripLayout(iRemoteId).volumeChanged();
+                    sl = getStripLayout(msg.arg1);
+                    if (sl != null)
+                        sl.volumeChanged();
                     break;
 
                 case OSC_STRIP_RECEIVES:
                     Object args[] = (Object[]) msg.obj;
 
                     for( int i = 0; i < args.length; i+=5 ) {
-                        iRemoteId = (int)args[i];
-                        StripLayout strip = getStripLayout(iRemoteId);
-                        strip.setType(Track.TrackType.SEND, (Float)args[i+3], (int)args[i+2], (int)args[i+4] == 1);
-
+                        sl = getStripLayout((int)args[i]);
+                        if( sl != null )
+                            sl.setType(Track.TrackType.SEND, (Float)args[i+3], (int)args[i+2], (int)args[i+4] == 1);
                     }
                     break;
 
@@ -682,11 +680,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     }
                     break;
 
+                // TODO: proprietary request should be removed
                 case OSC_STRIP_SENDS:
-                    iRemoteId = msg.arg1;
                     Object sargs[] = (Object[]) msg.obj;
 
-                    StripLayout strip = getStripLayout(iRemoteId);
+                    sl = getStripLayout(msg.arg1);
 
                     if (!useSendsLayout) {
                         int next = 1;
@@ -695,14 +693,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 StripLayout receiveStrip = getStripLayout((int) sargs[i]);
                                 receiveStrip.setType(Track.TrackType.RECEIVE, (Float) sargs[i + 3], (int) sargs[i + 2], (int) sargs[i + 4] == 1);
                                 if (!currentBank.contains(receiveStrip.getRemoteId())) {
-                                    receiveStrip.setPosition(strip.getPosition() + next);
-                                    llStripList.addView(receiveStrip, strip.getPosition() + (next++));
+                                    receiveStrip.setPosition(sl.getPosition() + next);
+                                    llStripList.addView(receiveStrip, sl.getPosition() + (next++));
                                 }
                             }
                         }
                     }
                     else {
-                        showSends(strip, sargs);
+                        showSends(sl, sargs);
                     }
                     break;
 
@@ -730,11 +728,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
                 case OSC_STRIP_METER:
-                    iRemoteId = msg.arg1;
-                    _StripLayout = getStripLayout(iRemoteId);
-                    if ( _StripLayout!= null ) {
-                        _StripLayout = getStripLayout(iRemoteId);
-                        _StripLayout.meterChange();
+                    sl = getStripLayout(msg.arg1);
+                    if ( sl != null ) {
+                        sl.meterChange();
                     }
                     break;
 
@@ -846,11 +842,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         LinearLayout.LayoutParams stripLP = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.MATCH_PARENT);
-//        if( t.type == Track.TrackType.MASTER ) {
-//            masterStrip = stripLayout;
-//
-//            llMaster.addView(masterStrip);
-//        }
+
         stripLayout.setPadding(0, 0, 0, 0);
         stripLayout.setLayoutParams(stripLP);
         stripLayout.setBackgroundColor(getResources().getColor(R.color.fader, null));
@@ -1387,8 +1379,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private StripLayout getStripLayout(int iRemoteid) {
-        if( iRemoteid-1 < strips.size() )
-            return strips.get(iRemoteid-1);
+        for( StripLayout sl: strips) {
+            if( sl.getRemoteId() == iRemoteid )
+                return sl;
+        }
         return null;
     }
 
@@ -1475,7 +1469,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         currentBank = _bank;
     }
 
-    public ArrayList<Track> getRoutes() {
+    public HashMap<Integer, Track> getRoutes() {
         return oscService.getRoutes();
     }
 

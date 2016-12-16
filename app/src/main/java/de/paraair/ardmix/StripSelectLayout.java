@@ -12,6 +12,7 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by onkel on 19.10.16.
@@ -29,11 +30,12 @@ public class StripSelectLayout extends ListView {
 
     }
 
-    public void setRoutes(ArrayList<Track> routes, Bank bank) {
+    public void setRoutes(HashMap<Integer, Track> routes, Bank bank) {
 
         Bank b = new Bank();
 
-        for( Track t : routes) {
+        for( int index : routes.keySet()) {
+            Track t = routes.get(index);
             if(t.type == Track.TrackType.AUDIO || t.type == Track.TrackType.BUS ) {
                 b.add(t.name, t.remoteId, bank.contains(t.remoteId));
             }

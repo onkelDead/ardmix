@@ -14,6 +14,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by onkel on 03.11.16.
@@ -24,7 +25,7 @@ public class BankSettingDialogFragment extends DialogFragment {
     private Bank bank;
     private EditText txtBankName;
     private int bankIndex;
-    private ArrayList<Track> routes;
+    private HashMap<Integer, Track> routes;
 
     @NonNull
     @Override

@@ -385,15 +385,18 @@ public class StripLayout extends LinearLayout {
     }
 
     public void soloSafeChanged() {
-        if( track.soloSafeEnabled)
-            ttbSolo.setEnabled(false);
-        else
-            ttbSolo.setEnabled(true);
-        ttbSoloSafe.setToggleState(track.soloSafeEnabled);
+        if( ttbSoloSafe != null ) {
+            if (track.soloSafeEnabled)
+                ttbSolo.setEnabled(false);
+            else
+                ttbSolo.setEnabled(true);
+            ttbSoloSafe.setToggleState(track.soloSafeEnabled);
+        }
     }
 
     public void soloIsoChanged() {
-        ttbSoloIso.setToggleState(track.soloIsolateEnabled);
+        if( ttbSoloIso != null )
+            ttbSoloIso.setToggleState(track.soloIsolateEnabled);
     }
 
 
