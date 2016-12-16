@@ -736,11 +736,11 @@ public class OscService {
 								break;
 
 							case "send_name":
-								System.out.printf("path: %s, ", message.getName());
-								for( int a = 0; a < message.getArgCount(); a++) {
-									System.out.printf("%d-%s,  ", a, String.valueOf(message.getArg(a)));
-								}
-								System.out.printf("\n");
+//								System.out.printf("path: %s, ", message.getName());
+//								for( int a = 0; a < message.getArgCount(); a++) {
+//									System.out.printf("%d-%s,  ", a, String.valueOf(message.getArg(a)));
+//								}
+//								System.out.printf("\n");
 
 								transportHandler.sendMessage(transportHandler.obtainMessage(
 										ArdourConstants.OSC_SELECT_SEND_NAME, (int)message.getArg(0), 0, (String) message.getArg(1)));
@@ -929,7 +929,8 @@ public class OscService {
 							case "smpte":
 								transportHandler.sendMessage(transportHandler.obtainMessage(ArdourConstants.OSC_UPDATE_CLOCKSTRING, (String) message.getArg(0)));
 								break;
-					}
+						}
+						break;
 					case "master":
 						switch (pathes[2]) {
 

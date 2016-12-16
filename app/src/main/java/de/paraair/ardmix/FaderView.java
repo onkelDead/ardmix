@@ -142,7 +142,7 @@ public class FaderView extends ImageView implements View.OnTouchListener {
             p.setColor(progressColor);
             p.setStrokeWidth(1);
             p.setStyle(Paint.Style.STROKE);
-            canvas.drawRect(leftEdge, vCenter - 2 , parentWidth - rightEdge , vCenter + 2, p);
+            canvas.drawRect(leftEdge, vCenter - 2 , fullWidth + leftEdge , vCenter + 2, p);
 
             // bright bg till volume
             p.setColor(this.progressColor);
@@ -151,7 +151,7 @@ public class FaderView extends ImageView implements View.OnTouchListener {
 
             if( val0 > 0 ) {
                 // 0dB line
-                float left0db = ((float)val0 / max * (fullWidth - leftEdge - rightEdge));
+                float left0db = ((float)val0 / max * (fullWidth)) + leftEdge;
                 p.setStrokeWidth(2);
                 canvas.drawLine(left0db, 4, left0db, parentHeight - 2, p);
             }
