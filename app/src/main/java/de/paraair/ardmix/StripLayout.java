@@ -372,8 +372,8 @@ public class StripLayout extends LinearLayout {
     }
 
     public void recChanged() {
-//        System.out.printf("rec changed on %d\n", track.remoteId);
-        ttbRecord.setToggleState(track.recEnabled);
+        if(ttbRecord != null)
+            ttbRecord.setToggleState(track.recEnabled);
     }
 
     public void muteChanged() {

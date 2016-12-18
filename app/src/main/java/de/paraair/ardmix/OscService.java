@@ -17,9 +17,8 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
+import java.text.Format;
 import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author lincoln
@@ -29,7 +28,7 @@ public class OscService {
 
 	private static String TAG = "OscService";
 
-    private int masterId;
+    private Integer masterId;
 
 	// States
 	private static final int READY = 0;
@@ -95,6 +94,7 @@ public class OscService {
 	/** The handler where we shall post transport state updates on the UI thread. */
 	private Handler transportHandler = null;
 
+
 	//private ArdroidMain ardroidMainActivity = null;
 
 	public OscService() {
@@ -153,7 +153,9 @@ public class OscService {
 			oscClient.start();  // open channel and (in the case of TCP) connect, then start listening for replies
 			
 	        Log.d(TAG, "Started. Starting listener");
-	        
+
+
+
 	        oscClient.addOSCListener(replyListener);
 	        
 	        Log.d(TAG, "Listening.");
@@ -169,25 +171,25 @@ public class OscService {
 	}
 
     public void initSurfaceFeedback1() {
-        if (oscClient.isConnected()){
-
-            int feedback = 0; // feedback
-
-            System.out.println("OSC State: " + state);
-            Object[] args = {
-					0 // bank size
-					, ArdourConstants.STRIP_TRACK_AUDIO // strip types
-					+ ArdourConstants.STRIP_HIDDEN
-					+ ArdourConstants.STRIP_BUS_AUDIO
-					+ ArdourConstants.STRIP_AUX
-//                    + ArdourConstants.STRIP_MASTER
-					, feedback
-					, 1 // fader mode (float from 0 to 1)
-			};
-
-			sendOSCMessage("/set_surface", args);
-
-        }
+//        if (oscClient.isConnected()){
+//
+//            int feedback = 0; // feedback
+//
+//            System.out.println("OSC State: " + state);
+//            Object[] args = {
+//					0 // bank size
+//					, ArdourConstants.STRIP_TRACK_AUDIO // strip types
+//					+ ArdourConstants.STRIP_HIDDEN
+//					+ ArdourConstants.STRIP_BUS_AUDIO
+//					+ ArdourConstants.STRIP_AUX
+////                    + ArdourConstants.STRIP_MASTER
+//					, feedback
+//					, 1 // fader mode (float from 0 to 1)
+//			};
+//
+//			sendOSCMessage("/set_surface", args);
+//
+//        }
     }
 
 	public void initSurfaceFeedback2() {
@@ -196,10 +198,10 @@ public class OscService {
 			int feedback = ArdourConstants.FEEDBACK_STRIP_BUTTONS // feedback
                     + ArdourConstants.FEEDBACK_STRIP_VALUES
 					+ ArdourConstants.FEEDBACK_MASTER
-					+ ArdourConstants.FEEDBACK_STRIP_METER_16BIT
+//					+ ArdourConstants.FEEDBACK_STRIP_METER_16BIT
                     + ArdourConstants.FEEDBACK_TIMECODE
                     + ArdourConstants.FEEDBACK_TRANSPORT_POSITION_SAMPLES
-					+ ArdourConstants.FEEDBACK_EXTRA_SELECT
+//					+ ArdourConstants.FEEDBACK_EXTRA_SELECT
 					;
 
 			System.out.println("OSC State: " + state);
@@ -246,9 +248,7 @@ public class OscService {
                 0 // bank size
                 , ArdourConstants.STRIP_TRACK_AUDIO // strip types
                 + ArdourConstants.STRIP_BUS_AUDIO
-                , ArdourConstants.FEEDBACK_STRIP_BUTTONS // feedback
-//                + ArdourConstants.FEEDBACK_STRIP_VALUES
-//                + ArdourConstants.FEEDBACK_STRIP_METER_16BIT
+                , 0
                 , 1 // fader mode (loat from 0 to 1)
         };
         sendOSCMessage("/set_surface", sargs);
@@ -569,79 +569,64 @@ public class OscService {
 	 */
 	private void sendOSCMessage(final String messageUri, final Object[] args){
 
-		Runnable runnable = new Runnable() {
-			public void run() {
-				OSCMessage message;
+        OSCMessage message;
 
-				if (args == null || args.length == 0){
-                    message = new OSCMessage(messageUri);
-                }
-                else {
-                    message = new OSCMessage(messageUri, args);
-                }
+        if (args == null || args.length == 0){
+            message = new OSCMessage(messageUri);
+        }
+        else {
+            message = new OSCMessage(messageUri, args);
+        }
 
-				try {
-                    oscClient.send (message);
-                }
-                catch (IOException e){
-                    Log.d(TAG, "Could not send OSC message: " + messageUri);
-                    e.printStackTrace();
-                }
-			}
-		};
-		runnable.run();
+        try {
+            oscClient.send (message);
+        }
+        catch (IOException e){
+            Log.d(TAG, "Could not send OSC message: " + messageUri);
+            e.printStackTrace();
+        }
+
 	}
 
 
-    public int msg_count = 0;
-    public int msg_max = 0;
-    /**
-	 * The OSC reply listener handler
-	 */
-	private OSCListener replyListener = new OSCListener(){
-		
-		@Override
-		public void  messageReceived(OSCMessage message, SocketAddress addr, long time) {
+    private Handler queueHandler = new Handler() {
 
-//            System.out.printf("path: %s, ", message.getName());
-//            for( int a = 0; a < message.getArgCount(); a++) {
-//                System.out.printf("%d-%s,  ", a, String.valueOf(message.getArg(a)));
-//            }
-//            System.out.printf("\n");
-
+        @Override
+        public void handleMessage(Message queueMessage) {
+            OSCMessage message = (OSCMessage)queueMessage.obj;
             msg_count++;
             if( msg_count > msg_max)
                 msg_max = msg_count;
 
-			if ( message.getName().equals("/rec_enable_toggle")) {
-				System.out.printf("path: %s\n", message.getName());
-			}
+            if ( message.getName().equals("/rec_enable_toggle")) {
+                System.out.printf("path: %s\n", message.getName());
+            }
 
             if( message.getName().equals("#reply") ) {
                 String arg0 = (String)message.getArg(0);
                 if(arg0.equals("end_route_list")) {
                     System.out.printf("#end-route-list\n");
 
-					Long frameRate = (Long) message.getArg(1);
+                    Long frameRate = (Long) message.getArg(1);
 
-					Message msg = transportHandler.obtainMessage(ArdourConstants.OSC_FRAMERATE, frameRate);
-					transportHandler.sendMessage(msg);
+                    Message msg = transportHandler.obtainMessage(ArdourConstants.OSC_FRAMERATE, frameRate);
+                    transportHandler.sendMessage(msg);
 
-					Long maxFrame = (Long) message.getArg(2);
+                    Long maxFrame = (Long) message.getArg(2);
 
-					Message msg1 = transportHandler.obtainMessage(ArdourConstants.OSC_MAXFRAMES, maxFrame);
-					transportHandler.sendMessage(msg1);
+                    Message msg1 = transportHandler.obtainMessage(ArdourConstants.OSC_MAXFRAMES, maxFrame);
+                    transportHandler.sendMessage(msg1);
 
-                    masterId = routes.size() + 1;
-					Track t = new Track();
-					t.name = "Master";
-					t.type = Track.TrackType.MASTER;
-                    t.remoteId = masterId;
-                    t.muteEnabled = false;
-
-                    routes.put(t.remoteId, t);
-					Message msg4 = transportHandler.obtainMessage(ArdourConstants.OSC_NEWSTRIP, t);
-					transportHandler.sendMessage(msg4);
+//                    masterId = routes.size() + 1;
+//                    Track t = new Track();
+//                    t.name = "Master";
+//                    t.type = Track.TrackType.MASTER;
+//                    t.remoteId = masterId;
+//                    t.muteEnabled = false;
+//
+//                    routes.put(t.remoteId, t);
+//                    Message msg4 = transportHandler.obtainMessage(ArdourConstants.OSC_NEWSTRIP, t);
+//                    transportHandler.sendMessage(msg4);
 
                     Message msg2 = transportHandler.obtainMessage(ArdourConstants.OSC_STRIPLIST);
                     transportHandler.sendMessage(msg2);
@@ -662,6 +647,11 @@ public class OscService {
                     case "B":
                         t.type = Track.TrackType.BUS;
                         break;
+					case "M":
+						t.type = Track.TrackType.MASTER;
+						masterId = (Integer) message.getArg(6);
+						break;
+
                 }
 
 
@@ -696,17 +686,17 @@ public class OscService {
                     i = (Integer) message.getArg(7);
                     t.recEnabled = (i > 0);
                 }
-				routes.put(t.remoteId, t);
+                routes.put(t.remoteId, t);
 
-				Message msg3 = transportHandler.obtainMessage(ArdourConstants.OSC_NEWSTRIP, t);
-				transportHandler.sendMessage(msg3);
+                Message msg3 = transportHandler.obtainMessage(ArdourConstants.OSC_NEWSTRIP, t);
+                transportHandler.sendMessage(msg3);
             }
             else {
 
-				// get a list of the URI elements
-				String[] pathes = message.getName().split("/");
-				int stripIndex = 0;
-				Track t;
+                // get a list of the URI elements
+                String[] pathes = message.getName().split("/");
+                Integer stripIndex = 0;
+                Track t;
 
 //                    if(pathes.length < 3) {
 //                        System.out.printf("pathes.length < 3: %s, ", message.getName());
@@ -717,292 +707,319 @@ public class OscService {
 //						return;
 //					}
 
-				switch (pathes[1]) {
-					case "transport_play":
-						transportHandler.sendMessage(transportHandler.obtainMessage(ArdourConstants.OSC_PLAY, (int)message.getArg(0), 0));
-						break;
+                switch (pathes[1]) {
+                    case "transport_play":
+                        transportHandler.sendMessage(transportHandler.obtainMessage(ArdourConstants.OSC_PLAY, (int)message.getArg(0), 0));
+                        break;
 
-					case "transport_stop":
-						transportHandler.sendMessage(transportHandler.obtainMessage(ArdourConstants.OSC_STOP, (int)message.getArg(0), 0));
-						break;
+                    case "transport_stop":
+                        transportHandler.sendMessage(transportHandler.obtainMessage(ArdourConstants.OSC_STOP, (int)message.getArg(0), 0));
+                        break;
 
-					case "rec_enable_toggle":
-						transportHandler.sendMessage(transportHandler.obtainMessage(ArdourConstants.OSC_RECORD, (int)message.getArg(0), 0));
-						break;
+                    case "rec_enable_toggle":
+                        transportHandler.sendMessage(transportHandler.obtainMessage(ArdourConstants.OSC_RECORD, (int)message.getArg(0), 0));
+                        break;
 
-					case "select":
-						switch (pathes[2]) {
-							case "send_fader":
-								Object margs[] = new Object[message.getArgCount()];
-								for(int i = 0; i < message.getArgCount(); i++ ) {
-									margs[i] = message.getArg(i);
-								}
-								transportHandler.sendMessage(transportHandler.obtainMessage(ArdourConstants.OSC_SELECT_SEND_FADER, margs));
-								break;
+                    case "select":
+                        switch (pathes[2]) {
+                            case "send_fader":
+                                Object margs[] = new Object[message.getArgCount()];
+                                for(int i = 0; i < message.getArgCount(); i++ ) {
+                                    margs[i] = message.getArg(i);
+                                }
+                                transportHandler.sendMessage(transportHandler.obtainMessage(ArdourConstants.OSC_SELECT_SEND_FADER, margs));
+                                break;
 
-							case "send_enable":
-								Object seargs[] = new Object[message.getArgCount()];
-								for(int i = 0; i < message.getArgCount(); i++ ) {
-									seargs[i] = message.getArg(i);
-								}
-								transportHandler.sendMessage(transportHandler.obtainMessage(ArdourConstants.OSC_SELECT_SEND_ENABLE, seargs));
-								break;
+                            case "send_enable":
+                                Object seargs[] = new Object[message.getArgCount()];
+                                for(int i = 0; i < message.getArgCount(); i++ ) {
+                                    seargs[i] = message.getArg(i);
+                                }
+                                transportHandler.sendMessage(transportHandler.obtainMessage(ArdourConstants.OSC_SELECT_SEND_ENABLE, seargs));
+                                break;
 
-							case "send_name":
-//								System.out.printf("path: %s, ", message.getName());
-//								for( int a = 0; a < message.getArgCount(); a++) {
-//									System.out.printf("%d-%s,  ", a, String.valueOf(message.getArg(a)));
-//								}
-//								System.out.printf("\n");
+                            case "send_name":
+                                transportHandler.sendMessage(transportHandler.obtainMessage(
+                                        ArdourConstants.OSC_SELECT_SEND_NAME, (int)message.getArg(0), 0, message.getArg(1)));
+                                break;
+                            default:
+                                break;
+                        }
+                        break;
+                    case "strip":
+                        // argOffset represents if the strip index is part of the URI (argOffset=1) or not (argOffset=0)
+                        int argOffset = 0;
+                        if (pathes.length > 3 && TextUtils.isDigitsOnly(pathes[3]) )
+                            stripIndex = Integer.parseInt(pathes[3]);
+                        else {
+                            if( message.getArgCount() > 0) {
+                                stripIndex = (int) message.getArg(0);
+                                argOffset = 1;
+                            }
+                        }
+                        switch (pathes[2]) {
+                            case "processors":
+                                Log.d(TAG, "processors");
+                                break;
+                            case "plugin":
+                                switch(pathes[3]) {
+                                    case "list":
 
-								transportHandler.sendMessage(transportHandler.obtainMessage(
-										ArdourConstants.OSC_SELECT_SEND_NAME, (int)message.getArg(0), 0, (String) message.getArg(1)));
-								break;
-							default:
-								break;
-						}
-						break;
-					case "strip":
-						// argOffset represents if the strip index is part of the URI (argOffset=1) or not (argOffset=0)
-						int argOffset = 0;
-						if (pathes.length > 3 && TextUtils.isDigitsOnly(pathes[3]) )
-							stripIndex = Integer.parseInt(pathes[3]);
-						else {
-							if( message.getArgCount() > 0) {
-								stripIndex = (int) message.getArg(0);
-								argOffset = 1;
-							}
-						}
-						switch (pathes[2]) {
-							case "processors":
-								Log.d(TAG, "processors");
-								break;
-							case "plugin":
-								switch(pathes[3]) {
-									case "list":
+                                        Object plargs[] = new Object[message.getArgCount()];
+                                        for(int i = 0; i < message.getArgCount(); i++ ) {
+                                            plargs[i] = message.getArg(i);
+                                        }
+                                        Message plmsg = transportHandler.obtainMessage(ArdourConstants.OSC_PLUGIN_LIST, plargs);
+                                        transportHandler.sendMessage(plmsg);
+                                        break;
+                                    case "descriptor":
+                                        Object pdargs[] = new Object[message.getArgCount()];
+                                        for(int i = 0; i < message.getArgCount(); i++ ) {
+                                            pdargs[i] = message.getArg(i);
+                                        }
+                                        Message pdmsg = transportHandler.obtainMessage(ArdourConstants.OSC_PLUGIN_DESCRIPTOR, pdargs);
+                                        transportHandler.sendMessage(pdmsg);
+                                        break;
+                                }
+                                break;
+                            case "meter":
+                                t = getTrack(stripIndex);
 
-										Object plargs[] = new Object[message.getArgCount()];
-										for(int i = 0; i < message.getArgCount(); i++ ) {
-											plargs[i] = message.getArg(i);
-										}
-										Message plmsg = transportHandler.obtainMessage(ArdourConstants.OSC_PLUGIN_LIST, plargs);
-										transportHandler.sendMessage(plmsg);
-										break;
-									case "descriptor":
-										Object pdargs[] = new Object[message.getArgCount()];
-										for(int i = 0; i < message.getArgCount(); i++ ) {
-											pdargs[i] = message.getArg(i);
-										}
-										Message pdmsg = transportHandler.obtainMessage(ArdourConstants.OSC_PLUGIN_DESCRIPTOR, pdargs);
-										transportHandler.sendMessage(pdmsg);
-										break;
-								}
-								break;
-							case "meter":
-								t = getTrack(stripIndex);
+                                if (message.getArg(1) instanceof Integer) {
+                                    int newMeter = ((int)message.getArg(1));
 
-								if (message.getArg(1) instanceof Integer) {
-									int newMeter = ((int)message.getArg(1));
-
-									newMeter = (newMeter != 0xffff) ? newMeter & 0x1FFF : 0;
-									if( t != null && t.meter != newMeter ) {
+                                    newMeter = (newMeter != 0xffff) ? newMeter & 0x1FFF : 0;
+                                    if( t != null && t.meter != newMeter ) {
                                         t.meter = newMeter;
                                         Message mmsg = transportHandler.obtainMessage(ArdourConstants.OSC_STRIP_METER);
                                         mmsg.arg1 = stripIndex;
                                         transportHandler.sendMessage(mmsg);
                                     }
-								}
-								break;
-							case "receives":
+                                }
+                                break;
+                            case "receives":
 
-								Object margs[] = new Object[message.getArgCount()];
-								for(int i = 0; i < message.getArgCount(); i++ ) {
-									margs[i] = message.getArg(i);
-								}
-								transportHandler.sendMessage(transportHandler.obtainMessage(ArdourConstants.OSC_STRIP_RECEIVES, margs));
-								break;
+                                Object margs[] = new Object[message.getArgCount()];
+                                for(int i = 0; i < message.getArgCount(); i++ ) {
+                                    margs[i] = message.getArg(i);
+                                }
+                                transportHandler.sendMessage(transportHandler.obtainMessage(ArdourConstants.OSC_STRIP_RECEIVES, margs));
+                                break;
 
-							case "sends":
+                            case "sends":
 
-								Object rargs[] = new Object[message.getArgCount()-1];
+                                Object rargs[] = new Object[message.getArgCount()-1];
 
-								for(int i = 1; i < message.getArgCount(); i++ ) {
-									rargs[i-1] = message.getArg(i);
-								}
-								transportHandler.sendMessage(transportHandler.obtainMessage(ArdourConstants.OSC_STRIP_SENDS, (int)message.getArg(0), 0, rargs));
-								break;
-							case "name":
-								t = getTrack(stripIndex);
-								if (t!=null) {
-									t.name = (String) message.getArg(argOffset);
-									transportHandler.sendMessage(transportHandler.obtainMessage(ArdourConstants.OSC_STRIP_NAME, stripIndex, 0));
-								}
-								break;
-							case "fader":
-								t = getTrack(stripIndex);
-								if ( t!=null && !t.getTrackVolumeOnSeekBar() ) {
-									Float val = (Float) message.getArg(argOffset);
-									t.trackVolume = Math.round(val * 1000);
-									Message fadermsg = transportHandler.obtainMessage(ArdourConstants.OSC_STRIP_FADER);
-									fadermsg.arg1 = stripIndex;
-									transportHandler.sendMessage(fadermsg);
-								}
-								else {
-									if ( t==null )
-										Log.d(TAG, "fader change missed\n");
-								}
-								break;
-							case "recenable":
+                                for(int i = 1; i < message.getArgCount(); i++ ) {
+                                    rargs[i-1] = message.getArg(i);
+                                }
+                                transportHandler.sendMessage(transportHandler.obtainMessage(ArdourConstants.OSC_STRIP_SENDS, (int)message.getArg(0), 0, rargs));
+                                break;
+                            case "name":
+                                t = getTrack(stripIndex);
+                                if (t!=null) {
+                                    t.name = (String) message.getArg(argOffset);
+                                    transportHandler.sendMessage(transportHandler.obtainMessage(ArdourConstants.OSC_STRIP_NAME, stripIndex, 0));
+                                }
+                                break;
+                            case "fader":
+                                t = getTrack(stripIndex);
+                                if ( t!=null && !t.getTrackVolumeOnSeekBar() ) {
+                                    Float val = (Float) message.getArg(argOffset);
+                                    t.trackVolume = Math.round(val * 1000);
+                                    Message fadermsg = transportHandler.obtainMessage(ArdourConstants.OSC_STRIP_FADER);
+                                    fadermsg.arg1 = stripIndex;
+                                    transportHandler.sendMessage(fadermsg);
+                                }
+                                else {
+                                    if ( t==null )
+										Log.d(TAG, "fader change missed" + stripIndex.toString() + "\n");
+                                }
+                                break;
+                            case "recenable":
 //                                    System.out.printf("OSC rec changed on %d\n", stripIndex);
 
-								t = getTrack(stripIndex);
-								if (t!=null) {
-									t.recEnabled = ((Float) message.getArg(argOffset) > 0);
-									Message recmsg = transportHandler.obtainMessage(ArdourConstants.OSC_STRIP_REC);
-									recmsg.arg1 = stripIndex;
-									transportHandler.sendMessage(recmsg);
-								}
-								else {
-									Log.d(TAG, "recEnable missed\n");
-								}
-								break;
-							case "mute":
-								t = getTrack(stripIndex);
-								if (t!=null) {
-									t.muteEnabled = ((Float) message.getArg(argOffset) > 0);
-									transportHandler.sendMessage(transportHandler.obtainMessage(ArdourConstants.OSC_STRIP_MUTE, stripIndex, 0));
-								}
-								break;
-							case "solo":
-								t = getTrack(stripIndex);
-								if (t!=null) {
-									t.soloEnabled = ((Float) message.getArg(argOffset) > 0);
-									Message somsg = transportHandler.obtainMessage(ArdourConstants.OSC_STRIP_SOLO);
-									somsg.arg1 = stripIndex;
-									transportHandler.sendMessage(somsg);
-								}
-								break;
+                                t = getTrack(stripIndex);
+                                if (t!=null) {
+                                    t.recEnabled = ((Float) message.getArg(argOffset) > 0);
+                                    Message recmsg = transportHandler.obtainMessage(ArdourConstants.OSC_STRIP_REC);
+                                    recmsg.arg1 = stripIndex;
+                                    transportHandler.sendMessage(recmsg);
+                                }
+                                else {
+                                    Log.d(TAG, "recEnable missed\n");
+                                }
+                                break;
+                            case "mute":
+                                t = getTrack(stripIndex);
+                                if (t!=null) {
+                                    t.muteEnabled = ((Float) message.getArg(argOffset) > 0);
+                                    transportHandler.sendMessage(transportHandler.obtainMessage(ArdourConstants.OSC_STRIP_MUTE, stripIndex, 0));
+                                }
+                                break;
+                            case "solo":
+                                t = getTrack(stripIndex);
+                                if (t!=null) {
+                                    t.soloEnabled = ((Float) message.getArg(argOffset) > 0);
+                                    Message somsg = transportHandler.obtainMessage(ArdourConstants.OSC_STRIP_SOLO);
+                                    somsg.arg1 = stripIndex;
+                                    transportHandler.sendMessage(somsg);
+                                }
+                                break;
 
-							case "solo_iso":
-								t = getTrack(stripIndex);
-								if (t!=null) {
+                            case "solo_iso":
+                                t = getTrack(stripIndex);
+                                if (t!=null) {
 
-									t.soloIsolateEnabled = ((Float) message.getArg(argOffset) > 0);
-									transportHandler.sendMessage(transportHandler.obtainMessage(ArdourConstants.OSC_STRIP_SOLOISO, stripIndex, 0));
-								}
-								break;
+                                    t.soloIsolateEnabled = ((Float) message.getArg(argOffset) > 0);
+                                    transportHandler.sendMessage(transportHandler.obtainMessage(ArdourConstants.OSC_STRIP_SOLOISO, stripIndex, 0));
+                                }
+                                break;
 
-							case "solo_safe":
-								t = getTrack(stripIndex);
-								if (t!=null) {
+                            case "solo_safe":
+                                t = getTrack(stripIndex);
+                                if (t!=null) {
 
-									t.soloSafeEnabled = ((Float) message.getArg(argOffset) > 0);
-									transportHandler.sendMessage(transportHandler.obtainMessage(ArdourConstants.OSC_STRIP_SOLOSAFE, stripIndex, 0));
-								}
-								break;
+                                    t.soloSafeEnabled = ((Float) message.getArg(argOffset) > 0);
+                                    transportHandler.sendMessage(transportHandler.obtainMessage(ArdourConstants.OSC_STRIP_SOLOSAFE, stripIndex, 0));
+                                }
+                                break;
 
-							case "pan_stereo_position":
-								t = getTrack(stripIndex);
-								if (t!=null) {
-									t.panPosition = (Float) message.getArg(argOffset);
-									transportHandler.sendMessage(transportHandler.obtainMessage(ArdourConstants.OSC_STRIP_PAN, stripIndex, 0));
-								}
-								break;
+                            case "pan_stereo_position":
+                                t = getTrack(stripIndex);
+                                if (t!=null) {
+                                    t.panPosition = (Float) message.getArg(argOffset);
+                                    transportHandler.sendMessage(transportHandler.obtainMessage(ArdourConstants.OSC_STRIP_PAN, stripIndex, 0));
+                                }
+                                break;
 
-							case "monitor_input":
-								t = getTrack(stripIndex);
-								if( t != null ) {
-									if( message.getArg(argOffset) instanceof Integer) {
-										t.stripIn = (int) message.getArg(argOffset) > 0;
-										transportHandler.sendMessage(transportHandler.obtainMessage(ArdourConstants.OSC_STRIP_INPUT, stripIndex, 0));
-									}
-								}
-								break;
+                            case "monitor_input":
+                                t = getTrack(stripIndex);
+                                if( t != null ) {
+                                    if( message.getArg(argOffset) instanceof Integer) {
+                                        t.stripIn = (int) message.getArg(argOffset) > 0;
+                                        transportHandler.sendMessage(transportHandler.obtainMessage(ArdourConstants.OSC_STRIP_INPUT, stripIndex, 0));
+                                    }
+                                }
+                                break;
 
-							case "select":
-								transportHandler.sendMessage(transportHandler.obtainMessage(
-										ArdourConstants.OSC_STRIP_SELECT, (int)message.getArg(0), (float)message.getArg(1) > 0 ? 1 : 0));
-								break;
+                            case "select":
+                                transportHandler.sendMessage(transportHandler.obtainMessage(
+                                        ArdourConstants.OSC_STRIP_SELECT, (int)message.getArg(0), (float)message.getArg(1) > 0 ? 1 : 0));
+                                break;
 
-							default:
+                            default:
 
 //								System.out.printf("path: %s, ", message.getName());
 //								for( int a = 0; a < message.getArgCount(); a++) {
 //									System.out.printf("%d-%s,  ", a, String.valueOf(message.getArg(a)));
 //								}
 //								System.out.printf("\n");
-								break;
-						}
-						break;
-					case "position":
-						switch (pathes[2]) {
-							case "samples":
-								transportHandler.sendMessage(transportHandler.obtainMessage(ArdourConstants.OSC_UPDATE_CLOCK, Long.parseLong((String) message.getArg(0))));
-								break;
-							case "smpte":
-								transportHandler.sendMessage(transportHandler.obtainMessage(ArdourConstants.OSC_UPDATE_CLOCKSTRING, (String) message.getArg(0)));
-								break;
-						}
-						break;
-					case "master":
-						switch (pathes[2]) {
+                                break;
+                        }
+                        break;
+                    case "position":
+                        switch (pathes[2]) {
+                            case "samples":
+                                transportHandler.sendMessage(transportHandler.obtainMessage(ArdourConstants.OSC_UPDATE_CLOCK, Long.parseLong((String) message.getArg(0))));
+                                break;
+                            case "smpte":
+                                transportHandler.sendMessage(transportHandler.obtainMessage(ArdourConstants.OSC_UPDATE_CLOCKSTRING, (String) message.getArg(0)));
+                                break;
+                        }
+                        break;
+                    case "master":
+                        switch (pathes[2]) {
 
-							case "meter":
-								t = getTrack(masterId);
+                            case "meter":
+                                t = getTrack(masterId);
 
-								int newMeter = ((int)message.getArg(0)) & 0xffff;
-								newMeter = (newMeter != 0xffff) ? newMeter & 0x1FFF : 0;
+                                int newMeter = ((int)message.getArg(0)) & 0xffff;
+                                newMeter = (newMeter != 0xffff) ? newMeter & 0x1FFF : 0;
 
-								if( t != null && t.meter != newMeter ) {
-									t.meter = newMeter;
-									Message mmsg = transportHandler.obtainMessage(ArdourConstants.OSC_STRIP_METER, masterId, 0);
-									transportHandler.sendMessage(mmsg);
-								}
+                                if( t != null && t.meter != newMeter ) {
+                                    t.meter = newMeter;
+                                    Message mmsg = transportHandler.obtainMessage(ArdourConstants.OSC_STRIP_METER, masterId, 0);
+                                    transportHandler.sendMessage(mmsg);
+                                }
+								else
+									if( t == null )
+										Log.d(TAG, "master meter change missed " + masterId.toString() + "\n");
+                                break;
+
+                            case "fader":
+                                t = getTrack(masterId);
+                                if ( t!=null && !t.getTrackVolumeOnSeekBar() ) {
+                                    Float val = (Float) message.getArg(0);
+                                    t.trackVolume = Math.round(val * 1000);
+                                    Message fadermsg = transportHandler.obtainMessage(ArdourConstants.OSC_STRIP_FADER);
+                                    fadermsg.arg1 = t.remoteId-1;
+                                    transportHandler.sendMessage(fadermsg);
+                                }
+                                else {
+                                    if ( t==null )
+                                        Log.d(TAG, "master fader change missed " + masterId.toString() + "\n");
+                                }
+                                break;
+
+                            case "mute":
+                                t = getMaster();
+                                if (t!=null) {
+                                    t.muteEnabled = ((Float) message.getArg(0) > 0);
+                                    transportHandler.sendMessage(transportHandler.obtainMessage(ArdourConstants.OSC_STRIP_MUTE, t.remoteId-1, 0));
+                                }
+								else
+									Log.d(TAG, "master mute change missed " + masterId.toString() + "\n");
 								break;
 
-							case "fader":
-								t = getTrack(masterId);
-								if ( t!=null && !t.getTrackVolumeOnSeekBar() ) {
-									Float val = (Float) message.getArg(0);
-									t.trackVolume = Math.round(val * 1000);
-									Message fadermsg = transportHandler.obtainMessage(ArdourConstants.OSC_STRIP_FADER);
-									fadermsg.arg1 = t.remoteId-1;
-									transportHandler.sendMessage(fadermsg);
-								}
-								else {
-									if ( t==null )
-										Log.d(TAG, "fader change missed\n");
-								}
-								break;
+                            case "name":
+                                t = getMaster();
+                                if (t!=null) {
+                                    t.name = (String) message.getArg(0);
+                                    transportHandler.sendMessage(transportHandler.obtainMessage(ArdourConstants.OSC_STRIP_NAME, t.remoteId-1, 0));
+                                }
+								else
+									Log.d(TAG, "master name change missed " + masterId.toString() + "\n");
+                                break;
+                            default:
+//                                System.out.printf("path: %s\n", message.getName());
+//                                for( int a = 0; a < message.getArgCount(); a++) {
+//                                    System.out.printf("%d-%s,  ", a, String.valueOf(message.getArg(a)));
+//                                }
+//                                System.out.printf("\n");
+                                break;
 
-							case "mute":
-								t = getMaster();
-								if (t!=null) {
-									t.muteEnabled = ((Float) message.getArg(0) > 0);
-									transportHandler.sendMessage(transportHandler.obtainMessage(ArdourConstants.OSC_STRIP_MUTE, t.remoteId-1, 0));
-								}
-								break;
-
-							case "name":
-								t = getMaster();
-								if (t!=null) {
-									t.name = (String) message.getArg(0);
-									transportHandler.sendMessage(transportHandler.obtainMessage(ArdourConstants.OSC_STRIP_NAME, t.remoteId-1, 0));
-								}
-								break;
-                        default:
-                            System.out.printf("path: %s, ", message.getName());
-                            for( int a = 0; a < message.getArgCount(); a++) {
-                                System.out.printf("%d-%s,  ", a, String.valueOf(message.getArg(a)));
-                            }
-                            System.out.printf("\n");
-                            break;
-
-						}
-						break;
-					}
+                        }
+                        break;
                 }
+            }
             msg_count--;
+
+        }
+    };
+
+    public int msg_count = 0;
+    public int msg_max = 0;
+    public boolean dropPackages = false;
+    /**
+	 * The OSC reply listener handler
+	 */
+	private OSCListener replyListener = new OSCListener(){
+		
+		@Override
+		public void  messageReceived(OSCMessage message, SocketAddress addr, long time) {
+
+            if(message.getName().startsWith("/strip/fader")) {
+                System.out.printf("path: %s, ", message.getName());
+                for (int a = 0; a < message.getArgCount(); a++) {
+                    System.out.printf("%d-%s,  ", a, String.valueOf(message.getArg(a)));
+                }
+                System.out.printf("\n");
+            }
+            Message queueMessage = queueHandler.obtainMessage(999, message);
+            if(!dropPackages)
+                queueHandler.sendMessage(queueMessage);
+
 		}
 	};
 

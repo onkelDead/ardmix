@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.StrictMode;
+import android.renderscript.RenderScript;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.JsonReader;
@@ -455,9 +456,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         oscService.connect();
 
-        oscService.initSurfaceFeedback1();
-
         oscService.requestStripList();
+//			try {
+//				Thread.sleep(1000);
+//			} catch (InterruptedException e) {
+//				e.printStackTrace();
+//			}
+//        oscService.initSurfaceFeedback2();
 
 
     }
@@ -600,7 +605,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 case OSC_STRIPLIST:
                     updateStripList();
+//                    oscService.dropPackages = true;
                     oscService.initSurfaceFeedback2();
+
                     break;
 
                 case OSC_NEWSTRIP:
@@ -861,7 +868,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         strips.add(stripLayout);
 
-        System.out.printf("adding strip %s with id %d\n", t.name, t.remoteId-1);
+        System.out.printf("adding strip %s with id %d\n", t.name, t.remoteId);
 
     }
 
