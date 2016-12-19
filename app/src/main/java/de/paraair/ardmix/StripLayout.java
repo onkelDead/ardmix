@@ -401,6 +401,7 @@ public class StripLayout extends LinearLayout {
 
 
     public void inputChanged() {
+        if( ttbInput != null )
         ttbInput.setToggleState(track.stripIn);
     }
 

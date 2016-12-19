@@ -87,6 +87,8 @@ public class OscService {
 	
 	private String host = "127.0.0.1";
 	private int port = 3819;
+	private String protocol = "udp";
+
 
 	static final int MSG_SAY_HELLO = 1;
 
@@ -135,7 +137,7 @@ public class OscService {
 	/**
 	 * Connect to the Ardour OSC server
 	 */
-	public void connect(){
+	public boolean connect(){
 		
 		try {
 
@@ -145,7 +147,7 @@ public class OscService {
 				disconnect();
 			}
 
-	        oscClient = OSCClient.newUsing (OSCClient.UDP);    // create UDP client with any free port number
+	        oscClient = OSCClient.newUsing (protocol);    // create UDP client with any free port number
 	        oscClient.setTarget (new InetSocketAddress(InetAddress.getByName(host), port));
 	        	        
 	        Log.d(TAG, "Starting connection...");
@@ -164,10 +166,13 @@ public class OscService {
 		} catch (UnknownHostException e) {
 			Log.d(TAG, "Unknown host");
 			e.printStackTrace();
+            return false;
 		} catch (IOException e) {
 			Log.d(TAG, "IO Exception");
 			e.printStackTrace();
+            return false;
 		}
+        return true;
 	}
 
     public void initSurfaceFeedback1() {
@@ -198,10 +203,10 @@ public class OscService {
 			int feedback = ArdourConstants.FEEDBACK_STRIP_BUTTONS // feedback
                     + ArdourConstants.FEEDBACK_STRIP_VALUES
 					+ ArdourConstants.FEEDBACK_MASTER
-//					+ ArdourConstants.FEEDBACK_STRIP_METER_16BIT
+					+ ArdourConstants.FEEDBACK_STRIP_METER_16BIT
                     + ArdourConstants.FEEDBACK_TIMECODE
                     + ArdourConstants.FEEDBACK_TRANSPORT_POSITION_SAMPLES
-//					+ ArdourConstants.FEEDBACK_EXTRA_SELECT
+					+ ArdourConstants.FEEDBACK_EXTRA_SELECT
 					;
 
 			System.out.println("OSC State: " + state);
@@ -211,6 +216,7 @@ public class OscService {
 					+ ArdourConstants.STRIP_HIDDEN
 					+ ArdourConstants.STRIP_BUS_AUDIO
 					+ ArdourConstants.STRIP_MASTER
+                    + ArdourConstants.STRIP_VCA
 					+ ArdourConstants.STRIP_AUX
 					, feedback
 					, 1 // fader mode (loat from 0 to 1)
@@ -244,21 +250,21 @@ public class OscService {
 
         Log.d(TAG, "Disconnetecting from Ardour");
 
-        Object[] sargs = {
-                0 // bank size
-                , ArdourConstants.STRIP_TRACK_AUDIO // strip types
-                + ArdourConstants.STRIP_BUS_AUDIO
-                , 0
-                , 1 // fader mode (loat from 0 to 1)
-        };
-        sendOSCMessage("/set_surface", sargs);
-
-        Integer[] args = new Integer[routes.size()];
-		int j = 0;
-		for( int index : routes.keySet()) {
-			args[j++] = index;
-        }
-        sendOSCMessage("/strip/ignore", args);
+//        Object[] sargs = {
+//                0 // bank size
+//                , ArdourConstants.STRIP_TRACK_AUDIO // strip types
+//                + ArdourConstants.STRIP_BUS_AUDIO
+//                , 0
+//                , 1 // fader mode (loat from 0 to 1)
+//        };
+//        sendOSCMessage("/set_surface", sargs);
+//
+//        Integer[] args = new Integer[routes.size()];
+//		int j = 0;
+//		for( int index : routes.keySet()) {
+//			args[j++] = index;
+//        }
+//        sendOSCMessage("/strip/ignore", args);
 
         oscClient.dispose();
 	}
@@ -617,16 +623,18 @@ public class OscService {
                     Message msg1 = transportHandler.obtainMessage(ArdourConstants.OSC_MAXFRAMES, maxFrame);
                     transportHandler.sendMessage(msg1);
 
-//                    masterId = routes.size() + 1;
-//                    Track t = new Track();
-//                    t.name = "Master";
-//                    t.type = Track.TrackType.MASTER;
-//                    t.remoteId = masterId;
-//                    t.muteEnabled = false;
-//
-//                    routes.put(t.remoteId, t);
-//                    Message msg4 = transportHandler.obtainMessage(ArdourConstants.OSC_NEWSTRIP, t);
-//                    transportHandler.sendMessage(msg4);
+/*
+                    masterId = 0;
+                    Track t = new Track();
+                    t.name = "Master";
+                    t.type = Track.TrackType.MASTER;
+                    t.remoteId = masterId;
+                    t.muteEnabled = false;
+
+                    routes.put(t.remoteId, t);
+                    Message msg4 = transportHandler.obtainMessage(ArdourConstants.OSC_NEWSTRIP, t);
+                    transportHandler.sendMessage(msg4);
+*/
 
                     Message msg2 = transportHandler.obtainMessage(ArdourConstants.OSC_STRIPLIST);
                     transportHandler.sendMessage(msg2);
@@ -952,9 +960,7 @@ public class OscService {
                                 if ( t!=null && !t.getTrackVolumeOnSeekBar() ) {
                                     Float val = (Float) message.getArg(0);
                                     t.trackVolume = Math.round(val * 1000);
-                                    Message fadermsg = transportHandler.obtainMessage(ArdourConstants.OSC_STRIP_FADER);
-                                    fadermsg.arg1 = t.remoteId-1;
-                                    transportHandler.sendMessage(fadermsg);
+                                    transportHandler.sendMessage(transportHandler.obtainMessage(ArdourConstants.OSC_STRIP_FADER, masterId, 0 ));
                                 }
                                 else {
                                     if ( t==null )
@@ -966,7 +972,7 @@ public class OscService {
                                 t = getMaster();
                                 if (t!=null) {
                                     t.muteEnabled = ((Float) message.getArg(0) > 0);
-                                    transportHandler.sendMessage(transportHandler.obtainMessage(ArdourConstants.OSC_STRIP_MUTE, t.remoteId-1, 0));
+                                    transportHandler.sendMessage(transportHandler.obtainMessage(ArdourConstants.OSC_STRIP_MUTE, masterId, 0));
                                 }
 								else
 									Log.d(TAG, "master mute change missed " + masterId.toString() + "\n");
@@ -976,7 +982,7 @@ public class OscService {
                                 t = getMaster();
                                 if (t!=null) {
                                     t.name = (String) message.getArg(0);
-                                    transportHandler.sendMessage(transportHandler.obtainMessage(ArdourConstants.OSC_STRIP_NAME, t.remoteId-1, 0));
+                                    transportHandler.sendMessage(transportHandler.obtainMessage(ArdourConstants.OSC_STRIP_NAME, masterId, 0));
                                 }
 								else
 									Log.d(TAG, "master name change missed " + masterId.toString() + "\n");
@@ -1063,11 +1069,14 @@ public class OscService {
 	public void setPort(int port) {
 		this.port = port;
 	}
+	public void setProtocol(String protocol) {
+		this.protocol = protocol;
+	}
 
 	public void setSendEnable(int iAuxLayout, int source_id, float v) {
 		Object[] args  = new Object[3];
 		args[0] = iAuxLayout;
-		args[1] = source_id + 1;
+		args[1] = source_id;
 		args[2] = v;
 		this.sendOSCMessage("/strip/send/enable", args);
 	}
@@ -1166,4 +1175,8 @@ public class OscService {
 		this.sendOSCMessage(enabled ? "/strip/plugin/activate" : "/strip/plugin/deactivate", eargs);
 	}
 
+
+    public int getMasterId() {
+        return masterId;
+    }
 }

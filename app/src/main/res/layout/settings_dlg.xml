@@ -29,6 +29,12 @@
         android:fontFamily="sans-serif"
         android:hint="@string/port"/>
 
+    <CheckBox
+        android:text="TCP connect via OSCbridge"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/chkOSCbridge" />
+
     <EditText
         android:id="@+id/bankSize"
         android:inputType="number"

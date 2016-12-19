@@ -89,10 +89,6 @@ public class SendsLayout extends LinearLayout implements OnClickListener {
         tvSendsDescription.setText("Sends of " + strip.getTrack().name);
         addView(tvSendsDescription);
 
-//        for (int i = 0; i < sargs.length; i += 5) {
-//            addSend((int)sargs[i+2], (String) sargs[i+1]);
-//        }
-
         LinearLayout llButtons = new LinearLayout(context);
         llButtons.setOrientation(HORIZONTAL);
         llButtons.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));

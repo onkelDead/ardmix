@@ -19,6 +19,7 @@ public class SettingsDialogFragment extends android.support.v4.app.DialogFragmen
 
     private EditText hostText;
     private EditText portText;
+    private CheckBox useOSCbridge;
     private EditText bankSizeText;
     private CheckBox useSendsLayoutCheckbox;
 
@@ -50,7 +51,7 @@ public class SettingsDialogFragment extends android.support.v4.app.DialogFragmen
                 }
 
                 MainActivity callingActivity = (MainActivity) getActivity();
-                callingActivity.onSettingDlg(host, port, bankSize, useSendsLayoutCheckbox.isChecked());
+                callingActivity.onSettingDlg(host, port, bankSize, useSendsLayoutCheckbox.isChecked(), useOSCbridge.isChecked());
             }
         });
         builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -62,11 +63,13 @@ public class SettingsDialogFragment extends android.support.v4.app.DialogFragmen
         portText = (EditText) view.findViewById(R.id.port);
         bankSizeText = (EditText) view.findViewById(R.id.bankSize);
         useSendsLayoutCheckbox = (CheckBox) view.findViewById(R.id.useSendsLayout);
+        useOSCbridge = (CheckBox) view.findViewById(R.id.chkOSCbridge);
 
         hostText.setText(args.getString("host"));
         portText.setText(String.valueOf(args.getInt("port")));
         bankSizeText.setText(String.valueOf(args.getInt("bankSize")));
-        useSendsLayoutCheckbox.setChecked(args.getBoolean("useSendsLayout"));
+        useSendsLayoutCheckbox.setChecked(args.getBoolean("useOSCbridge"));
+        useOSCbridge.setChecked(args.getBoolean("useSendsLayout"));
 
         // Create the AlertDialog object and return it
         return builder.create();
