@@ -29,9 +29,9 @@ public class FaderView extends ImageView implements View.OnTouchListener {
 
     private int max = 1000;
     private int min = 0;
-    public int meterLevel = 0;
-    public float parentWidth;
-    public float parentHeight;
+    private int meterLevel = 0;
+    private float parentWidth;
+    private float parentHeight;
     private float relative;
     private Orientation orientation = Orientation.VERTICAL;
 
@@ -42,13 +42,12 @@ public class FaderView extends ImageView implements View.OnTouchListener {
 
     public int val0 = 0;
 
-    private Paint p;
+    private final Paint p;
     private final Bitmap fader_bmp_vertical;
     private final Bitmap fader_bmp_horizontal;
 
     private Handler myListener;
     private int progressColor = getResources().getColor(R.color.fader, null);
-    private int progressOffColor = getResources().getColor(R.color.VeryDark, null);
 
     public FaderView(Context context) {
         super(context);
@@ -186,11 +185,11 @@ public class FaderView extends ImageView implements View.OnTouchListener {
         this.invalidate();
     }
 
-    int getProgress() {
+    private int getProgress() {
         return meterLevel;
     }
 
-    int getMax() {
+    private int getMax() {
         return max;
     }
 
@@ -210,8 +209,7 @@ public class FaderView extends ImageView implements View.OnTouchListener {
                         relative = (getHeight() - p * getHeight() - event.getY());
                     else
                         relative = (event.getX() - p * getWidth());
-                    msg = myListener.obtainMessage(10);
-                    myListener.sendMessage(msg);
+                    myListener.sendMessage(myListener.obtainMessage(10));
                 }
                 break;
             case MotionEvent.ACTION_MOVE:
@@ -232,7 +230,6 @@ public class FaderView extends ImageView implements View.OnTouchListener {
                         newVal = max;
                     setProgress(newVal);
                     onSizeChanged(getWidth(), getHeight(), 0, 0);
-                    setDisplayText(String.format("%d", Math.round(newVal)));
                 }
                 msg = myListener.obtainMessage(20, this.getId(), this.getProgress());
                 myListener.sendMessage(msg);
@@ -240,8 +237,7 @@ public class FaderView extends ImageView implements View.OnTouchListener {
                 break;
             case MotionEvent.ACTION_UP:
                 getParent().getParent().requestDisallowInterceptTouchEvent(false);
-                msg = myListener.obtainMessage(30, this.getId(), this.getProgress());
-                myListener.sendMessage(msg);
+                myListener.sendMessage(myListener.obtainMessage(30, this.getId(), this.getProgress()));
                 break;
 
             case MotionEvent.ACTION_CANCEL:
@@ -257,9 +253,6 @@ public class FaderView extends ImageView implements View.OnTouchListener {
 
     public void setProgressColor(int progressColor) {
         this.progressColor = progressColor;
-    }
-
-    void setDisplayText(String text) {
     }
 
     public void setbTopText(boolean bTopText) {

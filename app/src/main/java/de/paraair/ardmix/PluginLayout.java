@@ -51,6 +51,9 @@ public class PluginLayout extends LinearLayout implements View.OnClickListener  
     private TextView pluginDescription;
     private Button resetPlugin;
     private ArdourPlugin currentPlugin;
+    ScrollView scrollView;
+
+    boolean bInitEnabled = true;
 
     public PluginLayout(Context context) {
         super(context);
@@ -59,6 +62,9 @@ public class PluginLayout extends LinearLayout implements View.OnClickListener  
 
     public void initLayout(boolean inlude_request, Track t) {
 
+        if( track != null && track.remoteId == t.remoteId)
+            return;
+        removeAllViews();
         this.track = t;
         pluginDescription = new TextView(context);
         pluginDescription.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
@@ -131,34 +137,49 @@ public class PluginLayout extends LinearLayout implements View.OnClickListener  
 
         addView(btnLayout);
 
-        if( inlude_request) {
-            Message fm = onChangeHandler.obtainMessage(PLUGIN_DESCRIPTOR_REQUEST, getId(), 1);
+        scrollView = new ScrollView(context);
+        scrollView.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+        scrollView.setFillViewport(true);
+        addView(scrollView);
+
+
+        if( inlude_request ) {
+            Message fm = onChangeHandler.obtainMessage(PLUGIN_DESCRIPTOR_REQUEST, track.remoteId, 1);
             onChangeHandler.sendMessage(fm);
         }
 
     }
 
     public void init(int pluginId) {
+        if( !bInitEnabled )
+            return;
         defaultIndex = pluginId;
+        if( currentPlugin != null && this.currentPlugin.getPluginId()  == pluginId)
+            return;
         this.currentPlugin = track.getPluginDescriptor(pluginId);
         setTag(currentPlugin);
         pluginDescription.setText("(" + (currentPlugin.getPluginId() ) + "/" + track.pluginDescriptors.size() + ") - " + currentPlugin.getName() + " - " + track.name);
         resetPlugin.setId(currentPlugin.getPluginId());
         ttbBypass.setToggleState(!currentPlugin.enabled);
-        int pi = 0;
+//        int pi = 0;
 
-        ScrollView scrollView = new ScrollView(context);
-        scrollView.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
-        scrollView.setFillViewport(true);
-        addView(scrollView);
+        scrollView.removeAllViews();
+
         LinearLayout scroller = new LinearLayout(context);
         scroller.setOrientation(VERTICAL);
         scroller.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
 
         scrollView.addView(scroller);
 
-        for(ArdourPlugin.InputParameter parameter: currentPlugin.getParameters()) {
+
+        for(int index: currentPlugin.getParameters().keySet()) {
+            ArdourPlugin.InputParameter parameter = currentPlugin.getParameters().get(index);
             if( (parameter.flags & 0x80) == 0x80 && (parameter.flags & 0x100) != 0x100) {
+
+                Log.d("PLUGIN", "parameter " + parameter.name + " flags: " + String.format("%x", parameter.flags) +
+                        " u/l " + String.format("%.2f", parameter.min) + "/" + String.format("%.2f", parameter.max));
+
+
                 LinearLayout pLayout = new LinearLayout(context);
                 pLayout.setOrientation(HORIZONTAL);
                 pLayout.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, PARAMETER_HEIGHT));
@@ -182,7 +203,7 @@ public class PluginLayout extends LinearLayout implements View.OnClickListener  
                                 mHandler.sendMessage(msg);
                             }
                         });
-                        parameterValue.setTag(pi);
+                        parameterValue.setTag(parameter.parameter_index);
                         pLayout.addView(parameterValue);
                     }
                     else {
@@ -190,10 +211,17 @@ public class PluginLayout extends LinearLayout implements View.OnClickListener  
                         parameterValue.param = parameter;
 
                         parameterValue.setLayoutParams(new LayoutParams(240, PARAMETER_HEIGHT));
-                        parameterValue.setMax(1000);
                         parameterValue.setOrientation(FaderView.Orientation.HORIZONTAL);
-                        parameterValue.setId(pi);
-                        parameterValue.setProgress(parameter.getFaderFromCurrent(1000));
+                        parameterValue.setId(parameter.parameter_index);
+                        if( (parameter.flags & 0x02) == 0x02) {
+                            parameterValue.setMax((int)parameter.max);
+                            parameterValue.setMin((int)parameter.min);
+                            parameterValue.setProgress((int)parameter.current);
+                        }
+                        else {
+                            parameterValue.setMax(1000);
+                            parameterValue.setProgress(parameter.getFaderFromCurrent(1000));
+                        }
                         parameterValue.setOnChangeHandler(mHandler);
                         pLayout.addView(parameterValue);
                     }
@@ -219,7 +247,7 @@ public class PluginLayout extends LinearLayout implements View.OnClickListener  
                         }
 
                     });
-                    parameterValue.setTag(pi);
+                    parameterValue.setTag(parameter.parameter_index);
                     pLayout.addView(parameterValue);
                 }
                 scroller.addView(pLayout);
@@ -229,9 +257,9 @@ public class PluginLayout extends LinearLayout implements View.OnClickListener  
                 if( (parameter.flags & 0x80) != 0x80 )
                     Log.d("Ardmix", "output parameter found: " + parameter.name);
             }
-            pi++;
+//            pi++;
         }
-
+        bInitEnabled = false;
 
     }
 
@@ -293,7 +321,11 @@ public class PluginLayout extends LinearLayout implements View.OnClickListener  
                 case 20:
                     int pi = msg.arg1;
                     ArdourPlugin.InputParameter ip = currentPlugin.getParameter(pi);
-                    ip.setCurrentFromFader(msg.arg2, 1000);
+                    if( (ip.flags & 0x02) == 0x02) {
+                        ip.current = (double)msg.arg2;
+                    }
+                    else
+                        ip.setCurrentFromFader(msg.arg2, 1000);
                     Object[] plargs = new Object[2];
                     plargs[0] = currentPlugin.getParameter(pi).parameter_index;
                     plargs[1] = ip.current;
@@ -332,13 +364,14 @@ public class PluginLayout extends LinearLayout implements View.OnClickListener  
                 onChangeHandler.sendMessage(onChangeHandler.obtainMessage(PLUGIN_RESET, currentPlugin.getTrackId(), currentPlugin.getPluginId()) );
                 break;
             case "pluginTitle":
-                this.removeAllViews();
+//                this.removeAllViews();
                 this.initLayout(false, track);
+                bInitEnabled = true;
                 if(currentPlugin.getPluginId() == track.pluginDescriptors.size()) {
-                    onChangeHandler.sendMessage(onChangeHandler.obtainMessage(PLUGIN_DESCRIPTOR_REQUEST, getId(), 1));
+                    onChangeHandler.sendMessage(onChangeHandler.obtainMessage(PLUGIN_DESCRIPTOR_REQUEST, currentPlugin.getTrackId(), 1));
                 }
                 else {
-                    onChangeHandler.sendMessage(onChangeHandler.obtainMessage(PLUGIN_DESCRIPTOR_REQUEST, getId(), currentPlugin.getPluginId() + 1));
+                    onChangeHandler.sendMessage(onChangeHandler.obtainMessage(PLUGIN_DESCRIPTOR_REQUEST, currentPlugin.getTrackId(), currentPlugin.getPluginId() + 1));
                 }
                 break;
             case "close":
@@ -354,7 +387,7 @@ public class PluginLayout extends LinearLayout implements View.OnClickListener  
                 break;
 
             case "bypass":
-                onChangeHandler.sendMessage(onChangeHandler.obtainMessage(PLUGIN_BYPASS, getId(), currentPlugin.getPluginId(), !ttbBypass.getToggleState() ? 1 : 0));
+                onChangeHandler.sendMessage(onChangeHandler.obtainMessage(PLUGIN_BYPASS, currentPlugin.getTrackId(), currentPlugin.getPluginId(), !ttbBypass.getToggleState() ? 1 : 0));
                 break;
 
             default:

@@ -77,7 +77,7 @@ public class SendsLayout extends LinearLayout implements OnClickListener {
     }
 
     public void init(StripLayout strip, Object[] sargs) {
-        iStripIndex = strip.getId();
+        iStripIndex = strip.getRemoteId();
 
         TextView tvSendsDescription = new TextView(context);
         tvSendsDescription.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));

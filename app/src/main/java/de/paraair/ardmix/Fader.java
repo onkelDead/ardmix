@@ -8,12 +8,12 @@ class Fader {
     public String name;
     public int Volume = 0;
 
-    public final static double minpos = 0.0;
-    public final static double maxpos = 1000.0;
-    public final static double minlval = Math.cbrt(0.0000000001);
-    public final static double maxlval = Math.cbrt(2000.0);
+    private final static double minpos = 0.0;
+    private final static double maxpos = 1000.0;
+    private final static double minlval = Math.cbrt(0.0000000001);
+    private final static double maxlval = Math.cbrt(2000.0);
 
-    public final static double scale = (maxlval - minlval) / (maxpos - minpos);
+    private final static double scale = (maxlval - minlval) / (maxpos - minpos);
 
     public static int valueToSlider(double value){
         return  (int)(minpos + (Math.cbrt(value) - minlval) / scale);

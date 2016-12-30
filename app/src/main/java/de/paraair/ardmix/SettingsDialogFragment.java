@@ -68,8 +68,8 @@ public class SettingsDialogFragment extends android.support.v4.app.DialogFragmen
         hostText.setText(args.getString("host"));
         portText.setText(String.valueOf(args.getInt("port")));
         bankSizeText.setText(String.valueOf(args.getInt("bankSize")));
-        useSendsLayoutCheckbox.setChecked(args.getBoolean("useOSCbridge"));
-        useOSCbridge.setChecked(args.getBoolean("useSendsLayout"));
+        useSendsLayoutCheckbox.setChecked(args.getBoolean("useSendsLayout"));
+        useOSCbridge.setChecked(args.getBoolean("useOSCbridge"));
 
         // Create the AlertDialog object and return it
         return builder.create();

@@ -38,6 +38,8 @@ public class StripElementMask {
 
     public int stripSize = 1;
 
+    public int autoSize = 32;
+
     public void config(AppCompatActivity context) {
         StripMaskDialogFragment sdlg = new StripMaskDialogFragment();
         Bundle settingsBundle = new Bundle();
@@ -96,6 +98,7 @@ public class StripElementMask {
         editor.putBoolean("mskSoloIso", bSoloIso);
         editor.putBoolean("mskSoloSafe", bSoloSafe);
         editor.putBoolean("mskMute", bMute);
+        editor.putBoolean("mskPan", bPan);
 
         editor.putInt("strip_wide", stripSize);
 

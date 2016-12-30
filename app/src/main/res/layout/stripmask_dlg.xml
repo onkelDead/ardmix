@@ -3,6 +3,13 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/textView2"
+        android:text="@string/stripdlg_label_size"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
+
     <RadioGroup
         android:orientation="horizontal"
         android:layout_width="match_parent"
@@ -13,25 +20,31 @@
         android:layout_marginBottom="4dp" >
 
         <RadioButton
-            android:text="Small Strips"
+            android:text="Small"
             android:id="@+id/small_strips"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" />
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
 
         <RadioButton
-            android:text="Medium Strips"
+            android:text="Medium"
             android:id="@+id/medium_strips"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1" />
+             />
 
         <RadioButton
-            android:text="Wide Strips"
+            android:text="Wide"
             android:id="@+id/wide_strips"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1" />
+            />
+
+        <RadioButton
+            android:text="Auto"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/auto_strips"
+             />
     </RadioGroup>
 
     <CheckBox

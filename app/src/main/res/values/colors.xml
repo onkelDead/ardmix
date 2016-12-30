@@ -5,7 +5,7 @@
     <color name="colorAccent">#FF4081</color>
     <color name="VeryDark">#303030</color>
     <color name="fader">#a0a0a0</color>
-    <color name="BUS_AUX_BACKGROUND">#6ea8ff</color>
+    <color name="BUS_AUX_BACKGROUND">#ffaec8ff</color>
     <color name="AUDIO_STRIP_BACKGROUND">#b4b4b4</color>
     <color name="SENDS_BACKGROUND">#005c52</color>
     <color name="BUTTON_FX">#ff98ff</color>

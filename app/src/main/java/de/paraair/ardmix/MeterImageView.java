@@ -1,8 +1,6 @@
 package de.paraair.ardmix;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -14,12 +12,17 @@ import android.widget.ImageView;
  */
 public class MeterImageView extends ImageView {
 
-    public float parentWidth;
-    public float parentHeight;
+    private float parentWidth;
+    private float parentHeight;
 
-    public int meterLevel = 0;
-    private Bitmap meter_bmp;
-    private Paint p;
+    private int meterLevel = 0;
+    private final Paint p;
+
+    private final static float leftEdge = 8;
+    private final static float rightEdge = 8;
+    private final static float meterWidth = 12;
+
+    private final static String[] dbs = {"-50", "-40", "-37", "-32", "-27", "-25", "-20", "-17", "-13", "-10", "-5", "-2", "0" };
 
     public MeterImageView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -30,24 +33,20 @@ public class MeterImageView extends ImageView {
         super(context);
         p = new Paint(Paint.ANTI_ALIAS_FLAG);
         this.setBackgroundColor(getResources().getColor(R.color.VeryDark, null));
-        meter_bmp = BitmapFactory.decodeResource(getResources(),
-                R.drawable.gain_image);
+
+        p.setTextAlign(Paint.Align.RIGHT);
+        p.setStrokeWidth(meterWidth);
+
     }
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        canvas.drawBitmap(Bitmap.createScaledBitmap(meter_bmp, (int)parentWidth, (int)parentHeight, true),0,0,p);
-
-        int ledheight =  (int)parentHeight / 13;
+        int ledHeight =  (int)parentHeight / 13;
 
         int val = meterLevel;
+        int lower = 1;
 
-        float leftEdge = 15;
-        float rightEdge = 15;
-        float meterWidth = 12;
-
-        p.setStrokeWidth(meterWidth);
         for( int i = 0; i < 13; i++) {
             int  b = val & 1;
 
@@ -62,14 +61,15 @@ public class MeterImageView extends ImageView {
             else if( i > 6 )
                 c = Color.GREEN;
 
-            if( b == 1 ) {
-                p.setColor(c);
-                canvas.drawLine(leftEdge, parentHeight - (i+1) * ledheight, rightEdge, parentHeight - (i) * ledheight - 2, p);
-            }
-            else
-                break;
-            val = val >> 1;
+            p.setColor(c);
+            if( b == 1 && lower == 1) {
+                canvas.drawLine(leftEdge, parentHeight - (i+1) * ledHeight, rightEdge, parentHeight - (i) * ledHeight - 2, p);
 
+            }
+
+            canvas.drawText(dbs[i], parentWidth - 4 , parentHeight - (i) * ledHeight - 2, p);
+            val = val >> 1;
+            lower = b;
         }
 
 
@@ -78,7 +78,7 @@ public class MeterImageView extends ImageView {
     public void setProgress(int val) {
         meterLevel = val;
 
-        this.invalidate();
+        this.invalidate(0, 0, (int)rightEdge, (int)parentHeight);
     }
 
     @Override

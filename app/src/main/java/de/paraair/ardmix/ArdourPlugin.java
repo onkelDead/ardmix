@@ -17,7 +17,7 @@ public  class ArdourPlugin {
 
     private String name;
 
-    private ArrayList<InputParameter> parameterList = new ArrayList<>();
+    private TreeMap<Integer, InputParameter> parameterList = new TreeMap<>();
 
     public ArdourPlugin() {}
 
@@ -27,8 +27,8 @@ public  class ArdourPlugin {
         this.enabled = enabled == 1 ? true : false;
     }
 
-    public InputParameter addParameter(InputParameter parameter) {
-        parameterList.add(parameter);
+    public InputParameter addParameter(int index, InputParameter parameter) {
+        parameterList.put(index, parameter);
         return parameter;
     }
 
@@ -36,7 +36,7 @@ public  class ArdourPlugin {
         return name;
     }
 
-    public ArrayList<InputParameter> getParameters() {
+    public TreeMap<Integer, InputParameter> getParameters() {
         return parameterList;
     }
 
@@ -94,8 +94,12 @@ public  class ArdourPlugin {
         }
 
         public String getTextFromCurrent() {
-            if( print_fmt == null || print_fmt.isEmpty() )
-                return String.format("%.2f", current);
+            if( print_fmt == null || print_fmt.isEmpty() ) {
+                if( (flags & 0x02) == 0x02)
+                    return String.format("%.0f", current);
+                else
+                    return String.format("%.2f", current);
+            }
             else
                 return String.format(print_fmt, current);
         }

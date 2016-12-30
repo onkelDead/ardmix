@@ -65,6 +65,7 @@ final class ArdourConstants {
 
     public static final int OSC_PLUGIN_LIST = 4010;
     public static final int OSC_PLUGIN_DESCRIPTOR = 4000;
+    public static final int OSC_PLUGIN_DESCRIPTOR_END = 4020;
 
 
     // constants about Ardour Transport

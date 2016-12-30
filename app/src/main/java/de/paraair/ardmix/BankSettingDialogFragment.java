@@ -43,8 +43,7 @@ public class BankSettingDialogFragment extends DialogFragment {
         bankIndex = args.getInt("bankIndex");
 
         MainActivity callingActivity = (MainActivity) getActivity();
-        final Bank orgBank = callingActivity.getBank(bankIndex);
-        bank = orgBank.GetClone();
+        bank = callingActivity.getBank(bankIndex);
         txtBankName = (EditText) view.findViewById(R.id.bankname);
         txtBankName.setText(bank.getName());
         routes = callingActivity.getRoutes();
@@ -88,7 +87,7 @@ public class BankSettingDialogFragment extends DialogFragment {
             }
         });
 
-        if( orgBank.button != null ) {
+        if( bank.button != null ) {
             builder.setNeutralButton(R.string.action_removebank, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
                     MainActivity callingActivity = (MainActivity) getActivity();

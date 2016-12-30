@@ -12,8 +12,6 @@ import java.util.HashMap;
 public class Track extends Fader {
 
 
-    public int bank;
-
 	enum TrackType  {
 		MASTER, AUDIO, MIDI, BUS, SEND, RECEIVE, PAN
     }
@@ -26,6 +24,9 @@ public class Track extends Fader {
 	public int trackVolume = 0;
     public float panPosition = 0.5f;
 	public int meter;
+
+	public int currentSendVolume;
+	public boolean currentSendEnable;
 
 	public boolean recEnabled = false;
 	public boolean soloEnabled = false;
@@ -40,7 +41,7 @@ public class Track extends Fader {
 
 	public int sendCount = 0;
 
-	public HashMap<Integer, ArdourPlugin> pluginDescriptors = new HashMap<>();
+	public final HashMap<Integer, ArdourPlugin> pluginDescriptors = new HashMap<>();
 
 
 	public void setTrackVolumeOnSeekBar(boolean val){
@@ -51,9 +52,10 @@ public class Track extends Fader {
 	}
 
 
-	public void addPlugin(int pluginIndex, String pluginName) {
+	public void addPlugin(int pluginIndex, String pluginName, int enabled) {
 		ArdourPlugin plugin = new ArdourPlugin(remoteId, pluginIndex, 1);
 		plugin.setName(pluginName);
+		plugin.enabled = (enabled > 0);
 		pluginDescriptors.put(pluginIndex, plugin);
 	}
 

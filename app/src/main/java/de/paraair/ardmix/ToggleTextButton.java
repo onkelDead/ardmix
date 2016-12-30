@@ -14,8 +14,8 @@ import android.widget.Button;
 public class ToggleTextButton extends Button implements ToggleListener {
 
 
-    public float parentWidth;
-    public float parentHeight;
+    private float parentWidth;
+    private float parentHeight;
 
     private int state = 2;
     private boolean autoToggle = false;
@@ -27,27 +27,19 @@ public class ToggleTextButton extends Button implements ToggleListener {
     private int offColor = Color.BLACK;
 
 
-    private Paint p;
+    private final Paint p;
 
     public ToggleTextButton(Context context) {
         super(context);
         p = new Paint(Paint.ANTI_ALIAS_FLAG);
     }
-    /**
-     * @param context
-     * @param attrs
-     * @param defStyle
-     */
+
     public ToggleTextButton(Context context, AttributeSet attrs, int defStyle) {
 
         super(context, attrs, defStyle);
         p = new Paint(Paint.ANTI_ALIAS_FLAG);
     }
 
-    /**
-     * @param context
-     * @param attrs
-     */
     public ToggleTextButton(Context context, AttributeSet attrs) {
 
         super(context, attrs);
@@ -140,10 +132,6 @@ public class ToggleTextButton extends Button implements ToggleListener {
         return this.state == 1;
     }
     
-    /**
-     * Toogle to a given state
-     * @param s
-     */
     public void  setToggleState(boolean s){
 
         if( s &&  state == 1) {

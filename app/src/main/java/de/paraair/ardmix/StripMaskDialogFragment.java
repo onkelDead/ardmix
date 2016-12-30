@@ -20,6 +20,7 @@ public class StripMaskDialogFragment extends DialogFragment {
     private RadioButton rbSmall;
     private RadioButton rbMedium;
     private RadioButton rbWide;
+    private RadioButton rbAuto;
 
     private CheckBox cbStripTitle;
     private CheckBox cbStripFX;
@@ -66,11 +67,13 @@ public class StripMaskDialogFragment extends DialogFragment {
                 item.bFader = cbStripFader.isChecked();
 
                 if( rbSmall.isChecked())
-                    item.stripSize = 0;
+                    item.stripSize = StripLayout.SMALL_STRIP;
                 else if( rbMedium.isChecked())
-                    item.stripSize = 1;
+                    item.stripSize = StripLayout.MEDIUM_STRIP;
                 else if( rbWide.isChecked())
-                    item.stripSize = 2;
+                    item.stripSize = StripLayout.WIDE_STRIP;
+                else if( rbAuto.isChecked())
+                    item.stripSize = StripLayout.AUTO_STRIP;
 
                 MainActivity callingActivity = (MainActivity) getActivity();
                 callingActivity.onStripMaskDlg();
@@ -125,16 +128,20 @@ public class StripMaskDialogFragment extends DialogFragment {
         rbSmall = (RadioButton) view.findViewById(R.id.small_strips);
         rbMedium = (RadioButton) view.findViewById(R.id.medium_strips);
         rbWide = (RadioButton) view.findViewById(R.id.wide_strips);
+        rbAuto = (RadioButton) view.findViewById(R.id.auto_strips);
 
         switch(args.getInt("stripSize")) {
-            case 0:
+            case StripLayout.SMALL_STRIP:
                 rbSmall.setChecked(true);
                 break;
-            case 1:
+            case StripLayout.MEDIUM_STRIP:
                 rbMedium.setChecked(true);
                 break;
-            case 2:
+            case StripLayout.WIDE_STRIP:
                 rbWide.setChecked(true);
+                break;
+            case StripLayout.AUTO_STRIP:
+                rbAuto.setChecked(true);
                 break;
 
         }

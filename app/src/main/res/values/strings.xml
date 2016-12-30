@@ -35,4 +35,5 @@
     <string name="action_processors">Processors...</string>
     <string name="soloiso">solo isolate</string>
     <string name="solosafe">Solo locked</string>
+    <string name="stripdlg_label_size">Strip size</string>
 </resources>
