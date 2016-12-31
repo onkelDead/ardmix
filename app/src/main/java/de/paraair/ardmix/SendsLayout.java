@@ -148,7 +148,7 @@ public class SendsLayout extends LinearLayout implements OnClickListener {
         fwSend.setId(sendIndex);
         fwSend.setProgressColor(getResources().getColor(R.color.BUTTON_SEND, null));
         fwSend.val0 = 782;
-        fwSend.setOnChangeHandler(mHandler);
+        fwSend.SetListener(sendListener);
         llSend.addView(fwSend);
 
         fwSendGains.add(fwSend);
@@ -156,6 +156,26 @@ public class SendsLayout extends LinearLayout implements OnClickListener {
         addView(llSend);
         llSends.add(llSend);
     }
+
+    private FaderView.FaderViewListener sendListener = new FaderView.FaderViewListener() {
+
+        @Override
+        public void onFader(int id, int pos) {
+            int pi = id;
+            Message fm = onChangeHandler.obtainMessage(SEND_CHANGED, iStripIndex, pi, pos);
+            onChangeHandler.sendMessage(fm);
+        }
+
+        @Override
+        public void onStartFade() {
+
+        }
+
+        @Override
+        public void onStopFade(int id, int pos) {
+
+        }
+    };
 
     private Handler mHandler = new Handler() {
 

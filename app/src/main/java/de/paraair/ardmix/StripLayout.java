@@ -9,6 +9,8 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import de.paraair.ardmix.FaderView.FaderViewListener;
+
 
 /**
  * Created by onkel on 06.10.16.
@@ -400,7 +402,7 @@ public class StripLayout extends LinearLayout {
         fwVolume.setBackgroundColor(getResources().getColor(R.color.VeryDark, null));
         fwVolume.setTag("volume");
         fwVolume.setId(getId());
-        fwVolume.setOnChangeHandler(mHandler);
+        fwVolume.SetListener(faderViewListener);
         fwVolume.val0 = 782;
         fwVolume.setProgress(track.trackVolume);
         if (mask.bFader)
@@ -465,56 +467,40 @@ public class StripLayout extends LinearLayout {
     }
 
     public void volumeChanged() {
-        if (fwVolume == null) {
-            fwVolume = new FaderView(this.getContext());
-            fwVolume.setLayoutParams(new LayoutParams(
-                    LayoutParams.MATCH_PARENT,
-                    LayoutParams.MATCH_PARENT));
-            fwVolume.setTag("volume");
-            fwVolume.setId(track.remoteId);
-            fwVolume.setClickable(true);
-
-            fwVolume.setOnChangeHandler(mHandler);
-
-            faderLayout.addView(fwVolume);
-        }
         if( showtype == Track.TrackType.AUDIO || showtype == Track.TrackType.BUS || showtype == Track.TrackType.MASTER)
             fwVolume.setProgress(track.trackVolume);
     }
 
-    private Handler mHandler = new Handler() {
 
-        /* (non-Javadoc)
-         * @see android.os.Handler#handleMessage(android.os.Message)
-         */
+    private FaderViewListener faderViewListener = new FaderViewListener() {
         @Override
-        public void handleMessage(Message msg) {
-
-            switch (msg.what) {
-                case 10:
-                    track.setTrackVolumeOnSeekBar(true);
-                    break;
-                case 20:
-                    if(showtype == Track.TrackType.RECEIVE) {
-                        track.currentSendVolume = msg.arg2;
-                        onChangeHandler.sendMessage(onChangeHandler.obtainMessage(RECEIVE_CHANGED, track.source_id, track.currentSendVolume));
-                    }
-                    else if(showtype == Track.TrackType.SEND) {
-                        track.currentSendVolume = msg.arg2;
-                        onChangeHandler.sendMessage(onChangeHandler.obtainMessage(AUX_CHANGED, msg.arg1, track.trackVolume));
-                    }
-                    else if(showtype == Track.TrackType.PAN) {
-                        track.panPosition = (float)msg.arg2 / 1000;
-                        onChangeHandler.sendMessage(onChangeHandler.obtainMessage(PAN_CHANGED, track.remoteId, msg.arg2));
-                    }
-                    else {
-                        track.trackVolume = msg.arg2;
-                        onChangeHandler.sendMessage(onChangeHandler.obtainMessage(STRIP_FADER_CHANGED, track.remoteId, track.trackVolume));
-                    }
-                    break;
-                case 30:
-                    track.setTrackVolumeOnSeekBar(false);
+        public void onFader(int faderId, int pos) {
+            if(showtype == Track.TrackType.RECEIVE) {
+                track.currentSendVolume = pos;
+                onChangeHandler.sendMessage(onChangeHandler.obtainMessage(RECEIVE_CHANGED, track.source_id, track.currentSendVolume));
             }
+            else if(showtype == Track.TrackType.SEND) {
+                track.currentSendVolume = pos;
+                onChangeHandler.sendMessage(onChangeHandler.obtainMessage(AUX_CHANGED, faderId, track.trackVolume));
+            }
+            else if(showtype == Track.TrackType.PAN) {
+                track.panPosition = (float)pos / 1000;
+                onChangeHandler.sendMessage(onChangeHandler.obtainMessage(PAN_CHANGED, track.remoteId, pos));
+            }
+            else {
+                track.trackVolume = pos;
+                onChangeHandler.sendMessage(onChangeHandler.obtainMessage(STRIP_FADER_CHANGED, track.remoteId, track.trackVolume));
+            }
+        }
+
+        @Override
+        public void onStartFade() {
+            track.setTrackVolumeOnSeekBar(true);
+        }
+
+        @Override
+        public void onStopFade(int id, int pos) {
+            track.setTrackVolumeOnSeekBar(false);
         }
     };
 
@@ -628,14 +614,6 @@ public class StripLayout extends LinearLayout {
     public void pullVolume() {
         track.trackVolume = oldVolume;
         volumeChanged();
-    }
-
-    public void changeVolume(int delta) {
-        track.trackVolume += delta;
-        if(track.trackVolume < 0)
-            track.trackVolume = 0;
-        volumeChanged();
-        onChangeHandler.sendMessage(onChangeHandler.obtainMessage(RECEIVE_CHANGED, track.remoteId, track.trackVolume));
     }
 
     public void resetBackground() {

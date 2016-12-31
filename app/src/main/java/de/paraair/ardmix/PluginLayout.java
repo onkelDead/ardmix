@@ -222,7 +222,7 @@ public class PluginLayout extends LinearLayout implements View.OnClickListener  
                             parameterValue.setMax(1000);
                             parameterValue.setProgress(parameter.getFaderFromCurrent(1000));
                         }
-                        parameterValue.setOnChangeHandler(mHandler);
+                        parameterValue.SetListener(parameterHandler);
                         pLayout.addView(parameterValue);
                     }
                 }
@@ -262,6 +262,35 @@ public class PluginLayout extends LinearLayout implements View.OnClickListener  
         bInitEnabled = false;
 
     }
+
+    private FaderView.FaderViewListener parameterHandler = new FaderView.FaderViewListener() {
+
+        @Override
+        public void onFader(int id, int pos) {
+            int pi = id;
+            ArdourPlugin.InputParameter ip = currentPlugin.getParameter(pi);
+            if( (ip.flags & 0x02) == 0x02) {
+                ip.current = (double)pos;
+            }
+            else
+                ip.setCurrentFromFader(pos, 1000);
+            Object[] plargs = new Object[2];
+            plargs[0] = currentPlugin.getParameter(pi).parameter_index;
+            plargs[1] = ip.current;
+            Message fm = onChangeHandler.obtainMessage(PLUGIN_PARAMETER_CHANGED, currentPlugin.getTrackId(), currentPlugin.getPluginId(), plargs);
+            onChangeHandler.sendMessage(fm );
+        }
+
+        @Override
+        public void onStartFade() {
+
+        }
+
+        @Override
+        public void onStopFade(int id, int pos) {
+
+        }
+    };
 
     public class MyAdapter extends BaseAdapter {
         private final ArrayList mData;
@@ -333,8 +362,8 @@ public class PluginLayout extends LinearLayout implements View.OnClickListener  
                     onChangeHandler.sendMessage(fm );
                     break;
                 case 30:
-                    int pir = msg.arg1;
-                    ArdourPlugin.InputParameter ipr = currentPlugin.getParameter(pir);
+//                    int pir = msg.arg1;
+//                    ArdourPlugin.InputParameter ipr = currentPlugin.getParameter(pir);
                     break;
                 case 40:
                     int pis = msg.arg1;
