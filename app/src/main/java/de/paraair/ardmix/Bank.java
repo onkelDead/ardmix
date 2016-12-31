@@ -8,7 +8,28 @@ import java.util.ArrayList;
 
 public class Bank implements Cloneable{
 
+//    enum BankType { ALL, AUDIO, MIDI, BUS }
+
+    private final ArrayList<Strip> strips = new ArrayList<>();
+    private String name;
+//    private BankType type = BankType.ALL;
+
     ToggleTextButton button = null;
+
+    public Bank() {}
+
+    public Bank(String name) {
+        setName(name);
+    }
+
+    public class Strip {
+        /** remote id of the contained track (1-n) */
+
+        public int id;
+        public String name;
+        public boolean enabled;
+        public Track.TrackType type;
+    }
 
     public ToggleTextButton getButton() {
         return button;
@@ -25,23 +46,13 @@ public class Bank implements Cloneable{
         return strips.size();
     }
 
-    enum BankType { ALL, AUDIO, MIDI, BUS }
 
-    private final ArrayList<Strip> strips = new ArrayList<>();
-    private String name;
-    private BankType type = BankType.ALL;
-
-    public Bank() {}
-
-    public Bank(String name) {
-        setName(name);
-    }
-
-    public void add(String name, int remoteId, boolean enabled) {
+    public void add(String name, int remoteId, boolean enabled, Track.TrackType type) {
         Strip strip = new Strip();
         strip.id = remoteId;
         strip.name = name;
         strip.enabled = enabled;
+        strip.type = type;
         int insert_index = 0;
         for(Strip p: strips) {
             if (p.id < remoteId)
@@ -76,30 +87,15 @@ public class Bank implements Cloneable{
         this.name = name;
     }
 
-    public class Strip {
-        /** remote id of the contained track (1-n) */
-
-        public int id;
-        public String name;
-        public boolean enabled;
-    }
-
     public ArrayList<Strip> getStrips() {
         return strips;
     }
 
-    public void setType(BankType type) {
-        this.type = type;
-    }
-
-    public BankType getType() {
-        return type;
-    }
 
     Bank GetClone() {
         Bank clone = new Bank(name);
         for(Strip strip: strips ) {
-            clone.add(strip.name, strip.id, strip.enabled);
+            clone.add(strip.name, strip.id, strip.enabled, strip.type);
         }
         return clone ;
     }

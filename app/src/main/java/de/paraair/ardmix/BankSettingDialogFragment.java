@@ -13,7 +13,6 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -62,7 +61,7 @@ public class BankSettingDialogFragment extends DialogFragment {
                 }
                 else {
                     Track t = routes.get(id);
-                    bank.add(t.name, id, true);
+                    bank.add(t.name, id, true, t.type);
                 }
             }
         };

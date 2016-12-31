@@ -37,7 +37,7 @@ public class StripSelectLayout extends ListView {
         for( int index : routes.keySet()) {
             Track t = routes.get(index);
             if(t.type == Track.TrackType.AUDIO || t.type == Track.TrackType.BUS ) {
-                b.add(t.name, t.remoteId, bank.contains(t.remoteId));
+                b.add(t.name, t.remoteId, bank.contains(t.remoteId),t.type);
             }
         }
         adapter = new TrackAdapter(context, b.getStrips());
@@ -55,14 +55,14 @@ public class StripSelectLayout extends ListView {
     }
 
     private class TrackAdapter extends ArrayAdapter<Bank.Strip> {
-        public TrackAdapter(Context context, ArrayList<Bank.Strip> tracks ) {
-            super(context, 0, tracks);
+        public TrackAdapter(Context context, ArrayList<Bank.Strip> strip ) {
+            super(context, 0, strip);
         }
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             // Get the data item for this position
-            Bank.Strip track = getItem(position);
+            Bank.Strip strip = getItem(position);
 
 
             // Check if an existing view is being reused, otherwise inflate the view
@@ -73,9 +73,9 @@ public class StripSelectLayout extends ListView {
             CheckBox tvName = (CheckBox) convertView.findViewById(R.id.checkBox);
 
             // Populate the data into the template view using the data object
-            tvName.setText(track.name);
-            tvName.setTag(track.id);
-            tvName.setChecked(track.enabled);
+            tvName.setText(strip.name + " - " + (strip.type == Track.TrackType.AUDIO ? "Audio" : "Aux"));
+            tvName.setTag(strip.id);
+            tvName.setChecked(strip.enabled);
             tvName.setOnClickListener(onClickListener);
             // Return the completed view to render on screen
             return convertView;

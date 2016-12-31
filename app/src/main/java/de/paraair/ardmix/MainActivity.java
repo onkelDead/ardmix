@@ -96,8 +96,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private StripElementMask stripElementMask = new StripElementMask();
 
-
-
     private StripLayout masterStrip;
     private LinearLayout llMain;
     private StripSelectLayout stripSelect;
@@ -933,7 +931,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Track t = sl.getTrack();
 
             if( t.type != Track.TrackType.MASTER ) {
-                allBank.add(t.name, sl.getId(), true);
+                allBank.add(t.name, sl.getId(), true, t.type);
 
 /*                if ( lt != t.type || iTrackInBank++ == bankSize) {
                     nb = new Bank();
@@ -1461,7 +1459,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             selectBank.setName(bank.getName());
             selectBank.getStrips().clear();
             for( Bank.Strip strip: bank.getStrips()) {
-                selectBank.add(strip.name, getStripLayout(strip.id).getId(), strip.enabled);
+                selectBank.add(strip.name, getStripLayout(strip.id).getId(), strip.enabled, strip.type);
             }
             showBank((int)selectBank.getButton().getTag());
         }
@@ -1492,7 +1490,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Bank clone = banks.get(iBankIndex);
             result.setName(clone.getName());
             for( Bank.Strip s: clone.getStrips()) {
-                result.add(s.name, getStripLayoutId(s.id).getRemoteId(), false);
+                result.add(s.name, getStripLayoutId(s.id).getRemoteId(), false, s.type);
             }
             result.button = clone.getButton();
         }
@@ -1570,7 +1568,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     reader.beginArray();
                     while (reader.hasNext()) {
                         reader.beginObject();
-                        bank.add(reader.nextName(), reader.nextInt(), true);
+                        bank.add(reader.nextName(), reader.nextInt(), true, Track.TrackType.AUDIO);
                         reader.endObject();
                     }
                     reader.endArray();
