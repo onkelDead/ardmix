@@ -18,9 +18,7 @@ public class MeterImageView extends ImageView {
     private int meterLevel = 0;
     private final Paint p;
 
-    private final static float leftEdge = 8;
-    private final static float rightEdge = 8;
-    private final static float meterWidth = 12;
+    private final static float meterWidth = 10;
 
     private final static String[] dbs = {"-50", "-40", "-37", "-32", "-27", "-25", "-20", "-17", "-13", "-10", "-5", "-2", "0" };
 
@@ -41,6 +39,9 @@ public class MeterImageView extends ImageView {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
+
+        float leftEdge = parentWidth / 2-12;
+        float rightEdge = parentWidth / 2-12;
 
         int ledHeight =  (int)parentHeight / 13;
 
@@ -64,10 +65,9 @@ public class MeterImageView extends ImageView {
             p.setColor(c);
             if( b == 1 && lower == 1) {
                 canvas.drawLine(leftEdge, parentHeight - (i+1) * ledHeight, rightEdge, parentHeight - (i) * ledHeight - 2, p);
-
             }
 
-            canvas.drawText(dbs[i], parentWidth - 4 , parentHeight - (i) * ledHeight - 2, p);
+            canvas.drawText(dbs[i], rightEdge+30 , parentHeight - (i) * ledHeight - 2, p);
             val = val >> 1;
             lower = b;
         }
@@ -78,7 +78,7 @@ public class MeterImageView extends ImageView {
     public void setProgress(int val) {
         meterLevel = val;
 
-        this.invalidate(0, 0, (int)rightEdge, (int)parentHeight);
+        this.invalidate(0, (int)(parentWidth / 2 - meterWidth), (int)(parentWidth / 2+meterWidth), (int)parentHeight);
     }
 
     @Override

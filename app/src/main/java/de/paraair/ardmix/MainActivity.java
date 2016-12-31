@@ -501,20 +501,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 case StripLayout.STRIP_FADER_CHANGED:
                     _track = oscService.getTrack(msg.arg1 );
-                    if ( iAuxLayout == msg.arg1) {
-                        for( StripLayout _sl: strips) {
-                            if( _sl.getShowType() == Track.TrackType.RECEIVE && _sl.getTrack().muteEnabled == true ) {
-                                if( nLastVolume != -1) {
-                                    _sl.changeVolume(_track.trackVolume - nLastVolume);
-                                }
-                            }
-                        }
-                        nLastVolume = _track.trackVolume;
-                    }
-                    else {
-                        if (_track != null)
+//                    if ( iAuxLayout == msg.arg1) {
+//                        for( StripLayout _sl: strips) {
+//                            if( _sl.getShowType() == Track.TrackType.RECEIVE && _sl.getTrack().muteEnabled == true ) {
+//                                if( nLastVolume != -1) {
+//                                    _sl.changeVolume(_track.trackVolume - nLastVolume);
+//                                }
+//                            }
+//                        }
+//                        nLastVolume = _track.trackVolume;
+//                    }
+//                    else {
+//                        if (_track != null)
                             oscService.trackListAction(OscService.FADER_CHANGED, _track );
-                    }
+//                    }
                     break;
 
                 case SendsLayout.RESET_LAYOUT:
