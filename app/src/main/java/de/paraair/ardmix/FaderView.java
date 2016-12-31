@@ -18,8 +18,6 @@ import android.widget.ImageView;
 
 public class FaderView extends ImageView implements View.OnTouchListener {
 
-
-
     enum Orientation {
         VERTICAL,
         HORIZONTAL
@@ -53,10 +51,7 @@ public class FaderView extends ImageView implements View.OnTouchListener {
         void onStopFade(int id, int pos);
     }
 
-//    private Handler myListener;
-
     private FaderViewListener m_listener;
-
 
     public void SetListener(FaderViewListener l) {
         m_listener = l;
@@ -246,15 +241,12 @@ public class FaderView extends ImageView implements View.OnTouchListener {
                     setProgress(newVal);
                     onSizeChanged(getWidth(), getHeight(), 0, 0);
                 }
-//                msg = myListener.obtainMessage(20, this.getId(), this.getProgress());
-//                myListener.sendMessage(msg);
                 if(m_listener!=null) {
                     m_listener.onFader(this.getId(), this.getProgress());
                 }
                 break;
             case MotionEvent.ACTION_UP:
                 getParent().getParent().requestDisallowInterceptTouchEvent(false);
-//                myListener.sendMessage(myListener.obtainMessage(30, this.getId(), this.getProgress()));
                 if(m_listener!=null) {
                     m_listener.onStopFade(this.getId(), this.getProgress());
                 }
@@ -265,11 +257,6 @@ public class FaderView extends ImageView implements View.OnTouchListener {
         }
         return true;
     }
-
-//
-//    public void setOnChangeHandler(Handler thisHandler) {
-//        this.myListener = thisHandler;
-//    }
 
     public void setProgressColor(int progressColor) {
         this.progressColor = progressColor;
@@ -283,6 +270,7 @@ public class FaderView extends ImageView implements View.OnTouchListener {
         this.strTopText = strTopText;
         this.bTopText = !strTopText.equals("");
     }
+
     public void setbBottomText(boolean bBottomText) {
         this.bBottomText = bBottomText;
     }

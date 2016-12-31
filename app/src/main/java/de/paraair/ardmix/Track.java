@@ -3,6 +3,8 @@
  */
 package de.paraair.ardmix;
 
+import android.support.annotation.NonNull;
+
 import java.util.HashMap;
 
 /**
@@ -16,6 +18,7 @@ public class Track extends Fader {
 		MASTER, AUDIO, MIDI, BUS, SEND, RECEIVE, PAN
     }
 
+    @NonNull
 	static final String getTrackTypeName(TrackType type) {
 		switch (type) {
 			case AUDIO:
