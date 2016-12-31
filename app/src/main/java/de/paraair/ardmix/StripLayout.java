@@ -3,7 +3,6 @@ package de.paraair.ardmix;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Handler;
-import android.os.Message;
 import android.view.Gravity;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -46,7 +45,6 @@ public class StripLayout extends LinearLayout {
     private ToggleTextButton ttbSoloIso;
     private ToggleTextButton ttbSoloSafe;
     private ToggleTextButton ttbPan;
-    LinearLayout faderLayout;
     private FaderView fwVolume = null;
     MeterImageView meterImage = null;
     private RoundKnobButton kbPan = null;
@@ -57,7 +55,7 @@ public class StripLayout extends LinearLayout {
     // params for senders
     private int oldVolume;
 
-    public Track.TrackType showtype;
+    public Track.TrackType showType;
     private int iPosition;
 
     private int strip_wide;
@@ -129,17 +127,17 @@ public class StripLayout extends LinearLayout {
         tvStripName.setGravity(Gravity.CENTER_HORIZONTAL);
         switch(track.type) {
             case AUDIO:
-                showtype = Track.TrackType.AUDIO;
+                showType = Track.TrackType.AUDIO;
                 tvStripName.setBackgroundColor(getResources().getColor(R.color.AUDIO_STRIP_BACKGROUND, null));
                 setBackgroundColor(getResources().getColor(R.color.AUDIO_STRIP_BACKGROUND, null));
                 break;
             case BUS:
-                showtype = Track.TrackType.BUS;
+                showType = Track.TrackType.BUS;
                 tvStripName.setBackgroundColor(getResources().getColor(R.color.BUS_AUX_BACKGROUND, null));
                 setBackgroundColor(getResources().getColor(R.color.BUS_AUX_BACKGROUND, null));
                 break;
             default:
-                showtype = Track.TrackType.MASTER;
+                showType = Track.TrackType.MASTER;
                 tvStripName.setBackgroundColor(Color.WHITE);
                 break;
         }
@@ -428,7 +426,7 @@ public class StripLayout extends LinearLayout {
     }
 
     public void muteChanged() {
-        if( showtype == Track.TrackType.AUDIO || showtype == Track.TrackType.BUS|| showtype == Track.TrackType.MASTER)
+        if( showType == Track.TrackType.AUDIO || showType == Track.TrackType.BUS|| showType == Track.TrackType.MASTER)
             ttbMute.setToggleState(track.muteEnabled);
 
     }
@@ -459,7 +457,7 @@ public class StripLayout extends LinearLayout {
     }
 
     public void panChanged() {
-        if( showtype == Track.TrackType.PAN)
+        if( showType == Track.TrackType.PAN)
             fwVolume.setProgress((int) (track.panPosition * 1000));
         else
             if(kbPan != null)
@@ -467,7 +465,7 @@ public class StripLayout extends LinearLayout {
     }
 
     public void volumeChanged() {
-        if( showtype == Track.TrackType.AUDIO || showtype == Track.TrackType.BUS || showtype == Track.TrackType.MASTER)
+        if( showType == Track.TrackType.AUDIO || showType == Track.TrackType.BUS || showType == Track.TrackType.MASTER)
             fwVolume.setProgress(track.trackVolume);
     }
 
@@ -475,15 +473,15 @@ public class StripLayout extends LinearLayout {
     private FaderViewListener faderViewListener = new FaderViewListener() {
         @Override
         public void onFader(int faderId, int pos) {
-            if(showtype == Track.TrackType.RECEIVE) {
+            if(showType == Track.TrackType.RECEIVE) {
                 track.currentSendVolume = pos;
                 onChangeHandler.sendMessage(onChangeHandler.obtainMessage(RECEIVE_CHANGED, track.source_id, track.currentSendVolume));
             }
-            else if(showtype == Track.TrackType.SEND) {
+            else if(showType == Track.TrackType.SEND) {
                 track.currentSendVolume = pos;
                 onChangeHandler.sendMessage(onChangeHandler.obtainMessage(AUX_CHANGED, faderId, track.trackVolume));
             }
-            else if(showtype == Track.TrackType.PAN) {
+            else if(showType == Track.TrackType.PAN) {
                 track.panPosition = (float)pos / 1000;
                 onChangeHandler.sendMessage(onChangeHandler.obtainMessage(PAN_CHANGED, track.remoteId, pos));
             }
@@ -554,7 +552,7 @@ public class StripLayout extends LinearLayout {
             ttbMute.setAutoToggle(false);
 //            track.muteEnabled = oldMute;
         }
-        showtype = type;
+        showType = type;
     }
 
     public void ResetType() {
@@ -562,7 +560,7 @@ public class StripLayout extends LinearLayout {
     }
 
     public Track.TrackType getShowType() {
-        return showtype;
+        return showType;
     }
 
     public void meterChange() {
@@ -580,11 +578,7 @@ public class StripLayout extends LinearLayout {
         fwVolume.setMin(0);
         fwVolume.setProgressColor(getResources().getColor(R.color.AUDIO_STRIP_BACKGROUND, null));
         fwVolume.val0 = 782;
-        showtype = track.type;
-    }
-
-    public Track.TrackType getTrackType() {
-        return track.type;
+        showType = track.type;
     }
 
     public Track getTrack() {

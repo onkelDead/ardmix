@@ -36,24 +36,21 @@ public class PluginLayout extends LinearLayout implements View.OnClickListener  
     public static final int PLUGIN_BYPASS = 35;
     private static final int NAVBUTTON_HEIGHT = 36;
 
-
     private static final int PARAMETER_HEIGHT = 36;
 
-    ToggleTextButton ttbBypass;
+    private ToggleTextButton ttbBypass;
 
-    private Context context;
+    private final Context context;
 
     Track track;
-
-    int defaultIndex = 0;
 
     private Handler onChangeHandler;
     private TextView pluginDescription;
     private Button resetPlugin;
     private ArdourPlugin currentPlugin;
-    ScrollView scrollView;
+    private ScrollView scrollView;
 
-    boolean bInitEnabled = true;
+    private boolean bInitEnabled = true;
 
     public PluginLayout(Context context) {
         super(context);
@@ -77,7 +74,7 @@ public class PluginLayout extends LinearLayout implements View.OnClickListener  
                 pluginDescription.setOnClickListener(this);
         }
         else
-            pluginDescription.setText("No FX present");
+            pluginDescription.setText(R.string.lb_Descr_noFX);
         addView(pluginDescription);
 
         LinearLayout btnLayout = new LinearLayout(context);
@@ -91,14 +88,14 @@ public class PluginLayout extends LinearLayout implements View.OnClickListener  
         btnClose.setLayoutParams(bclp);
         btnClose.setPadding(1, 0, 1, 0);
         btnClose.setTag("close");
-        btnClose.setText("Close");
+        btnClose.setText(R.string.btn_close);
         btnClose.setOnClickListener(this);
         btnLayout.addView(btnClose);
 
         if( t.pluginDescriptors.size() > 0 ) {
             resetPlugin = new Button(context);
             resetPlugin.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, NAVBUTTON_HEIGHT));
-            resetPlugin.setText("reset");
+            resetPlugin.setText(R.string.btn_reset);
             resetPlugin.setPadding(1, 0, 1, 0);
             resetPlugin.setTag("resetPlugin");
             resetPlugin.setOnClickListener(this);
@@ -153,7 +150,6 @@ public class PluginLayout extends LinearLayout implements View.OnClickListener  
     public void init(int pluginId) {
         if( !bInitEnabled )
             return;
-        defaultIndex = pluginId;
         if( currentPlugin != null && this.currentPlugin.getPluginId()  == pluginId)
             return;
         this.currentPlugin = track.getPluginDescriptor(pluginId);
@@ -263,19 +259,18 @@ public class PluginLayout extends LinearLayout implements View.OnClickListener  
 
     }
 
-    private FaderView.FaderViewListener parameterHandler = new FaderView.FaderViewListener() {
+    private final FaderView.FaderViewListener parameterHandler = new FaderView.FaderViewListener() {
 
         @Override
         public void onFader(int id, int pos) {
-            int pi = id;
-            ArdourPlugin.InputParameter ip = currentPlugin.getParameter(pi);
+            ArdourPlugin.InputParameter ip = currentPlugin.getParameter(id);
             if( (ip.flags & 0x02) == 0x02) {
                 ip.current = (double)pos;
             }
             else
                 ip.setCurrentFromFader(pos, 1000);
             Object[] plargs = new Object[2];
-            plargs[0] = currentPlugin.getParameter(pi).parameter_index;
+            plargs[0] = currentPlugin.getParameter(id).parameter_index;
             plargs[1] = ip.current;
             Message fm = onChangeHandler.obtainMessage(PLUGIN_PARAMETER_CHANGED, currentPlugin.getTrackId(), currentPlugin.getPluginId(), plargs);
             onChangeHandler.sendMessage(fm );
@@ -335,7 +330,7 @@ public class PluginLayout extends LinearLayout implements View.OnClickListener  
         }
     }
 
-    private Handler mHandler = new Handler() {
+    private final Handler mHandler = new Handler() {
 
         /* (non-Javadoc)
          * @see android.os.Handler#handleMessage(android.os.Message)

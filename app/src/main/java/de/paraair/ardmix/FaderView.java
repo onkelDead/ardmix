@@ -6,8 +6,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.os.Handler;
-import android.os.Message;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
@@ -206,8 +204,6 @@ public class FaderView extends ImageView implements View.OnTouchListener {
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {
-
-        Message msg;
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:

@@ -26,15 +26,15 @@ public class SendsLayout extends LinearLayout implements OnClickListener {
     public static final int PREV_SEND_LAYOUT = 197;
     public static final int NEXT_SEND_LAYOUT = 198;
     private static final int NAVBUTTON_HEIGHT = 36;
-    private Context context;
+    private final Context context;
 
     private int iStripIndex;
 
     private Handler onChangeHandler;
 
-    ArrayList<FaderView> fwSendGains = new ArrayList<>();
-    ArrayList<ToggleTextButton> ttbEnables = new ArrayList<>();
-    ArrayList<LinearLayout> llSends = new ArrayList<>();
+    private final ArrayList<FaderView> fwSendGains = new ArrayList<>();
+    private final ArrayList<ToggleTextButton> ttbEnables = new ArrayList<>();
+    private final ArrayList<LinearLayout> llSends = new ArrayList<>();
 
 
     public SendsLayout(Context context) {
@@ -76,7 +76,7 @@ public class SendsLayout extends LinearLayout implements OnClickListener {
         }
     }
 
-    public void init(StripLayout strip, Object[] sargs) {
+    public void init(StripLayout strip) {
         iStripIndex = strip.getRemoteId();
 
         TextView tvSendsDescription = new TextView(context);
@@ -86,7 +86,7 @@ public class SendsLayout extends LinearLayout implements OnClickListener {
         tvSendsDescription.setTextColor(Color.WHITE);
         tvSendsDescription.setTag("pluginTitle");
         tvSendsDescription.setOnClickListener(this);
-        tvSendsDescription.setText("Sends of " + strip.getTrack().name);
+        tvSendsDescription.setText(String.format("%s %s", R.string.send_layout_description, strip.getTrack().name));
         addView(tvSendsDescription);
 
         LinearLayout llButtons = new LinearLayout(context);
@@ -100,7 +100,7 @@ public class SendsLayout extends LinearLayout implements OnClickListener {
         btnClose.setLayoutParams(bclp);
         btnClose.setPadding(1, 0, 1, 0);
         btnClose.setTag("close");
-        btnClose.setText("Close");
+        btnClose.setText(R.string.btn_close);
         btnClose.setOnClickListener(this);
         llButtons.addView(btnClose);
 
@@ -157,12 +157,11 @@ public class SendsLayout extends LinearLayout implements OnClickListener {
         llSends.add(llSend);
     }
 
-    private FaderView.FaderViewListener sendListener = new FaderView.FaderViewListener() {
+    private final FaderView.FaderViewListener sendListener = new FaderView.FaderViewListener() {
 
         @Override
         public void onFader(int id, int pos) {
-            int pi = id;
-            Message fm = onChangeHandler.obtainMessage(SEND_CHANGED, iStripIndex, pi, pos);
+            Message fm = onChangeHandler.obtainMessage(SEND_CHANGED, iStripIndex, id, pos);
             onChangeHandler.sendMessage(fm);
         }
 
@@ -176,27 +175,27 @@ public class SendsLayout extends LinearLayout implements OnClickListener {
 
         }
     };
-
-    private Handler mHandler = new Handler() {
-
-        /* (non-Javadoc)
-         * @see android.os.Handler#handleMessage(android.os.Message)
-         */
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case 10:
-                    break;
-                case 20:
-                    int pi = msg.arg1;
-                    Message fm = onChangeHandler.obtainMessage(SEND_CHANGED, iStripIndex, pi, msg.arg2);
-                    onChangeHandler.sendMessage(fm);
-                    break;
-                case 30:
-                    break;
-            }
-        }
-    };
+//
+//    private Handler mHandler = new Handler() {
+//
+//        /* (non-Javadoc)
+//         * @see android.os.Handler#handleMessage(android.os.Message)
+//         */
+//        @Override
+//        public void handleMessage(Message msg) {
+//            switch (msg.what) {
+//                case 10:
+//                    break;
+//                case 20:
+//                    int pi = msg.arg1;
+//                    Message fm = onChangeHandler.obtainMessage(SEND_CHANGED, iStripIndex, pi, msg.arg2);
+//                    onChangeHandler.sendMessage(fm);
+//                    break;
+//                case 30:
+//                    break;
+//            }
+//        }
+//    };
 
     public void setOnChangeHandler(Handler onChangeHandler) {
         this.onChangeHandler = onChangeHandler;
@@ -230,7 +229,7 @@ public class SendsLayout extends LinearLayout implements OnClickListener {
         llSends.clear();
     }
 
-    OnClickListener checkedChangeListener = new OnClickListener() {
+    private final OnClickListener checkedChangeListener = new OnClickListener() {
         /**
          * Called when a view has been clicked.
          *

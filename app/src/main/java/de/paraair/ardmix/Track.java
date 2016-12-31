@@ -19,7 +19,7 @@ public class Track extends Fader {
     }
 
     @NonNull
-	static final String getTrackTypeName(TrackType type) {
+	static String getTrackTypeName(TrackType type) {
 		switch (type) {
 			case AUDIO:
 				return "Audio";

@@ -91,12 +91,4 @@ public class Bank implements Cloneable{
         return strips;
     }
 
-
-    Bank GetClone() {
-        Bank clone = new Bank(name);
-        for(Strip strip: strips ) {
-            clone.add(strip.name, strip.id, strip.enabled, strip.type);
-        }
-        return clone ;
-    }
 }
