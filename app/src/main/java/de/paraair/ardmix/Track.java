@@ -16,6 +16,26 @@ public class Track extends Fader {
 		MASTER, AUDIO, MIDI, BUS, SEND, RECEIVE, PAN
     }
 
+	static final String getTrackTypeName(TrackType type) {
+		switch (type) {
+			case AUDIO:
+				return "Audio";
+			case BUS:
+				return "BUS";
+			case MIDI:
+				return "Midi";
+			case SEND:
+				return "Send";
+			case RECEIVE:
+				return "Receive";
+			case PAN:
+				return "Pan";
+			case MASTER:
+				return "Master";
+		}
+		return "unknown track type";
+	}
+
 	public int remoteId;
 
 	public TrackType type;

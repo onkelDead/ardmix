@@ -73,7 +73,7 @@ public class StripSelectLayout extends ListView {
             CheckBox tvName = (CheckBox) convertView.findViewById(R.id.checkBox);
 
             // Populate the data into the template view using the data object
-            tvName.setText(strip.name + " - " + (strip.type == Track.TrackType.AUDIO ? "Audio" : "Aux"));
+            tvName.setText(strip.name + " - " + Track.getTrackTypeName(strip.type));
             tvName.setTag(strip.id);
             tvName.setChecked(strip.enabled);
             tvName.setOnClickListener(onClickListener);
