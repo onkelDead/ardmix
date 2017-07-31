@@ -1,23 +1,22 @@
 package de.paraair.ardmix;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.Set;
 
 /**
  * Created by onkel on 15.11.16.
  */
 public class FileSelectLayout extends ListView {
 
-    private Context context;
+    private final Context context;
     public OnClickListener onClickListener;
 
     public FileSelectLayout(Context context) {
@@ -37,8 +36,9 @@ public class FileSelectLayout extends ListView {
             super(context, 0, tracks);
         }
 
+        @NonNull
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
+        public View getView(int position, View convertView, @NonNull ViewGroup parent) {
             // Get the data item for this position
             String file = getItem(position);
 

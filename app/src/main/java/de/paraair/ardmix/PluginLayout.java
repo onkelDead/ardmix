@@ -116,29 +116,29 @@ public class PluginLayout extends LinearLayout implements View.OnClickListener  
 
         }
 
-        Button btnPrev = new Button(context);
-        btnPrev.setLayoutParams(new LayoutParams(48, NAVBUTTON_HEIGHT));
-        btnPrev.setPadding(1, 0, 1, 0);
-        btnPrev.setTag("prev");
-        btnPrev.setText("<");
-        btnPrev.setOnClickListener(this);
-        btnLayout.addView(btnPrev);
+        if( track.type != Track.TrackType.MASTER) {
+            Button btnPrev = new Button(context);
+            btnPrev.setLayoutParams(new LayoutParams(48, NAVBUTTON_HEIGHT));
+            btnPrev.setPadding(1, 0, 1, 0);
+            btnPrev.setTag("prev");
+            btnPrev.setText("<");
+            btnPrev.setOnClickListener(this);
+            btnLayout.addView(btnPrev);
 
-        Button btnNext = new Button(context);
-        btnNext.setLayoutParams(new LayoutParams(48, NAVBUTTON_HEIGHT));
-        btnNext.setPadding(1, 0, 1, 0);
-        btnNext.setTag("next");
-        btnNext.setText(">");
-        btnNext.setOnClickListener(this);
-        btnLayout.addView(btnNext);
-
+            Button btnNext = new Button(context);
+            btnNext.setLayoutParams(new LayoutParams(48, NAVBUTTON_HEIGHT));
+            btnNext.setPadding(1, 0, 1, 0);
+            btnNext.setTag("next");
+            btnNext.setText(">");
+            btnNext.setOnClickListener(this);
+            btnLayout.addView(btnNext);
+        }
         addView(btnLayout);
 
         scrollView = new ScrollView(context);
         scrollView.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
         scrollView.setFillViewport(true);
         addView(scrollView);
-
 
         if( inlude_request ) {
             Message fm = onChangeHandler.obtainMessage(PLUGIN_DESCRIPTOR_REQUEST, track.remoteId, 1);

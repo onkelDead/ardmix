@@ -626,19 +626,6 @@ public class OscService {
                     Message msg1 = transportHandler.obtainMessage(ArdourConstants.OSC_MAXFRAMES, maxFrame);
                     transportHandler.sendMessage(msg1);
 
-/*
-                    masterId = 0;
-                    Track t = new Track();
-                    t.name = "Master";
-                    t.type = Track.TrackType.MASTER;
-                    t.remoteId = masterId;
-                    t.muteEnabled = false;
-
-                    routes.put(t.remoteId, t);
-                    Message msg4 = transportHandler.obtainMessage(ArdourConstants.OSC_NEWSTRIP, t);
-                    transportHandler.sendMessage(msg4);
-*/
-
                     Message msg2 = transportHandler.obtainMessage(ArdourConstants.OSC_STRIPLIST);
                     transportHandler.sendMessage(msg2);
                     state = OscService.READY;
@@ -659,10 +646,13 @@ public class OscService {
                         t.type = Track.TrackType.BUS;
                         break;
 					case "M":
+					case "MA":
 						t.type = Track.TrackType.MASTER;
 						masterId = (Integer) message.getArg(6);
 						break;
-
+                    case "V":;
+                        t.type = Track.TrackType.VCA;
+                        break;
                 }
 
 
@@ -710,15 +700,6 @@ public class OscService {
                 String[] pathes = message.getName().split("/");
                 Integer stripIndex = 0;
                 Track t;
-
-//                    if(pathes.length < 3) {
-//                        System.out.printf("pathes.length < 3: %s, ", message.getName());
-//                        for( int a = 0; a < message.getArgCount(); a++) {
-//                            System.out.printf("%d-%s,  ", a, String.valueOf(message.getArg(a)));
-//                        }
-//                        System.out.printf("\n");
-//						return;
-//					}
 
                 switch (pathes[1]) {
 					case "expand":
@@ -781,6 +762,10 @@ public class OscService {
                             }
                         }
                         switch (pathes[2]) {
+							case "list":
+                                transportHandler.sendMessage(transportHandler.obtainMessage(ArdourConstants.OSC_RECONNECT));
+								Log.d(TAG, "list");
+								break;
                             case "processors":
                                 Log.d(TAG, "processors");
                                 break;
@@ -849,6 +834,10 @@ public class OscService {
                                 }
                                 break;
                             case "fader":
+                            	if (pathes.length > 3) {
+									Log.d(TAG, "too long path");
+									break;
+								}
                                 t = getTrack(stripIndex);
                                 if ( t!=null && !t.getTrackVolumeOnSeekBar() ) {
                                     Float val = (Float) message.getArg(argOffset);
@@ -880,6 +869,10 @@ public class OscService {
                                 break;
                             case "solo":
                                 t = getTrack(stripIndex);
+                                if (t == null || t.type == null) {
+                                    Log.d(TAG, "solo");
+                                    break;
+                                }
                                 if (t!=null) {
                                     t.soloEnabled = ((Float) message.getArg(argOffset) > 0);
                                     transportHandler.sendMessage(transportHandler.obtainMessage(ArdourConstants.OSC_STRIP_SOLO, stripIndex, 0));
@@ -980,7 +973,8 @@ public class OscService {
                             case "mute":
                                 t = getMaster();
                                 if (t!=null) {
-                                    transportHandler.sendMessage(transportHandler.obtainMessage(ArdourConstants.OSC_STRIP_MUTE, masterId,  (int)((float)message.getArg(0))));
+									t.muteEnabled = ((Float) message.getArg(0) > 0);
+                                    transportHandler.sendMessage(transportHandler.obtainMessage(ArdourConstants.OSC_STRIP_MUTE, masterId,  ((Float)message.getArg(0)).intValue()));
                                 }
 								else
 									Log.d(TAG, "master mute change missed " + masterId.toString() + "\n");

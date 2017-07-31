@@ -86,7 +86,7 @@ public class SendsLayout extends LinearLayout implements OnClickListener {
         tvSendsDescription.setTextColor(Color.WHITE);
         tvSendsDescription.setTag("pluginTitle");
         tvSendsDescription.setOnClickListener(this);
-        tvSendsDescription.setText(String.format("%s %s", R.string.send_layout_description, strip.getTrack().name));
+        tvSendsDescription.setText(String.format("%s \"%s\"", context.getString(R.string.send_layout_description), strip.getTrack().name));
         addView(tvSendsDescription);
 
         LinearLayout llButtons = new LinearLayout(context);

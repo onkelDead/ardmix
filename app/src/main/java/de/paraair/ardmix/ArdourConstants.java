@@ -44,6 +44,7 @@ final class ArdourConstants {
     public static final int OSC_MAXFRAMES = 400;
     public static final int OSC_FRAMERATE = 500;
     public static final int OSC_STRIPLIST = 1000;
+    public static final int OSC_RECONNECT = 1020;
     public static final int OSC_STRIP_FADER = 90;
     public static final int OSC_STRIP_INPUT = 110;
 
@@ -66,6 +67,7 @@ final class ArdourConstants {
     public static final int OSC_PLUGIN_LIST = 4010;
     public static final int OSC_PLUGIN_DESCRIPTOR = 4000;
     public static final int OSC_PLUGIN_DESCRIPTOR_END = 4020;
+
 
 
     // constants about Ardour Transport

@@ -590,6 +590,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     oscService.initSurfaceFeedback2();
                     break;
 
+                case OSC_RECONNECT:
+                    startConnectionToArdour();
+                    break;
+
                 case OSC_NEWSTRIP:
                     addStrip((Track)msg.obj);
                     break;
@@ -655,11 +659,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     Object args[] = (Object[]) msg.obj;
 
                     int remoteId = (int)args[0];
-                    if( iReceiveLayout == remoteId ) {
-                        for (int i = 1; i < args.length; i += 5) {
+                    if (args.length % 5 == 0) {
+                        for (int i = 0; i < args.length; i += 5) {
                             sl = getStripLayout((int) args[i]);
                             if (sl != null)
                                 sl.setType(Track.TrackType.SEND, (Float) args[i + 3], (int) args[i + 2], (int) args[i + 4] == 1);
+                        }
+                    }
+                    else {
+                        if (iReceiveLayout == remoteId) {
+                            for (int i = 1; i < args.length; i += 5) {
+                                sl = getStripLayout((int) args[i]);
+                                if (sl != null)
+                                    sl.setType(Track.TrackType.SEND, (Float) args[i + 3], (int) args[i + 2], (int) args[i + 4] == 1);
+                            }
                         }
                     }
                     break;
@@ -726,6 +739,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         sl.meterChange();
                     }
                     break;
+
+                // 0171/3532161
 
                 case OSC_PLUGIN_LIST:
                     Object plargs[] = (Object[]) msg.obj;

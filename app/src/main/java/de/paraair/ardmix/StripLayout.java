@@ -136,26 +136,32 @@ public class StripLayout extends LinearLayout {
                 tvStripName.setBackgroundColor(getResources().getColor(R.color.BUS_AUX_BACKGROUND, null));
                 setBackgroundColor(getResources().getColor(R.color.BUS_AUX_BACKGROUND, null));
                 break;
-            default:
+
+            case MASTER:
                 showType = Track.TrackType.MASTER;
                 tvStripName.setBackgroundColor(Color.WHITE);
+                break;
+            case VCA:
+                showType = Track.TrackType.VCA;
+                tvStripName.setBackgroundColor(getResources().getColor(R.color.BUTTON_FX, null));
                 break;
         }
         if( mask.bTitle )
             this.addView(tvStripName);
 
+        if (track.type != Track.TrackType.VCA) {
+            LayoutParams meterParam = new LayoutParams(
+                    LayoutParams.MATCH_PARENT,
+                    METER_IMAGE_HIGHT);
+            meterParam.setMargins(1, 1, 0, 0);
+            meterImage = new MeterImageView(context);
+            meterImage.setLayoutParams(meterParam);
+            meterImage.setId(getId());
+            meterImage.setBackgroundColor(getResources().getColor(R.color.VeryDark, null));
 
-        LayoutParams meterParam = new LayoutParams(
-                LayoutParams.MATCH_PARENT,
-                METER_IMAGE_HIGHT);
-        meterParam.setMargins(1,1,0,0);
-        meterImage = new MeterImageView(context);
-        meterImage.setLayoutParams(meterParam);
-        meterImage.setId(getId());
-        meterImage.setBackgroundColor(getResources().getColor(R.color.VeryDark, null));
-
-        if (mask.bMeter)
-            this.addView(meterImage);
+            if (mask.bMeter)
+                this.addView(meterImage);
+        }
 
         ttbFX = new ToggleTextButton(context, "FX","FX", getResources().getColor(R.color.BUTTON_FX, null), R.color.VeryDark);
         ttbFX.setPadding(0,0,0,0);
@@ -176,32 +182,31 @@ public class StripLayout extends LinearLayout {
         ttbSends.setOnClickListener(onClickListener);
         ttbSends.setAutoToggle(true);
 
-        if( mask.stripSize == WIDE_STRIP) {
-            LinearLayout send_fx = new LinearLayout(context);
-            send_fx.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
-            send_fx.setOrientation(HORIZONTAL);
-            if( track.type != Track.TrackType.MASTER) {
-                ttbFX.setLayoutParams(switchWLP);
-                ttbSends.setLayoutParams(switchWLP);
+        if (track.type != Track.TrackType.VCA) {
+            if (mask.stripSize == WIDE_STRIP) {
+                LinearLayout send_fx = new LinearLayout(context);
+                send_fx.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+                send_fx.setOrientation(HORIZONTAL);
+                if (track.type != Track.TrackType.MASTER) {
+                    ttbFX.setLayoutParams(switchWLP);
+                    ttbSends.setLayoutParams(switchWLP);
+                    if (mask.bFX)
+                        send_fx.addView(ttbFX);
+                    if (mask.bSend && track.type != Track.TrackType.MASTER)
+                        send_fx.addView(ttbSends);
+                } else {
+                    ttbFX.setLayoutParams(switchLP);
+                    if (mask.bFX)
+                        send_fx.addView(ttbFX);
+                }
+                this.addView(send_fx);
+            } else {
                 if (mask.bFX)
-                    send_fx.addView(ttbFX);
+                    this.addView(ttbFX);
                 if (mask.bSend && track.type != Track.TrackType.MASTER)
-                    send_fx.addView(ttbSends);
+                    this.addView(ttbSends);
             }
-            else {
-                ttbFX.setLayoutParams(switchLP);
-                if (mask.bFX)
-                    send_fx.addView(ttbFX);
-            }
-            this.addView(send_fx);
         }
-        else {
-            if (mask.bFX)
-                this.addView(ttbFX);
-            if (mask.bSend && track.type != Track.TrackType.MASTER)
-                this.addView(ttbSends);
-        }
-
 
         if( track.type != Track.TrackType.MASTER ) {
             ttbRecord = new ToggleTextButton(context, "REC", "REC", getResources().getColor(R.color.BUTTON_RECORD, null), R.color.VeryDark);
@@ -346,7 +351,7 @@ public class StripLayout extends LinearLayout {
             }
         }
 
-        if( track.type != Track.TrackType.MASTER ) {
+        if( track.type != Track.TrackType.MASTER && track.type != Track.TrackType.VCA) {
             ttbPan = new ToggleTextButton(context, "PAN", "PAN", getResources().getColor(R.color.BUTTON_PAN, null), R.color.VeryDark);
             ttbPan.setPadding(0, 0, 0, 0);
             ttbPan.setLayoutParams(switchLP);
@@ -465,7 +470,7 @@ public class StripLayout extends LinearLayout {
     }
 
     public void volumeChanged() {
-        if( showType == Track.TrackType.AUDIO || showType == Track.TrackType.BUS || showType == Track.TrackType.MASTER)
+        if( showType == Track.TrackType.AUDIO || showType == Track.TrackType.BUS || showType == Track.TrackType.MASTER || showType == Track.TrackType.VCA)
             fwVolume.setProgress(track.trackVolume);
     }
 

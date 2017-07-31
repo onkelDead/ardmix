@@ -37,7 +37,7 @@
     <string name="solosafe">Solo locked</string>
     <string name="stripdlg_label_size">Strip size</string>
     <string name="btn_close">Close</string>
-    <string name="send_layout_description">"Sends of"</string>
+    <string name="send_layout_description">"Sends of channel"</string>
     <string name="btn_reset">reset</string>
     <string name="lb_Descr_noFX">No FX present</string>
 </resources>

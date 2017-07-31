@@ -77,7 +77,6 @@ public class MeterImageView extends ImageView {
 
     public void setProgress(int val) {
         meterLevel = val;
-
         this.invalidate(0, (int)(parentWidth / 2 - meterWidth), (int)(parentWidth / 2+meterWidth), (int)parentHeight);
     }
 
@@ -91,7 +90,5 @@ public class MeterImageView extends ImageView {
         parentHeight = parentH;
 
     }
-
-
 }
 

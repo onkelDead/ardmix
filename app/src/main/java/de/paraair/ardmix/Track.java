@@ -15,7 +15,7 @@ public class Track extends Fader {
 
 
 	enum TrackType  {
-		MASTER, AUDIO, MIDI, BUS, SEND, RECEIVE, PAN
+		MASTER, AUDIO, MIDI, BUS, SEND, RECEIVE, PAN, VCA
     }
 
     @NonNull
@@ -35,6 +35,8 @@ public class Track extends Fader {
 				return "Pan";
 			case MASTER:
 				return "Master";
+			case VCA:
+				return "VCA";
 		}
 		return "unknown track type";
 	}
